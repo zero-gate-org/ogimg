@@ -342,6 +342,67 @@ export interface TemplateProps {
 export const resolveTitleFontSize = (titleSize: number | null | undefined, fallbackPx: number) =>
     typeof titleSize === "number" && Number.isFinite(titleSize) && titleSize > 0 ? titleSize : fallbackPx;
 
+/** sRGB luma, good enough to tell a light card from a dark one. */
+const getLuminance = (hexColor: string) => {
+    const [r, g, b] = hexToRgb(hexColor);
+    return (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+};
+
+/**
+ * Every template derives its hierarchy from the user's text colour instead of
+ * hardcoding accent hues. One colour, expressed at fixed opacities, so a card
+ * stays in a single family whatever background or text colour it is given.
+ */
+export interface CardTone {
+    /** True when the text colour is dark, which means the card itself is light. */
+    isDarkText: boolean;
+    /** Neutral off-black or off-white, used for image scrims. Never pure #000 or #fff. */
+    veil: string;
+    primary: string;
+    secondary: string;
+    tertiary: string;
+    hairline: string;
+    fill: string;
+    wash: string;
+}
+
+export const getCardTone = (textColor: string): CardTone => {
+    const isDarkText = getLuminance(textColor) > 0.5;
+
+    return {
+        isDarkText,
+        veil: isDarkText ? "#101013" : "#fcfcfd",
+        primary: textColor,
+        secondary: hexToRgba(textColor, 0.68),
+        tertiary: hexToRgba(textColor, 0.46),
+        hairline: hexToRgba(textColor, isDarkText ? 0.16 : 0.14),
+        fill: hexToRgba(textColor, isDarkText ? 0.07 : 0.05),
+        wash: hexToRgba(textColor, isDarkText ? 0.05 : 0.04),
+    };
+};
+
+/**
+ * Lines ship as "Added: something useful". Splitting the keyword into its own
+ * column is what lets a changelog read as a ledger instead of a bullet list.
+ */
+export const splitPrefixedLine = (line: string) => {
+    const value = line.trim();
+    const separator = value.indexOf(":");
+
+    if (separator <= 0 || separator > 18) {
+        return { label: "", body: value };
+    }
+
+    const label = value.slice(0, separator).trim();
+    const body = value.slice(separator + 1).trim();
+
+    if (!body || !/^[\w +]+$/.test(label)) {
+        return { label: "", body: value };
+    }
+
+    return { label, body };
+};
+
 export const resolveTitleTracking = (titleTracking: number | undefined, fallbackEm: number) =>
     typeof titleTracking === "number" && Number.isFinite(titleTracking) ? titleTracking : fallbackEm;
 
@@ -350,8 +411,7 @@ export const resolveImageRadius = (imageRadius: number | undefined) =>
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(value, max));
 
-export const hexToRgba = (hexColor: string, alpha: number) => {
-    const safeAlpha = clamp(alpha, 0, 1);
+export const hexToRgb = (hexColor: string): [number, number, number] => {
     let hex = hexColor.replace("#", "").trim();
 
     if (hex.length === 3) {
@@ -361,18 +421,18 @@ export const hexToRgba = (hexColor: string, alpha: number) => {
             .join("");
     }
 
-    if (hex.length !== 6) {
-        return `rgba(255, 255, 255, ${safeAlpha})`;
+    if (hex.length !== 6 || Number.isNaN(Number.parseInt(hex, 16))) {
+        return [255, 255, 255];
     }
 
     const intValue = Number.parseInt(hex, 16);
-    if (Number.isNaN(intValue)) {
-        return `rgba(255, 255, 255, ${safeAlpha})`;
-    }
 
-    const r = (intValue >> 16) & 255;
-    const g = (intValue >> 8) & 255;
-    const b = intValue & 255;
+    return [(intValue >> 16) & 255, (intValue >> 8) & 255, intValue & 255];
+};
+
+export const hexToRgba = (hexColor: string, alpha: number) => {
+    const safeAlpha = clamp(alpha, 0, 1);
+    const [r, g, b] = hexToRgb(hexColor);
 
     return `rgba(${r}, ${g}, ${b}, ${safeAlpha})`;
 };

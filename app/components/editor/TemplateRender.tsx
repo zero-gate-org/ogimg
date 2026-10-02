@@ -65,7 +65,7 @@ export const templateDocumentToProps = (document: TemplateDocument): TemplatePro
         gridOpacity: fields.gridOpacity,
         gridBlur: fields.gridBlur,
         titleSize: fields.titleSize,
-        titleTracking: fields.titleTracking || 0,
+        titleTracking: fields.titleTracking ?? undefined,
         imageFit: fields.imageFit,
         imageRadius: fields.imageRadius,
     };

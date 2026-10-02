@@ -1,21 +1,23 @@
 "use client";
 
+import TemplateCard, { ImageSlot } from "./TemplateCard";
 import {
     DEFAULT_BACKGROUND_PRESET_ID,
-    TemplateProps,
-    clampGridBlur,
-    getBackgroundFill,
-    getGridOverlayStyle,
-    hexToRgba,
+    type TemplateProps,
+    getCardTone,
     resolveFontWeight,
-    resolveImageRadius,
     resolveTitleFontSize,
     resolveTitleTracking,
 } from "./templateShared";
 
+/**
+ * Episode art built like cover art: square image, show name above it in wide
+ * tracked caps, episode title below. Centred on both axes, because that is the
+ * convention this format expects.
+ */
 export default function PodcastCover({
     title,
-    textColor = "#fdf2f8",
+    textColor = "#F7F2FA",
     logoImage,
     image,
     tag,
@@ -25,101 +27,100 @@ export default function PodcastCover({
     textDecoration,
     fontFamily,
     backgroundMode = "Gradient",
-    gradientStart = "#1A1142",
-    gradientEnd = "#5F31B0",
-    gradientAngle = 145,
+    gradientStart = "#16111C",
+    gradientEnd = "#241B2E",
+    gradientAngle = 155,
     backgroundPresetId = DEFAULT_BACKGROUND_PRESET_ID,
     gridOverlay = "dots",
-    gridColor = "#A78BFA",
-    gridOpacity = 0.28,
-    gridBlur = 1.1,
+    gridColor,
+    gridOpacity = 0.2,
+    gridBlur = 0,
     titleSize,
     titleTracking,
-    imageFit = "contain",
+    imageFit = "cover",
     imageRadius,
 }: TemplateProps) {
-    const hasImage = Boolean(image);
-    const brandLabel = (logo || "").trim();
-    const tagLabel = (tag || "").trim();
-    const backgroundFill = getBackgroundFill(backgroundMode, gradientStart, gradientEnd, gradientAngle, backgroundPresetId);
-    const overlayStyle = getGridOverlayStyle(gridOverlay, gridColor, gridOpacity);
-    const clampedGridBlur = clampGridBlur(gridBlur);
-    const headlineWeight = resolveFontWeight(fontWeight, 760);
-    const guestColor = hexToRgba(textColor, 0.82);
-    const showColor = hexToRgba(textColor, 0.68);
+    const tone = getCardTone(textColor);
+    const showName = (logo || "").trim();
+    const guest = (tag || "").trim();
+    const hostMark = (logoImage || "").trim();
 
     return (
-        <div
-            id="og-template-node"
-            className="relative isolate flex overflow-hidden border border-zinc-900"
-            style={{
-                width: "1200px",
-                height: "630px",
-                fontFamily,
-                background: backgroundFill,
-            }}
+        <TemplateCard
+            tone={tone}
+            textColor={textColor}
+            fontFamily={fontFamily}
+            backgroundMode={backgroundMode}
+            gradientStart={gradientStart}
+            gradientEnd={gradientEnd}
+            gradientAngle={gradientAngle}
+            backgroundPresetId={backgroundPresetId}
+            gridOverlay={gridOverlay}
+            gridColor={gridColor}
+            gridOpacity={gridOpacity}
+            gridBlur={gridBlur}
         >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_16%,rgba(244,114,182,0.22)_0%,rgba(244,114,182,0)_40%),radial-gradient(circle_at_88%_74%,rgba(45,212,191,0.16)_0%,rgba(45,212,191,0)_50%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(126deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_40%,rgba(196,181,253,0.14)_100%)]" />
-            {gridOverlay !== "none" && (
-                <div
-                    className="absolute inset-0"
-                    style={{
-                        ...overlayStyle,
-                        filter: clampedGridBlur > 0 ? `blur(${clampedGridBlur}px)` : undefined,
-                        transform: clampedGridBlur > 0 ? "scale(1.02)" : undefined,
-                        mixBlendMode: "screen",
-                    }}
-                />
-            )}
-
-            <div className="relative z-10 h-full w-full px-14 py-12 flex gap-10">
-                <div className="w-[50%] h-full overflow-hidden flex items-center justify-center">
-                    {hasImage ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                                src={image}
-                                alt="guest portrait"
-                                className="w-full h-full object-center"
-                                style={{ objectFit: imageFit, borderRadius: resolveImageRadius(imageRadius) }}
-                            />
-                        ) : null}
-                </div>
-
-                <div className="w-[50%] h-full flex flex-col justify-center">
-                    <h1
-                        className="text-[46px] leading-[1.08] tracking-[-0.03em]"
+            <div className="flex h-full w-full flex-col items-center justify-center px-16">
+                {showName && (
+                    <p
+                        className="text-[16px] font-semibold uppercase tracking-[0.32em]"
                         style={{
-                            color: textColor,
+                            color: tone.secondary,
                             fontStyle,
-                            fontWeight: headlineWeight,
-                            fontSize: `${resolveTitleFontSize(titleSize, 46)}px`,
-                            letterSpacing: `${resolveTitleTracking(titleTracking, -0.03)}em`,
                             textDecoration,
                         }}
                     >
-                        {title}
-                    </h1>
+                        {showName}
+                    </p>
+                )}
 
-                    {tagLabel && (
-                        <p className="mt-7 text-[26px] tracking-[-0.015em]" style={{ color: guestColor }}>
-                            {tagLabel}
-                        </p>
-                    )}
+                <div className="mt-8 flex items-stretch gap-12">
+                    <ImageSlot
+                        className="h-[300px] w-[300px] shrink-0"
+                        image={image}
+                        alt="episode art"
+                        fit={imageFit}
+                        radius={imageRadius}
+                        tone={tone}
+                        emptyLabel="Artwork"
+                    />
 
-                    <div className="mt-6 flex items-center gap-3">
-                        {logoImage && (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={logoImage} alt="uploaded logo" className="w-[72px] h-[72px] object-contain" />
-                        )}
-                        {brandLabel && (
-                            <p className="text-[23px] tracking-[-0.014em]" style={{ color: showColor }}>
-                                {brandLabel}
-                            </p>
+                    {/*
+                      The title block is top aligned to the artwork and allowed to
+                      run long, so a longer episode title grows downward instead of
+                      stretching the artwork out of square.
+                    */}
+                    <div className="flex w-[300px] flex-col justify-between py-1">
+                        <h1
+                            className="leading-[1.04]"
+                            style={{
+                                color: textColor,
+                                fontStyle,
+                                fontWeight: resolveFontWeight(fontWeight, 740),
+                                textDecoration,
+                                fontSize: `${resolveTitleFontSize(titleSize, 48)}px`,
+                                letterSpacing: `${resolveTitleTracking(titleTracking, -0.038)}em`,
+                            }}
+                        >
+                            {title}
+                        </h1>
+
+                        {guest && (
+                            <div>
+                                <div className="h-px w-12" style={{ backgroundColor: tone.hairline }} />
+                                <p className="mt-5 text-[20px] leading-[1.3]" style={{ color: tone.secondary }}>
+                                    {guest}
+                                </p>
+                            </div>
                         )}
                     </div>
                 </div>
+
+                {hostMark && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={logoImage} alt="" className="mt-8 h-9 w-9 object-contain" />
+                )}
             </div>
-        </div>
+        </TemplateCard>
     );
 }

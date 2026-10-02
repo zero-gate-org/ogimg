@@ -1,11 +1,10 @@
 import { DEFAULT_BACKGROUND_PRESET_ID, type BackgroundPresetId, type GridOverlay } from "../../components/templates/templateShared";
 import type { TemplateFontId } from "../../components/templates/fontCatalog";
-import type { TemplateId } from "../../components/templates/templateRegistry";
+import { getTemplateById, type TemplateId } from "../../components/templates/templateRegistry";
 import type {
     BrandKit,
     CanvasBackground,
     FreeDocument,
-    ImageFit,
     Layer,
     ShapeKind,
     TemplateDocument,
@@ -32,11 +31,36 @@ export const DEFAULT_CANVAS_BACKGROUND: CanvasBackground = {
     gradientEnd: "#0B0B0D",
     gradientAngle: 145,
     presetId: DEFAULT_BACKGROUND_PRESET_ID,
+    imageSrc: "",
+    imageName: "",
+    imageFit: "cover",
+    imageOpacity: 1,
+    imageScrim: 0,
     overlay: "none",
     overlayColor: "#E5E7EB",
     overlayOpacity: 0.18,
     overlayBlur: 0,
     noise: true,
+};
+
+/**
+ * Backfills background fields added after a document was saved.
+ *
+ * Projects and drafts live in local storage, so a document written by an older
+ * build can be missing keys that the renderer now reads.
+ */
+export const normalizeCanvasBackground = (value: unknown): CanvasBackground => {
+    const stored = (value ?? {}) as Partial<CanvasBackground>;
+
+    return {
+        ...DEFAULT_CANVAS_BACKGROUND,
+        ...stored,
+        imageFit: stored.imageFit ?? DEFAULT_CANVAS_BACKGROUND.imageFit,
+        imageOpacity: typeof stored.imageOpacity === "number" ? stored.imageOpacity : DEFAULT_CANVAS_BACKGROUND.imageOpacity,
+        imageScrim: typeof stored.imageScrim === "number" ? stored.imageScrim : DEFAULT_CANVAS_BACKGROUND.imageScrim,
+        imageSrc: typeof stored.imageSrc === "string" ? stored.imageSrc : "",
+        imageName: typeof stored.imageName === "string" ? stored.imageName : "",
+    };
 };
 
 interface TextLayerInput {
@@ -148,18 +172,6 @@ export const createFreeDocument = (): FreeDocument => ({
     layers: [],
 });
 
-const TEMPLATE_DEFAULT_TITLE_SIZE: Record<TemplateId, number> = {
-    "minimalist-tech": 46,
-    "app-showcase": 24,
-    "centered-container": 44,
-    "brand-pitch": 46,
-    "editorial-pixel": 46,
-    "saas-launch": 38,
-    "blog-post": 46,
-    "podcast-cover": 46,
-    changelog: 42,
-};
-
 export const createTemplateDocument = (
     templateId: TemplateId,
     defaults: {
@@ -197,9 +209,11 @@ export const createTemplateDocument = (
         detailTwo: defaults.detailTwo ?? "",
         detailThree: defaults.detailThree ?? "",
         fontId: defaults.fontId,
-        titleSize: TEMPLATE_DEFAULT_TITLE_SIZE[templateId],
-        titleTracking: 0,
-        imageFit: "contain" as ImageFit,
+        titleSize: getTemplateById(templateId).defaultTitleSize,
+        // Null keeps the template's own tracking. Storing a literal 0 here would
+        // silently flatten every template's headline spacing.
+        titleTracking: null,
+        imageFit: getTemplateById(templateId).defaultImageFit,
         imageRadius: 0,
         backgroundMode: defaults.backgroundMode,
         gradientStart: defaults.gradientStart,

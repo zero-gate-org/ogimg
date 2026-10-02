@@ -11,6 +11,13 @@ as done so the list can be used as a backlog without rewriting history.
 - Per-layer typography: 16 self-hosted families, weight, size, line height, tracking, case, alignment.
 - Undo and redo with coalesced steps, so dragging or typing collapses into one undo.
 
+### Uploaded canvas background
+- The free canvas takes an uploaded image as its background, alongside solid, gradient, and preset fills.
+- Fit, opacity, and a scrim control sit behind the existing solid colour, so type stays readable over a
+  photo and no extra colour picker is introduced.
+- The image is stored as a data URL and rendered as a real `img`, so it survives the export pipeline and
+  the social preview without changes.
+
 ### Custom dimensions and platform presets
 - Open Graph, X summary large, LinkedIn, Product Hunt, YouTube, square, and story sizes.
 - Custom width and height, with existing layers rescaled proportionally when the canvas changes.
@@ -30,6 +37,8 @@ as done so the list can be used as a backlog without rewriting history.
 ### Template variables and layout rules
 - Each template declares its fields in a control schema instead of branching on `templateId`.
 - Headline size, headline tracking, image fit, and corner radius are adjustable per template.
+- Each template now has its own composition and headline baseline, and the nine share one card frame
+  (`TemplateCard.tsx`) so hierarchy stays consistent without repeating accent colours.
 
 ## Next
 
@@ -52,10 +61,13 @@ Why this matters:
   switching to the template editor.
 
 ### Text layout guards
-- Auto-shrink or flag headlines that overflow their frame, per layer and per template.
+- Auto-shrink or flag headlines that overflow their frame, per layer and per template. Still open: the
+  editor reports a baseline but does not yet warn when a long headline runs past its slot.
 
 ### Asset library
-- Reuse logos and screenshots already uploaded in this browser across new documents.
+- Reuse logos, screenshots, and canvas backgrounds already uploaded in this browser across new documents.
+  The upload primitive and data URL storage now exist in three places (image layer, template slot, canvas
+  background), so a shared picker is the natural next step.
 
 ### Team workspaces
 - Shared kits, shared templates, and approval flow. Useful only after projects sync beyond one device.

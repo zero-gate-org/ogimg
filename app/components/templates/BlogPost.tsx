@@ -1,22 +1,23 @@
 "use client";
 
+import TemplateCard, { ImageSlot, MetaLabel } from "./TemplateCard";
 import {
     DEFAULT_BACKGROUND_PRESET_ID,
-    TemplateProps,
-    clampGridBlur,
-    getBackgroundFill,
-    getBrandMark,
-    getGridOverlayStyle,
-    hexToRgba,
+    type TemplateProps,
+    getCardTone,
     resolveFontWeight,
-    resolveImageRadius,
     resolveTitleFontSize,
     resolveTitleTracking,
 } from "./templateShared";
 
+/**
+ * Article cover. Byline and category sit in a top bar, the serif headline runs
+ * down the left, and the cover image is given a wide frame that bleeds off the
+ * right and bottom edges. Serif by default, with no device competing with it.
+ */
 export default function BlogPost({
     title,
-    textColor = "#111827",
+    textColor = "#111111",
     logoImage,
     image,
     tag,
@@ -26,113 +27,93 @@ export default function BlogPost({
     textDecoration,
     fontFamily,
     backgroundMode = "Gradient",
-    gradientStart = "#F7F0DB",
-    gradientEnd = "#E5D7B8",
-    gradientAngle = 130,
+    gradientStart = "#FAFAF9",
+    gradientEnd = "#E7E5E4",
+    gradientAngle = 150,
     backgroundPresetId = DEFAULT_BACKGROUND_PRESET_ID,
     gridOverlay = "none",
-    gridColor = "#6B7280",
-    gridOpacity = 0.15,
+    gridColor,
+    gridOpacity = 0.14,
     gridBlur = 0,
     titleSize,
     titleTracking,
-    imageFit = "contain",
+    imageFit = "cover",
     imageRadius,
 }: TemplateProps) {
-    const hasImage = Boolean(image);
-    const brandLabel = (logo || "").trim();
-    const tagLabel = (tag || "").trim();
-    const brandMark = getBrandMark(brandLabel, tagLabel);
-    const backgroundFill = getBackgroundFill(backgroundMode, gradientStart, gradientEnd, gradientAngle, backgroundPresetId);
-    const overlayStyle = getGridOverlayStyle(gridOverlay, gridColor, gridOpacity);
-    const clampedGridBlur = clampGridBlur(gridBlur);
-    const headlineWeight = resolveFontWeight(fontWeight, 700);
-    const mutedPrimary = hexToRgba(textColor, 0.82);
-    const mutedSecondary = hexToRgba(textColor, 0.66);
-    const slotBorder = hexToRgba(textColor, 0.24);
-    const slotTint = hexToRgba(textColor, 0.08);
-    const markColor = hexToRgba(textColor, 0.54);
+    const tone = getCardTone(textColor);
+    const byline = (logo || "").trim();
+    const category = (tag || "").trim();
 
     return (
-        <div
-            id="og-template-node"
-            className="relative isolate flex overflow-hidden border border-zinc-900"
-            style={{
-                width: "1200px",
-                height: "630px",
-                fontFamily,
-                background: backgroundFill,
-            }}
+        <TemplateCard
+            tone={tone}
+            textColor={textColor}
+            fontFamily={fontFamily}
+            backgroundMode={backgroundMode}
+            gradientStart={gradientStart}
+            gradientEnd={gradientEnd}
+            gradientAngle={gradientAngle}
+            backgroundPresetId={backgroundPresetId}
+            gridOverlay={gridOverlay}
+            gridColor={gridColor}
+            gridOpacity={gridOpacity}
+            gridBlur={gridBlur}
         >
-            {gridOverlay !== "none" && (
-                <div
-                    className="absolute inset-0"
-                    style={{
-                        ...overlayStyle,
-                        filter: clampedGridBlur > 0 ? `blur(${clampedGridBlur}px)` : undefined,
-                        transform: clampedGridBlur > 0 ? "scale(1.01)" : undefined,
-                    }}
-                />
-            )}
+            <div className="flex h-full w-full flex-col">
+                <div className="flex items-center justify-between gap-6 px-14 pt-12">
+                    <div className="flex items-center gap-3">
+                        {logoImage && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={logoImage} alt="" className="h-9 w-9 object-contain" />
+                        )}
+                        {byline && (
+                            <p
+                                className="text-[19px] leading-none tracking-[-0.01em]"
+                                style={{
+                                    color: textColor,
+                                    fontStyle,
+                                    fontWeight: resolveFontWeight(fontWeight, 600),
+                                    textDecoration,
+                                }}
+                            >
+                                {byline}
+                            </p>
+                        )}
+                    </div>
 
-            <div className="relative z-10 h-full w-full px-12 py-10 flex gap-8">
-                <div
-                    className={`${hasImage ? "w-[44%] overflow-hidden flex items-center justify-center" : "w-[44%] rounded-2xl overflow-hidden flex items-center justify-center"}`}
-                    style={hasImage ? undefined : {
-                        border: `1px solid ${slotBorder}`,
-                        backgroundColor: slotTint,
-                    }}
-                >
-                    {hasImage ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                            src={image}
-                            alt="guest visual"
-                            className="w-full h-full object-center"
-                            style={{ objectFit: imageFit, borderRadius: resolveImageRadius(imageRadius) }}
-                        />
-                    ) : (
-                        <p className="text-[44px] tracking-[0.07em]" style={{ color: markColor }}>
-                            {brandMark}
-                        </p>
-                    )}
+                    {category && <MetaLabel tone={tone}>{category}</MetaLabel>}
                 </div>
 
-                <div className="w-[56%] flex flex-col justify-center pr-3 relative">
-                    {logoImage && (
-                        <div className="absolute top-0 right-1 w-[72px] h-[72px] flex items-center justify-center">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={logoImage} alt="uploaded logo" className="w-full h-full object-contain" />
-                        </div>
-                    )}
+                <div className="flex min-h-0 flex-1">
+                    <div className="flex w-[50%] shrink-0 flex-col justify-center px-14 pb-14 pt-10">
+                        <div className="mb-7 h-px w-16" style={{ backgroundColor: tone.hairline }} />
+                        <h1
+                            className="max-w-[520px] leading-[1.12]"
+                            style={{
+                                color: textColor,
+                                fontStyle,
+                                fontWeight: resolveFontWeight(fontWeight, 600),
+                                textDecoration,
+                                fontSize: `${resolveTitleFontSize(titleSize, 54)}px`,
+                                letterSpacing: `${resolveTitleTracking(titleTracking, -0.018)}em`,
+                            }}
+                        >
+                            {title}
+                        </h1>
+                    </div>
 
-                    <h1
-                        className="text-[46px] leading-[1.08] tracking-[-0.03em]"
-                        style={{
-                            color: textColor,
-                            fontStyle,
-                            fontWeight: headlineWeight,
-                            fontSize: `${resolveTitleFontSize(titleSize, 46)}px`,
-                            letterSpacing: `${resolveTitleTracking(titleTracking, -0.03)}em`,
-                            textDecoration,
-                        }}
-                    >
-                        {title}
-                    </h1>
-
-                    {tagLabel && (
-                        <p className="mt-7 text-[26px] tracking-[-0.014em]" style={{ color: mutedPrimary }}>
-                            {tagLabel}
-                        </p>
-                    )}
-
-                    {brandLabel && (
-                        <p className="mt-5 text-[22px] tracking-[-0.012em]" style={{ color: mutedSecondary }}>
-                            {brandLabel}
-                        </p>
-                    )}
+                    <ImageSlot
+                        className="min-w-0 flex-1 self-end"
+                        image={image}
+                        alt="article cover"
+                        fit={imageFit}
+                        radius={imageRadius}
+                        tone={tone}
+                        emptyLabel="Article cover"
+                        style={{ aspectRatio: "16 / 9" }}
+                    />
                 </div>
             </div>
-        </div>
+        </TemplateCard>
     );
 }

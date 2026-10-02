@@ -45,6 +45,10 @@ export default function TemplateGalleryPreview({
         gridColor: defaults.gridColor,
         gridOpacity: defaults.gridOpacity,
         gridBlur: defaults.gridBlur,
+        titleSize: null,
+        titleTracking: undefined,
+        imageFit: template.defaultImageFit,
+        imageRadius: 0,
     };
 
     const renderTemplate = () => {

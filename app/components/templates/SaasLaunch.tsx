@@ -1,21 +1,24 @@
 "use client";
 
+import TemplateCard, { ImageSlot, MetaLabel } from "./TemplateCard";
 import {
     DEFAULT_BACKGROUND_PRESET_ID,
-    TemplateProps,
-    clampGridBlur,
-    getBackgroundFill,
-    getGridOverlayStyle,
-    hexToRgba,
+    type TemplateProps,
+    getCardTone,
     resolveFontWeight,
-    resolveImageRadius,
     resolveTitleFontSize,
     resolveTitleTracking,
+    splitPrefixedLine,
 } from "./templateShared";
 
+/**
+ * Launch card with the image across the top band and copy beneath it, so the
+ * composition reads as a stacked announcement rather than another side by side
+ * split. "Added" style lines are split into a fixed width keyword column.
+ */
 export default function SaasLaunch({
     title,
-    textColor = "#f8fafc",
+    textColor = "#F4F7FB",
     logoImage,
     image,
     tag,
@@ -27,111 +30,125 @@ export default function SaasLaunch({
     textDecoration,
     fontFamily,
     backgroundMode = "Gradient",
-    gradientStart = "#081120",
-    gradientEnd = "#172554",
-    gradientAngle = 125,
+    gradientStart = "#0A1220",
+    gradientEnd = "#14243F",
+    gradientAngle = 150,
     backgroundPresetId = DEFAULT_BACKGROUND_PRESET_ID,
-    gridOverlay = "graph",
-    gridColor = "#60A5FA",
-    gridOpacity = 0.2,
-    gridBlur = 0.8,
+    gridOverlay = "none",
+    gridColor,
+    gridOpacity = 0.14,
+    gridBlur = 0,
     titleSize,
     titleTracking,
-    imageFit = "contain",
+    imageFit = "cover",
     imageRadius,
 }: TemplateProps) {
-    const hasImage = Boolean(image);
+    const tone = getCardTone(textColor);
     const brandLabel = (logo || "").trim();
     const tagLabel = (tag || "").trim();
-    const backgroundFill = getBackgroundFill(backgroundMode, gradientStart, gradientEnd, gradientAngle, backgroundPresetId);
-    const overlayStyle = getGridOverlayStyle(gridOverlay, gridColor, gridOpacity);
-    const clampedGridBlur = clampGridBlur(gridBlur);
-    const headlineWeight = resolveFontWeight(fontWeight, 720);
-    const mutedText = hexToRgba(textColor, 0.8);
-    const outcomes = [detailOne, detailTwo].map((item) => item?.trim() || "").filter(Boolean);
+    const outcomes = [detailOne, detailTwo].map((line) => line?.trim() || "").filter(Boolean);
+    const hasKeywords = outcomes.some((line) => splitPrefixedLine(line).label);
 
     return (
-        <div
-            id="og-template-node"
-            className="relative isolate flex overflow-hidden border border-zinc-900"
-            style={{
-                width: "1200px",
-                height: "630px",
-                fontFamily,
-                background: backgroundFill,
-            }}
+        <TemplateCard
+            tone={tone}
+            textColor={textColor}
+            fontFamily={fontFamily}
+            backgroundMode={backgroundMode}
+            gradientStart={gradientStart}
+            gradientEnd={gradientEnd}
+            gradientAngle={gradientAngle}
+            backgroundPresetId={backgroundPresetId}
+            gridOverlay={gridOverlay}
+            gridColor={gridColor}
+            gridOpacity={gridOpacity}
+            gridBlur={gridBlur}
         >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_16%,rgba(45,212,191,0.24)_0%,rgba(45,212,191,0)_38%),radial-gradient(circle_at_88%_80%,rgba(96,165,250,0.28)_0%,rgba(96,165,250,0)_52%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(128deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_42%,rgba(6,182,212,0.14)_100%)]" />
-            {gridOverlay !== "none" && (
-                <div
-                    className="absolute inset-0"
-                    style={{
-                        ...overlayStyle,
-                        filter: clampedGridBlur > 0 ? `blur(${clampedGridBlur}px)` : undefined,
-                        transform: clampedGridBlur > 0 ? "scale(1.02)" : undefined,
-                        mixBlendMode: "screen",
-                    }}
-                />
-            )}
-
-            <div className="relative z-10 h-full w-full px-14 py-12 flex gap-10">
-                <div className="w-[54%] h-full overflow-hidden flex items-center justify-center">
-                    {hasImage ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                            src={image}
-                            alt="dashboard screenshot"
-                            className="w-full h-full object-center"
-                            style={{ objectFit: imageFit, borderRadius: resolveImageRadius(imageRadius) }}
-                        />
-                    ) : null}
-                </div>
-
-                <div className="w-[46%] h-full flex flex-col justify-center">
+            <div className="flex h-full w-full flex-col">
+                <div className="flex items-center justify-between gap-6 px-14 pt-12">
                     <div className="flex items-center gap-3">
                         {logoImage && (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={logoImage} alt="uploaded logo" className="w-[72px] h-[72px] object-contain" />
+                            <img src={logoImage} alt="" className="h-10 w-10 object-contain" />
                         )}
                         {brandLabel && (
-                            <p className="text-[32px] leading-[1.08] tracking-[-0.025em]" style={{ color: textColor }}>
+                            <p
+                                className="text-[20px] leading-none tracking-[-0.01em]"
+                                style={{
+                                    color: textColor,
+                                    fontStyle,
+                                    fontWeight: resolveFontWeight(fontWeight, 600),
+                                    textDecoration,
+                                }}
+                            >
                                 {brandLabel}
                             </p>
                         )}
                     </div>
 
+                    {tagLabel && <MetaLabel tone={tone}>{tagLabel}</MetaLabel>}
+                </div>
+
+                <div className="min-h-0 flex-1 px-14 pt-9">
                     <h1
-                        className="mt-6 text-[38px] leading-[1.1] tracking-[-0.03em]"
+                        className="max-w-[860px] leading-[1.04]"
                         style={{
                             color: textColor,
                             fontStyle,
-                            fontWeight: headlineWeight,
-                            fontSize: `${resolveTitleFontSize(titleSize, 38)}px`,
-                            letterSpacing: `${resolveTitleTracking(titleTracking, -0.03)}em`,
+                            fontWeight: resolveFontWeight(fontWeight, 700),
                             textDecoration,
+                            fontSize: `${resolveTitleFontSize(titleSize, 60)}px`,
+                            letterSpacing: `${resolveTitleTracking(titleTracking, -0.036)}em`,
                         }}
                     >
                         {title}
                     </h1>
+                </div>
 
+                <div className="flex min-h-0 items-stretch gap-10 px-14 pb-12 pt-8">
                     {outcomes.length > 0 && (
-                        <div className="mt-8 space-y-3">
-                            {outcomes.map((line, index) => (
-                                <p key={`${line}-${index}`} className="text-[22px] leading-[1.2] tracking-[-0.01em]" style={{ color: mutedText }}>
-                                    • {line}
-                                </p>
-                            ))}
-                        </div>
+                        <ul
+                            className={`flex shrink-0 flex-col justify-center ${hasKeywords ? "w-[46%]" : "w-[54%]"}`}
+                        >
+                            {outcomes.map((line, index) => {
+                                const { label, body } = splitPrefixedLine(line);
+
+                                return (
+                                    <li
+                                        key={`${line}-${index}`}
+                                        className="border-t py-3.5 first:border-t-0 first:pt-0 last:pb-0"
+                                        style={{ borderColor: tone.hairline }}
+                                    >
+                                        <div className="flex items-baseline gap-5">
+                                            {label && (
+                                                <span
+                                                    className="w-[86px] shrink-0 text-[15px] font-semibold uppercase tracking-[0.14em]"
+                                                    style={{ color: tone.tertiary }}
+                                                >
+                                                    {label}
+                                                </span>
+                                            )}
+                                            <span className="text-[21px] leading-[1.3]" style={{ color: tone.primary }}>
+                                                {body}
+                                            </span>
+                                        </div>
+                                    </li>
+                                );
+                            })}
+                        </ul>
                     )}
 
-                    {tagLabel && (
-                        <p className="mt-7 text-[23px] leading-[1.18] tracking-[-0.014em]" style={{ color: mutedText }}>
-                            {tagLabel}
-                        </p>
-                    )}
+                    <ImageSlot
+                        className="min-w-0 flex-1"
+                        image={image}
+                        alt="product screenshot"
+                        fit={imageFit}
+                        radius={imageRadius}
+                        tone={tone}
+                        emptyLabel="Product screenshot"
+                    />
                 </div>
             </div>
-        </div>
+        </TemplateCard>
     );
 }

@@ -1,20 +1,25 @@
 "use client";
 
+import TemplateCard, { MetaLabel } from "./TemplateCard";
 import {
     DEFAULT_BACKGROUND_PRESET_ID,
-    TemplateProps,
-    getBackgroundFill,
-    getGridOverlayStyle,
-    clampGridBlur,
+    type TemplateProps,
+    getCardTone,
     resolveFontWeight,
-    hexToRgba,
     resolveTitleFontSize,
     resolveTitleTracking,
 } from "./templateShared";
 
+/**
+ * Announcement poster. The headline sits large and flush left on the lower
+ * third, with a small mark above it and a link line on the same baseline. The
+ * default face is a pixel cut, held at weight 400, which gives the template its
+ * printed notice register instead of a centred text block.
+ */
 export default function EditorialPixel({
     title,
-    textColor = "#f8fafc",
+    textColor = "#FAFAFA",
+    logoImage,
     tag,
     logo,
     detailOne,
@@ -23,85 +28,101 @@ export default function EditorialPixel({
     textDecoration,
     fontFamily,
     backgroundMode = "Gradient",
-    gradientStart = "#1A1F36",
-    gradientEnd = "#5B3B8F",
-    gradientAngle = 140,
+    gradientStart = "#0B0B0D",
+    gradientEnd = "#141418",
+    gradientAngle = 160,
     backgroundPresetId = DEFAULT_BACKGROUND_PRESET_ID,
     gridOverlay = "dots",
-    gridColor = "#FBCFE8",
-    gridOpacity = 0.24,
-    gridBlur = 0.2,
+    gridColor,
+    gridOpacity = 0.22,
+    gridBlur = 0,
     titleSize,
     titleTracking,
 }: TemplateProps) {
-    const waitlistLine = (tag || "").trim();
-    const supportLine = (logo || "").trim();
+    const tone = getCardTone(textColor);
+    const supportLine = (tag || "").trim();
+    const brandName = (logo || "").trim();
     const ctaLine = (detailOne || "").trim();
 
-    const backgroundFill = getBackgroundFill(backgroundMode, gradientStart, gradientEnd, gradientAngle, backgroundPresetId);
-    const overlayStyle = getGridOverlayStyle(gridOverlay, gridColor, gridOpacity);
-    const clampedGridBlur = clampGridBlur(gridBlur);
-    const headlineWeight = resolveFontWeight(fontWeight, 720);
-    const secondaryText = hexToRgba(textColor, 0.86);
-
     return (
-        <div
-            id="og-template-node"
-            className="relative isolate flex overflow-hidden border border-zinc-900"
-            style={{
-                width: "1200px",
-                height: "630px",
-                fontFamily,
-                background: backgroundFill,
-            }}
+        <TemplateCard
+            tone={tone}
+            textColor={textColor}
+            fontFamily={fontFamily}
+            backgroundMode={backgroundMode}
+            gradientStart={gradientStart}
+            gradientEnd={gradientEnd}
+            gradientAngle={gradientAngle}
+            backgroundPresetId={backgroundPresetId}
+            gridOverlay={gridOverlay}
+            gridColor={gridColor}
+            gridOpacity={gridOpacity}
+            gridBlur={gridBlur}
         >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_18%,rgba(255,255,255,0.2)_0%,rgba(255,255,255,0)_42%),radial-gradient(circle_at_86%_84%,rgba(245,158,11,0.14)_0%,rgba(245,158,11,0)_56%)]" />
-            <div className="absolute inset-0 bg-[linear-gradient(122deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_34%,rgba(17,24,39,0.28)_100%)]" />
-            {gridOverlay !== "none" && (
-                <div
-                    className="absolute inset-0"
-                    style={{
-                        ...overlayStyle,
-                        filter: clampedGridBlur > 0 ? `blur(${clampedGridBlur}px)` : undefined,
-                        transform: clampedGridBlur > 0 ? "scale(1.012)" : undefined,
-                        mixBlendMode: "screen",
-                    }}
-                />
-            )}
+            <div className="flex h-full w-full flex-col justify-between p-14">
+                <div className="flex items-center justify-between gap-6">
+                    <div className="flex items-center gap-3">
+                        {logoImage ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={logoImage} alt="" className="h-8 w-8 shrink-0 object-contain" />
+                        ) : (
+                            <div
+                                className="h-3.5 w-3.5 shrink-0"
+                                style={{ backgroundColor: textColor }}
+                            />
+                        )}
+                        {brandName && (
+                            <p
+                                className="text-[19px] leading-none tracking-[-0.01em]"
+                                style={{
+                                    color: textColor,
+                                    fontStyle,
+                                    fontWeight: resolveFontWeight(fontWeight, 600),
+                                    textDecoration,
+                                }}
+                            >
+                                {brandName}
+                            </p>
+                        )}
+                    </div>
 
-            <div className="relative z-10 h-full w-full px-20 py-14 flex flex-col items-center justify-center text-center">
-                <h1
-                    className="text-[46px] leading-[1.08] tracking-[-0.03em]"
-                    style={{
-                        color: textColor,
-                        fontStyle,
-                        fontWeight: headlineWeight,
-                        fontSize: `${resolveTitleFontSize(titleSize, 46)}px`,
-                        letterSpacing: `${resolveTitleTracking(titleTracking, -0.03)}em`,
-                        textDecoration,
-                    }}
-                >
-                    {title}
-                </h1>
+                    {supportLine && <MetaLabel tone={tone}>{supportLine}</MetaLabel>}
+                </div>
 
-                {waitlistLine && (
-                    <p className="mt-9 text-[30px] leading-[1.12] tracking-[-0.022em]" style={{ color: secondaryText }}>
-                        {waitlistLine}
-                    </p>
-                )}
+                <div className="flex items-end justify-between gap-12">
+                    {/*
+                      The default face for this template is Geist Pixel Square,
+                      which ships at weight 400 only. Holding the headline at 400
+                      keeps it honest and gives the template its poster register,
+                      so nothing is ever faux bolded.
+                    */}
+                    <h1
+                        className="max-w-[760px] leading-[1.08]"
+                        style={{
+                            color: textColor,
+                            fontStyle,
+                            fontWeight: 400,
+                            textDecoration,
+                            fontSize: `${resolveTitleFontSize(titleSize, 82)}px`,
+                            letterSpacing: `${resolveTitleTracking(titleTracking, -0.012)}em`,
+                        }}
+                    >
+                        {title}
+                    </h1>
 
-                {supportLine && (
-                    <p className="mt-7 text-[25px] leading-[1.14] tracking-[-0.015em]" style={{ color: secondaryText }}>
-                        {supportLine}
-                    </p>
-                )}
-
-                {ctaLine && (
-                    <p className="mt-8 text-[26px] leading-[1.12] tracking-[-0.015em]" style={{ color: textColor }}>
-                        {ctaLine}
-                    </p>
-                )}
+                    {ctaLine && (
+                        <div className="shrink-0 pb-2 text-right">
+                            <div
+                                className="mb-4 ml-auto h-px w-16"
+                                style={{ backgroundColor: tone.hairline }}
+                            />
+                            <p className="text-[22px] leading-none" style={{ color: tone.secondary }}>
+                                {ctaLine}
+                            </p>
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+        </TemplateCard>
     );
 }

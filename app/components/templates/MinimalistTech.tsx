@@ -1,23 +1,26 @@
 "use client";
 
+import TemplateCard, { ImageSlot, MetaLabel } from "./TemplateCard";
 import {
     DEFAULT_BACKGROUND_PRESET_ID,
-    TemplateImageFit,
-    TemplateProps,
-    clampGridBlur,
-    getBackgroundFill,
-    getGridOverlayStyle,
-    hexToRgba,
+    type TemplateProps,
+    getCardTone,
     resolveFontWeight,
-    resolveImageRadius,
     resolveTitleFontSize,
     resolveTitleTracking,
 } from "./templateShared";
 
+/**
+ * Asymmetric split: copy pinned to a narrow left rail on a strict grid, the
+ * screenshot given the remaining width and allowed to bleed off the right edge.
+ * The headline is bottom anchored so the card reads top to bottom as
+ * identity, then claim.
+ */
 export default function MinimalistTech({
     title,
-    textColor = "#020617",
+    textColor = "#FAFAFA",
     logoImage,
+    logo,
     image,
     tag,
     fontStyle,
@@ -25,86 +28,77 @@ export default function MinimalistTech({
     textDecoration,
     fontFamily,
     backgroundMode = "Gradient",
-    gradientStart = "#8B95A8",
-    gradientEnd = "#3D475A",
-    gradientAngle = 120,
+    gradientStart = "#0B0B0D",
+    gradientEnd = "#1C1C20",
+    gradientAngle = 155,
     backgroundPresetId = DEFAULT_BACKGROUND_PRESET_ID,
-    gridOverlay = "grid",
-    gridColor = "#6B7280",
-    gridOpacity = 0.4,
-    gridBlur = 1.2,
+    gridOverlay = "none",
+    gridColor,
+    gridOpacity = 0.14,
+    gridBlur = 0,
     titleSize,
     titleTracking,
-    imageFit = "contain" as TemplateImageFit,
+    imageFit = "cover",
     imageRadius,
 }: TemplateProps) {
-    const hasImage = Boolean(image);
+    const tone = getCardTone(textColor);
+    const brandName = (logo || "").trim();
     const tagLabel = (tag || "").trim();
-    const clampedGridBlur = clampGridBlur(gridBlur);
-    const backgroundFill = getBackgroundFill(backgroundMode, gradientStart, gradientEnd, gradientAngle, backgroundPresetId);
-    const overlayStyle = getGridOverlayStyle(gridOverlay, gridColor, gridOpacity);
-    const mutedTextColor = hexToRgba(textColor, 0.72);
+    const headlineSize = resolveTitleFontSize(titleSize, 68);
+    const headlineTracking = resolveTitleTracking(titleTracking, -0.038);
+    const headlineWeight = resolveFontWeight(fontWeight, 700);
 
     return (
-        <div
-            id="og-template-node"
-            className="relative isolate flex text-white overflow-hidden border border-zinc-900"
-            style={{
-                width: "1200px",
-                height: "630px",
-                fontFamily,
-                background: backgroundFill,
-            }}
+        <TemplateCard
+            tone={tone}
+            textColor={textColor}
+            fontFamily={fontFamily}
+            backgroundMode={backgroundMode}
+            gradientStart={gradientStart}
+            gradientEnd={gradientEnd}
+            gradientAngle={gradientAngle}
+            backgroundPresetId={backgroundPresetId}
+            gridOverlay={gridOverlay}
+            gridColor={gridColor}
+            gridOpacity={gridOpacity}
+            gridBlur={gridBlur}
         >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0)_58%)]" />
-            {gridOverlay !== "none" && (
-                <div
-                    className="absolute inset-0"
-                    style={{
-                        ...overlayStyle,
-                        filter: clampedGridBlur > 0 ? `blur(${clampedGridBlur}px)` : undefined,
-                        transform: clampedGridBlur > 0 ? "scale(1.01)" : undefined,
-                        transformOrigin: "center center",
-                        opacity: 1,
-                        mixBlendMode: "screen",
-                        pointerEvents: "none",
-                        willChange: "filter",
-                    }}
-                />
-            )}
-            <div
-                className="absolute inset-0 mix-blend-soft-light"
-                style={{
-                    opacity: 0.15,
-                    backgroundImage:
-                        "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.85'/%3E%3C/svg%3E\")",
-                    backgroundSize: "180px 180px",
-                }}
-            />
-
-            <div className="relative z-10 p-16 flex flex-col justify-between w-full h-full">
-                <div className="space-y-9">
-                    {logoImage && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={logoImage} alt="uploaded logo" className="w-[84px] h-[84px] object-contain" />
-                    )}
-
-                    {tagLabel && (
-                        <div className="inline-flex w-max max-w-full items-center whitespace-nowrap px-4 py-1.5 border border-black/30 rounded-full text-[14px] font-medium tracking-[-0.01em] bg-black/8 backdrop-blur-sm" style={{ color: mutedTextColor }}>
-                            {tagLabel}
+            <div className="flex h-full w-full">
+                <div className="flex w-[54%] shrink-0 flex-col justify-between p-14">
+                    <div className="flex items-center justify-between gap-6">
+                        <div className="flex min-w-0 items-center gap-3.5">
+                            {logoImage && (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={logoImage} alt="" className="h-11 w-11 shrink-0 object-contain" />
+                            )}
+                            {brandName && (
+                                <p
+                                    className="truncate text-[21px] leading-none tracking-[-0.02em]"
+                                    style={{
+                                        color: textColor,
+                                        fontStyle,
+                                        fontWeight: resolveFontWeight(fontWeight, 600),
+                                        textDecoration,
+                                    }}
+                                >
+                                    {brandName}
+                                </p>
+                            )}
                         </div>
-                    )}
 
-                    <div className={`${hasImage ? "max-w-[500px]" : "max-w-[720px]"} pt-2`}>
+                        {tagLabel && <MetaLabel tone={tone}>{tagLabel}</MetaLabel>}
+                    </div>
+
+                    <div className="max-w-[560px]">
                         <h1
-                            className="text-[46px] leading-[1.08] tracking-[-0.035em]"
+                            className="leading-[1.03]"
                             style={{
                                 color: textColor,
                                 fontStyle,
-                                fontWeight: resolveFontWeight(fontWeight, 700),
+                                fontWeight: headlineWeight,
                                 textDecoration,
-                                fontSize: `${resolveTitleFontSize(titleSize, 46)}px`,
-                                letterSpacing: `${resolveTitleTracking(titleTracking, -0.035)}em`,
+                                fontSize: `${headlineSize}px`,
+                                letterSpacing: `${headlineTracking}em`,
                             }}
                         >
                             {title}
@@ -112,18 +106,24 @@ export default function MinimalistTech({
                     </div>
                 </div>
 
-                <div className="flex items-end justify-end w-full">
-                    {image && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                            src={image}
-                            alt="app screenshot"
-                            className="absolute right-0 top-[98px] w-[700px] h-[460px] object-center"
-                            style={{ objectFit: imageFit, borderRadius: resolveImageRadius(imageRadius) }}
-                        />
-                    )}
+                {/*
+                  The screenshot gets a landscape frame that sits on the bottom
+                  edge and runs past the right edge, so it shares a baseline with
+                  the headline instead of floating in a full height panel.
+                */}
+                <div className="relative flex w-[46%] items-end overflow-hidden">
+                    <ImageSlot
+                        className="w-[124%] shrink-0"
+                        image={image}
+                        alt="product screenshot"
+                        fit={imageFit}
+                        radius={imageRadius}
+                        tone={tone}
+                        emptyLabel="Product screenshot"
+                        style={{ aspectRatio: "16 / 10" }}
+                    />
                 </div>
             </div>
-        </div>
+        </TemplateCard>
     );
 }

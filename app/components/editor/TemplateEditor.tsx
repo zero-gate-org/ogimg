@@ -547,14 +547,14 @@ export default function TemplateEditor({
                                             type="range"
                                             min={18}
                                             max={96}
-                                            value={document.fields.titleSize ?? 44}
+                                            value={document.fields.titleSize ?? template.defaultTitleSize}
                                             onChange={(event) =>
                                                 patchFields({ titleSize: Number(event.target.value) }, "titleSize")
                                             }
                                             className="h-4 w-full"
                                         />
                                         <span className="mt-1 block text-right font-mono text-[11px] text-muted-foreground">
-                                            {document.fields.titleSize ?? 44}px
+                                            {document.fields.titleSize ?? template.defaultTitleSize}px
                                         </span>
                                     </Field>
                                     <Field label="Headline tracking" htmlFor="template-title-tracking">
@@ -564,7 +564,7 @@ export default function TemplateEditor({
                                             min={-0.08}
                                             max={0.2}
                                             step={0.005}
-                                            value={document.fields.titleTracking}
+                                            value={document.fields.titleTracking ?? template.defaultTitleTracking}
                                             onChange={(event) =>
                                                 patchFields(
                                                     { titleTracking: Number(event.target.value) },
@@ -574,7 +574,7 @@ export default function TemplateEditor({
                                             className="h-4 w-full"
                                         />
                                         <span className="mt-1 block text-right font-mono text-[11px] text-muted-foreground">
-                                            {document.fields.titleTracking.toFixed(3)}em
+                                            {(document.fields.titleTracking ?? template.defaultTitleTracking).toFixed(3)}em
                                         </span>
                                     </Field>
                                     <Field label="Text colour" htmlFor="template-text-color">
@@ -589,7 +589,7 @@ export default function TemplateEditor({
                                         onClick={() =>
                                             patchFields({
                                                 titleSize: null,
-                                                titleTracking: 0,
+                                                titleTracking: null,
                                                 imageFit: "contain",
                                                 imageRadius: 0,
                                             })

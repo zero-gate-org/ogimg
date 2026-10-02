@@ -22,7 +22,11 @@ export const getCanvasBackgroundStyle = (background: CanvasBackground): React.CS
             ? background.color
             : background.mode === "preset"
               ? getBackgroundPresetById(background.presetId).background
-              : getBackgroundFill("Gradient", background.gradientStart, background.gradientEnd, background.gradientAngle),
+              : background.mode === "image"
+                ? // The solid colour doubles as the fill behind a contained
+                  // image and as the scrim colour on top of it.
+                  background.color
+                : getBackgroundFill("Gradient", background.gradientStart, background.gradientEnd, background.gradientAngle),
     color: "#FAFAFA",
 });
 
@@ -35,6 +39,41 @@ export function CanvasBackgroundEffects({ background }: { background: CanvasBack
 
     return (
         <>
+            {/*
+              The canvas image is a real <img>, not a CSS background, so the
+              export pipeline already waits for it and inlines it as base64.
+            */}
+            {background.mode === "image" && background.imageSrc ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                    src={background.imageSrc}
+                    alt=""
+                    style={{
+                        position: "absolute",
+                        inset: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: background.imageFit,
+                        objectPosition: "center",
+                        opacity: background.imageOpacity,
+                        display: "block",
+                        pointerEvents: "none",
+                    }}
+                />
+            ) : null}
+
+            {background.mode === "image" && background.imageSrc && background.imageScrim > 0 ? (
+                <div
+                    style={{
+                        position: "absolute",
+                        inset: 0,
+                        backgroundColor: background.color,
+                        opacity: background.imageScrim,
+                        pointerEvents: "none",
+                    }}
+                />
+            ) : null}
+
             {background.overlay !== "none" ? (
                 <div
                     style={{

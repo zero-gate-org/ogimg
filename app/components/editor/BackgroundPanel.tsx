@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowClockwise, ImageSquare, Trash } from "@phosphor-icons/react";
 import {
     BACKGROUND_PRESETS,
     type GridOverlay,
@@ -28,9 +29,13 @@ const GRADIENT_DIRECTIONS = [
 export default function BackgroundPanel({
     background,
     onChange,
+    onUploadImage,
+    isUploading = false,
 }: {
     background: CanvasBackground;
     onChange: (patch: Partial<CanvasBackground>) => void;
+    onUploadImage?: (file: File) => void;
+    isUploading?: boolean;
 }) {
     return (
         <div>
@@ -43,6 +48,7 @@ export default function BackgroundPanel({
                             { value: "solid", label: "Solid" },
                             { value: "gradient", label: "Gradient" },
                             { value: "preset", label: "Preset" },
+                            { value: "image", label: "Image" },
                         ]}
                         onChange={(mode) => onChange({ mode })}
                     />
@@ -84,6 +90,128 @@ export default function BackgroundPanel({
                             display={`${background.gradientAngle}°`}
                         />
                     </>
+                ) : null}
+
+                {background.mode === "image" ? (
+                    <div>
+                        {background.imageSrc ? (
+                            <>
+                                <div className="relative overflow-hidden border border-border">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
+                                        src={background.imageSrc}
+                                        alt=""
+                                        className="block h-28 w-full"
+                                        style={{ objectFit: "cover" }}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            onChange({ imageSrc: "", imageName: "", imageScrim: 0 })
+                                        }
+                                        className="absolute right-1.5 top-1.5 inline-flex items-center gap-1 border border-border bg-surface px-2 py-1 text-[11px] font-medium text-foreground transition-colors hover:border-border-strong"
+                                    >
+                                        <Trash size={12} />
+                                        Remove
+                                    </button>
+                                </div>
+                                <p className="mt-1.5 truncate text-[11px] text-muted-foreground">
+                                    {background.imageName}
+                                </p>
+
+                                <label
+                                    className={`mt-3 inline-flex h-8 w-full cursor-pointer items-center justify-center gap-1.5 border border-border bg-surface text-[12px] font-medium text-foreground transition-colors hover:border-border-strong ${
+                                        isUploading ? "pointer-events-none opacity-50" : ""
+                                    }`}
+                                >
+                                    <ArrowClockwise size={13} />
+                                    {isUploading ? "Reading" : "Replace image"}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="sr-only"
+                                        disabled={isUploading}
+                                        onChange={(event) => {
+                                            const file = event.target.files?.[0];
+                                            if (file) onUploadImage?.(file);
+                                            event.target.value = "";
+                                        }}
+                                    />
+                                </label>
+
+                                <div className="mt-4 space-y-3.5">
+                                    <Field label="Fit">
+                                        <SegmentedControl
+                                            ariaLabel="Canvas image fit"
+                                            value={background.imageFit}
+                                            options={[
+                                                { value: "cover", label: "Cover" },
+                                                { value: "contain", label: "Contain" },
+                                                { value: "fill", label: "Stretch" },
+                                            ]}
+                                            onChange={(imageFit) => onChange({ imageFit })}
+                                        />
+                                    </Field>
+                                    <SliderField
+                                        id="bg-image-opacity"
+                                        label="Opacity"
+                                        value={Math.round(background.imageOpacity * 100)}
+                                        min={0}
+                                        max={100}
+                                        onChange={(value) => onChange({ imageOpacity: value / 100 })}
+                                        display={`${Math.round(background.imageOpacity * 100)}%`}
+                                    />
+                                    <SliderField
+                                        id="bg-image-scrim"
+                                        label="Scrim"
+                                        value={Math.round(background.imageScrim * 100)}
+                                        min={0}
+                                        max={90}
+                                        onChange={(value) => onChange({ imageScrim: value / 100 })}
+                                        display={`${Math.round(background.imageScrim * 100)}%`}
+                                    />
+                                    <Field label="Scrim colour" htmlFor="bg-image-scrim-color">
+                                        <ColorInput
+                                            id="bg-image-scrim-color"
+                                            value={background.color}
+                                            onChange={(color) => onChange({ color })}
+                                        />
+                                    </Field>
+                                </div>
+
+                                <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+                                    The scrim sits over the photo using the colour above, so it doubles as
+                                    the fill behind a contained image.
+                                </p>
+                            </>
+                        ) : (
+                            <label
+                                className={`flex cursor-pointer flex-col items-center gap-2 border border-dashed border-border px-4 py-8 text-center transition-colors hover:border-border-strong ${
+                                    isUploading ? "pointer-events-none opacity-50" : ""
+                                }`}
+                            >
+                                <ImageSquare size={20} className="text-muted-foreground" />
+                                <span className="text-[12px] font-medium text-foreground">
+                                    {isUploading ? "Reading" : "Upload a canvas image"}
+                                </span>
+                                <span className="max-w-[30ch] text-[11px] leading-relaxed text-muted-foreground">
+                                    Use a photo or texture as the card background. Text layers sit on top
+                                    of it.
+                                </span>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="sr-only"
+                                    disabled={isUploading}
+                                    onChange={(event) => {
+                                        const file = event.target.files?.[0];
+                                        if (file) onUploadImage?.(file);
+                                        event.target.value = "";
+                                    }}
+                                />
+                            </label>
+                        )}
+                    </div>
                 ) : null}
 
                 {background.mode === "preset" ? (

@@ -9,7 +9,7 @@ export type TextAlign = "left" | "center" | "right";
 export type VerticalAlign = "top" | "middle" | "bottom";
 export type ShapeKind = "rect" | "ellipse" | "line";
 export type ImageFit = "cover" | "contain" | "fill";
-export type BackgroundMode = "solid" | "gradient" | "preset";
+export type BackgroundMode = "solid" | "gradient" | "preset" | "image";
 export type LayerKind = "text" | "shape" | "image";
 
 export interface BaseLayer {
@@ -70,6 +70,13 @@ export interface CanvasBackground {
     gradientEnd: string;
     gradientAngle: number;
     presetId: BackgroundPresetId;
+    /** Uploaded canvas image as a data URL. Empty means the slot is unused. */
+    imageSrc: string;
+    imageName: string;
+    imageFit: ImageFit;
+    imageOpacity: number;
+    /** Reuses `color`, so type stays readable over a photo. 0 to 1. */
+    imageScrim: number;
     overlay: GridOverlay;
     overlayColor: string;
     overlayOpacity: number;
@@ -97,7 +104,8 @@ export interface TemplateFields {
     detailThree: string;
     fontId: TemplateFontId;
     titleSize: number | null;
-    titleTracking: number;
+    /** Null means "use the template baseline". */
+    titleTracking: number | null;
     imageFit: ImageFit;
     imageRadius: number;
     backgroundMode: "Gradient" | "Solid Color" | "Background";

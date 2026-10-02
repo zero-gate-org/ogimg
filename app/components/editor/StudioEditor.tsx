@@ -213,6 +213,35 @@ export default function StudioEditor({ backHref = "/" }: { backHref?: string }) 
         [addLayer, patchLayer, selectedLayer],
     );
 
+    /** Fills the canvas itself rather than adding an image layer. */
+    const uploadCanvasImage = useCallback(
+        async (file: File) => {
+            if (!file.type.startsWith("image/")) {
+                setExportError("That file is not an image. Pick a PNG, JPEG, or WebP.");
+                return;
+            }
+
+            setIsUploading(true);
+            try {
+                const src = await readFile(file);
+                updateDocument((current) => ({
+                    ...current,
+                    background: {
+                        ...current.background,
+                        mode: "image",
+                        imageSrc: src,
+                        imageName: file.name,
+                    },
+                }));
+            } catch (error) {
+                setExportError(error instanceof Error ? error.message : "Could not read that file");
+            } finally {
+                setIsUploading(false);
+            }
+        },
+        [updateDocument],
+    );
+
     const deleteSelected = useCallback(() => {
         if (!selectedId) return;
         updateDocument((current) => ({
@@ -674,6 +703,8 @@ export default function StudioEditor({ backHref = "/" }: { backHref?: string }) 
                         {tab === "background" ? (
                             <BackgroundPanel
                                 background={document.background}
+                                onUploadImage={uploadCanvasImage}
+                                isUploading={isUploading}
                                 onChange={(patch) =>
                                     updateDocument((current) => ({
                                         ...current,

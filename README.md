@@ -24,7 +24,8 @@
 ## Two ways to work
 
 **Templates** are opinionated layouts for the common cases: launch cards, blog covers, changelog boards,
-podcast art, and more. Each one exposes its own controls for copy, type, colour, and background.
+podcast art, and more. Each one has its own composition, its own headline scale, and controls for copy,
+type, colour, and background.
 
 **The free canvas** has no fixed layout. Place text, shapes, and images as layers, drag them with snap
 guides, and set every value yourself.
@@ -37,7 +38,9 @@ PNG / JPEG / WebP export at 1x, 2x, or 3x.
 - Layer stack for text, shapes, and images with reorder, hide, lock, duplicate, and delete
 - Drag, resize, rotate, and arrow-key nudge with snapping to canvas edges and other layers
 - Typography per layer: 16 self-hosted families, weight, size, line height, tracking, case, alignment
-- Canvas background with solid, gradient, and 27 preset fills plus grid, graph, and dots overlays
+- Canvas background from a solid colour, a gradient, one of 27 presets, or your own uploaded image, plus
+  grid, graph, and dots overlays. An uploaded background gets fit, opacity, and a scrim that reuses the
+  solid colour so type stays readable over a photo
 - Platform sizes for Open Graph, X, LinkedIn, Product Hunt, YouTube, square posts, and stories, plus
   custom dimensions that rescale existing layers
 - Social preview drawer for X, LinkedIn, Discord, and Slack, with copyable `og:image` head tags and a crop warning when the canvas does not match the card
@@ -106,7 +109,7 @@ Open `http://localhost:3000` for the landing page, `/studio` for the free canvas
 ```text
 app/
   components/
-    editor/        editor shell, canvas, panels, export, preview simulator
+    editor/        shared editor shell: background, layers, canvas, export, preview simulator
     landing/       landing page sections
     templates/     the nine template components plus shared background and font data
   lib/editor/      document types, history, persistence, platform sizes, export pipeline
@@ -133,6 +136,15 @@ public/
   and embeds the fonts as base64 before rasterising. No server is involved at any point.
 - Templates are described by a control schema in `app/lib/editor/templateSchema.ts`, so adding a template
   does not add conditionals to the editor.
+- Every template renders through `TemplateCard.tsx`, which owns the shared rules: the fill is the user's
+  choice, hierarchy is expressed as opacities of the user's text colour rather than fixed accent hues, and
+  structure is drawn with hairlines instead of shadows. `getCardTone` in `templateShared.ts` is the single
+  place that derives those levels.
+- Each template's headline baseline lives in `templateRegistry.ts` as `defaultTitleSize` and
+  `defaultTitleTracking`, so the editor sliders report the real value and a reset returns to the design
+  rather than to a placeholder.
+- An uploaded canvas background is stored as a data URL and drawn as a real `img`, not a CSS background,
+  so the existing export pipeline waits for it and embeds it without changes.
 
 ## Contributing
 

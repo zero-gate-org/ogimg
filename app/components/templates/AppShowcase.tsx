@@ -1,129 +1,124 @@
 "use client";
 
+import TemplateCard, { ImageSlot } from "./TemplateCard";
 import {
     DEFAULT_BACKGROUND_PRESET_ID,
-    TemplateProps,
-    clampGridBlur,
-    getBackgroundFill,
-    getGridOverlayStyle,
-    hexToRgba,
+    type TemplateProps,
+    getCardTone,
     resolveFontWeight,
-    resolveImageRadius,
     resolveTitleFontSize,
     resolveTitleTracking,
 } from "./templateShared";
 
+/**
+ * Left aligned identity column with the product shot given a full bleed right
+ * panel. Differs from Minimalist Tech by keeping all copy in one left aligned
+ * stack and by letting the image run edge to edge with no radius of its own.
+ */
 export default function AppShowcase({
     title,
-    textColor = "#111827",
+    textColor = "#09090B",
     image,
     logo,
+    logoImage,
+    tag,
     fontStyle,
     fontWeight,
     textDecoration,
     fontFamily,
     backgroundMode = "Gradient",
-    gradientStart = "#F3F4F6",
-    gradientEnd = "#D1D5DB",
-    gradientAngle = 136,
+    gradientStart = "#F4F4F5",
+    gradientEnd = "#E4E4E7",
+    gradientAngle = 160,
     backgroundPresetId = DEFAULT_BACKGROUND_PRESET_ID,
     gridOverlay = "none",
-    gridColor = "#6B7280",
+    gridColor,
     gridOpacity = 0.12,
     gridBlur = 0,
     titleSize,
     titleTracking,
-    imageFit = "contain",
+    imageFit = "cover",
     imageRadius,
 }: TemplateProps) {
+    const tone = getCardTone(textColor);
     const brandName = (logo || "").trim();
-    const brandTagline = (title || "").trim();
-    const hasImage = Boolean(image);
-
-    const backgroundFill = getBackgroundFill(backgroundMode, gradientStart, gradientEnd, gradientAngle, backgroundPresetId);
-    const overlayStyle = getGridOverlayStyle(gridOverlay, gridColor, gridOpacity);
-    const clampedGridBlur = clampGridBlur(gridBlur);
-    const brandWeight = resolveFontWeight(fontWeight, 640);
-    const taglineWeight = resolveFontWeight(fontWeight, 560);
-    const placeholderColor = hexToRgba(textColor, 0.45);
+    const tagline = (title || "").trim();
+    const tagLabel = (tag || "").trim();
 
     return (
-        <div
-            id="og-template-node"
-            className="relative isolate flex overflow-hidden border border-zinc-900"
-            style={{
-                width: "1200px",
-                height: "630px",
-                fontFamily,
-                background: backgroundFill,
-            }}
+        <TemplateCard
+            tone={tone}
+            textColor={textColor}
+            fontFamily={fontFamily}
+            backgroundMode={backgroundMode}
+            gradientStart={gradientStart}
+            gradientEnd={gradientEnd}
+            gradientAngle={gradientAngle}
+            backgroundPresetId={backgroundPresetId}
+            gridOverlay={gridOverlay}
+            gridColor={gridColor}
+            gridOpacity={gridOpacity}
+            gridBlur={gridBlur}
         >
-            {gridOverlay !== "none" && (
-                <div
-                    className="absolute inset-0"
-                    style={{
-                        ...overlayStyle,
-                        filter: clampedGridBlur > 0 ? `blur(${clampedGridBlur}px)` : undefined,
-                        transform: clampedGridBlur > 0 ? "scale(1.01)" : undefined,
-                    }}
-                />
-            )}
-
-            <div className="relative z-10 h-full w-full px-12 py-8 flex flex-col">
-                <div className="px-10 pt-1 flex items-center justify-center text-center">
-                    {brandName && (
-                        <p
-                            className="text-[30px] leading-[1.04] tracking-[-0.03em]"
-                            style={{
-                                color: textColor,
-                                fontStyle,
-                                fontWeight: brandWeight,
-                                textDecoration,
-                            }}
-                        >
-                            {brandName}
-                        </p>
-                    )}
-                </div>
-
-                <div className="mt-4 px-16 flex items-center justify-center text-center">
-                    {brandTagline && (
-                        <p
-                            className="text-[24px] leading-[1.15] tracking-[-0.02em]"
-                            style={{
-                                color: textColor,
-                                fontStyle,
-                                fontWeight: taglineWeight,
-                                fontSize: `${resolveTitleFontSize(titleSize, 24)}px`,
-                                letterSpacing: `${resolveTitleTracking(titleTracking, -0.02)}em`,
-                                textDecoration,
-                            }}
-                        >
-                            {brandTagline}
-                        </p>
-                    )}
-                </div>
-
-                <div className="mt-8 flex-1 flex items-center justify-center">
-                    <div className="relative w-[700px] aspect-video overflow-hidden flex items-center justify-center">
-                        {hasImage ? (
+            <div className="flex h-full w-full">
+                <div className="flex w-[44%] shrink-0 flex-col justify-between p-14">
+                    <div className="flex items-center gap-3">
+                        {logoImage && (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                                src={image}
-                                alt="full app UI preview"
-                                className="h-full w-full object-center"
-                                style={{ objectFit: imageFit, borderRadius: resolveImageRadius(imageRadius) }}
-                            />
-                        ) : (
-                            <div className="text-center px-10">
-                                <p className="text-[32px] tracking-[-0.032em] leading-[1.05]" style={{ color: placeholderColor }}>
-                                    FULL APP UI IMAGE
-                                </p>
-                            </div>
+                            <img src={logoImage} alt="" className="h-10 w-10 object-contain" />
+                        )}
+                        {brandName && (
+                            <p
+                                className="text-[20px] leading-none tracking-[-0.01em]"
+                                style={{
+                                    color: textColor,
+                                    fontStyle,
+                                    fontWeight: resolveFontWeight(fontWeight, 600),
+                                    textDecoration,
+                                }}
+                            >
+                                {brandName}
+                            </p>
+                        )}
+                    </div>
+
+                    <div>
+                        {tagline && (
+                            <h1
+                                className="max-w-[440px] leading-[1.08]"
+                                style={{
+                                    color: textColor,
+                                    fontStyle,
+                                    fontWeight: resolveFontWeight(fontWeight, 680),
+                                    textDecoration,
+                                    fontSize: `${resolveTitleFontSize(titleSize, 54)}px`,
+                                    letterSpacing: `${resolveTitleTracking(titleTracking, -0.032)}em`,
+                                }}
+                            >
+                                {tagline}
+                            </h1>
+                        )}
+
+                        {tagLabel && (
+                            <p className="mt-6 max-w-[400px] text-[21px] leading-[1.35]" style={{ color: tone.secondary }}>
+                                {tagLabel}
+                            </p>
                         )}
                     </div>
                 </div>
+
+                <div className="flex w-[56%] items-stretch" style={{ backgroundColor: tone.fill }}>
+                    <ImageSlot
+                        className="flex-1"
+                        image={image}
+                        alt="product interface"
+                        fit={imageFit}
+                        radius={imageRadius}
+                        tone={tone}
+                        emptyLabel="Product interface"
+                    />
+                </div>
             </div>
-        </div>
+        </TemplateCard>
     );
 }

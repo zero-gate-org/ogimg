@@ -133,14 +133,14 @@ export const TEMPLATE_FONT_OPTIONS: TemplateFontOption[] = [
 
 export const TEMPLATE_DEFAULT_FONT_BY_ID: Record<TemplateId, TemplateFontId> = {
     "minimalist-tech": "manrope",
-    "app-showcase": "inter",
+    "app-showcase": "geist-sans",
     "centered-container": "space-grotesk",
-    "brand-pitch": "poppins",
-    "editorial-pixel": "outfit",
-    "saas-launch": "dm-sans",
+    "brand-pitch": "geist-sans",
+    "editorial-pixel": "geist-pixel-square",
+    "saas-launch": "geist-sans",
     "blog-post": "playfair-display",
     "podcast-cover": "sora",
-    "changelog": "montserrat",
+    "changelog": "geist-mono",
 };
 
 const TEMPLATE_FONT_OPTION_BY_ID = new Map(

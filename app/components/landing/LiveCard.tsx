@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import type { FreeDocument, Layer } from "../../lib/editor/types";
-import { createImageLayer, createShapeLayer, createTextLayer } from "../../lib/editor/factories";
+import {
+    DEFAULT_CANVAS_BACKGROUND,
+    createImageLayer,
+    createShapeLayer,
+    createTextLayer,
+} from "../../lib/editor/factories";
 import FreeCanvasRender from "../editor/FreeCanvasRender";
 import ScaledCanvas from "../editor/ScaledCanvas";
 
@@ -17,6 +22,7 @@ const HERO_DOCUMENT: FreeDocument = {
     width: 1200,
     height: 630,
     background: {
+        ...DEFAULT_CANVAS_BACKGROUND,
         mode: "gradient",
         color: "#0B0B0D",
         gradientStart: "#1D4ED8",

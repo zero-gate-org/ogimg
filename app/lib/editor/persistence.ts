@@ -1,7 +1,7 @@
 "use client";
 
-import type { BrandKit, EditorDocument, SavedProject } from "./types";
-import { createId } from "./factories";
+import type { BrandKit, EditorDocument, FreeDocument, SavedProject } from "./types";
+import { createId, normalizeCanvasBackground } from "./factories";
 
 const PROJECTS_KEY = "ogimg:projects:v1";
 const KITS_KEY = "ogimg:brand-kits:v1";
@@ -30,11 +30,17 @@ const writeJson = (key: string, value: unknown) => {
     }
 };
 
+const normalizeDocument = (document: EditorDocument): EditorDocument =>
+    document.kind === "free"
+        ? ({ ...document, background: normalizeCanvasBackground(document.background) } as FreeDocument)
+        : document;
+
 export const loadProjects = (): SavedProject[] => {
     const projects = readJson<SavedProject[]>(PROJECTS_KEY, []);
     if (!Array.isArray(projects)) return [];
     return projects
         .filter((project) => project && typeof project.id === "string" && project.document)
+        .map((project) => ({ ...project, document: normalizeDocument(project.document) }))
         .sort((a, b) => b.updatedAt - a.updatedAt);
 };
 
@@ -64,7 +70,7 @@ export const createBrandKit = (kit: Omit<BrandKit, "id">): BrandKit => ({
 export const loadStudioDraft = (): EditorDocument | null => {
     const draft = readJson<EditorDocument | null>(STUDIO_DRAFT_KEY, null);
     if (!draft || draft.kind !== "free") return null;
-    return draft;
+    return normalizeDocument(draft) as FreeDocument;
 };
 
 export const saveStudioDraft = (document: EditorDocument | null) => {
