@@ -9,6 +9,9 @@ import {
     getGridOverlayStyle,
     hexToRgba,
     resolveFontWeight,
+    resolveImageRadius,
+    resolveTitleFontSize,
+    resolveTitleTracking,
 } from "./templateShared";
 
 export default function BlogPost({
@@ -31,6 +34,10 @@ export default function BlogPost({
     gridColor = "#6B7280",
     gridOpacity = 0.15,
     gridBlur = 0,
+    titleSize,
+    titleTracking,
+    imageFit = "contain",
+    imageRadius,
 }: TemplateProps) {
     const hasImage = Boolean(image);
     const brandLabel = (logo || "").trim();
@@ -78,7 +85,12 @@ export default function BlogPost({
                 >
                     {hasImage ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={image} alt="guest visual" className="w-full h-full object-contain object-center" />
+                        <img
+                            src={image}
+                            alt="guest visual"
+                            className="w-full h-full object-center"
+                            style={{ objectFit: imageFit, borderRadius: resolveImageRadius(imageRadius) }}
+                        />
                     ) : (
                         <p className="text-[44px] tracking-[0.07em]" style={{ color: markColor }}>
                             {brandMark}
@@ -100,6 +112,8 @@ export default function BlogPost({
                             color: textColor,
                             fontStyle,
                             fontWeight: headlineWeight,
+                            fontSize: `${resolveTitleFontSize(titleSize, 46)}px`,
+                            letterSpacing: `${resolveTitleTracking(titleTracking, -0.03)}em`,
                             textDecoration,
                         }}
                     >

@@ -8,6 +8,8 @@ import {
     getGridOverlayStyle,
     hexToRgba,
     resolveFontWeight,
+    resolveTitleFontSize,
+    resolveTitleTracking,
 } from "./templateShared";
 
 export default function BrandPitch({
@@ -32,6 +34,8 @@ export default function BrandPitch({
     gridColor = "#94A3B8",
     gridOpacity = 0.14,
     gridBlur = 0.4,
+    titleSize,
+    titleTracking,
 }: TemplateProps) {
     const brandName = (logo || "").trim();
     const subheading = (tag || "").trim();
@@ -109,6 +113,8 @@ export default function BrandPitch({
                             color: textColor,
                             fontStyle,
                             fontWeight: headlineWeight,
+                            fontSize: `${resolveTitleFontSize(titleSize, 46)}px`,
+                            letterSpacing: `${resolveTitleTracking(titleTracking, -0.03)}em`,
                             textDecoration,
                         }}
                     >

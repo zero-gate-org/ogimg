@@ -8,6 +8,8 @@ import {
     clampGridBlur,
     resolveFontWeight,
     hexToRgba,
+    resolveTitleFontSize,
+    resolveTitleTracking,
 } from "./templateShared";
 
 export default function EditorialPixel({
@@ -29,6 +31,8 @@ export default function EditorialPixel({
     gridColor = "#FBCFE8",
     gridOpacity = 0.24,
     gridBlur = 0.2,
+    titleSize,
+    titleTracking,
 }: TemplateProps) {
     const waitlistLine = (tag || "").trim();
     const supportLine = (logo || "").trim();
@@ -72,6 +76,8 @@ export default function EditorialPixel({
                         color: textColor,
                         fontStyle,
                         fontWeight: headlineWeight,
+                        fontSize: `${resolveTitleFontSize(titleSize, 46)}px`,
+                        letterSpacing: `${resolveTitleTracking(titleTracking, -0.03)}em`,
                         textDecoration,
                     }}
                 >

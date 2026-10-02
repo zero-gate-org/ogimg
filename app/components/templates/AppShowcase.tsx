@@ -8,6 +8,9 @@ import {
     getGridOverlayStyle,
     hexToRgba,
     resolveFontWeight,
+    resolveImageRadius,
+    resolveTitleFontSize,
+    resolveTitleTracking,
 } from "./templateShared";
 
 export default function AppShowcase({
@@ -28,6 +31,10 @@ export default function AppShowcase({
     gridColor = "#6B7280",
     gridOpacity = 0.12,
     gridBlur = 0,
+    titleSize,
+    titleTracking,
+    imageFit = "contain",
+    imageRadius,
 }: TemplateProps) {
     const brandName = (logo || "").trim();
     const brandTagline = (title || "").trim();
@@ -87,6 +94,8 @@ export default function AppShowcase({
                                 color: textColor,
                                 fontStyle,
                                 fontWeight: taglineWeight,
+                                fontSize: `${resolveTitleFontSize(titleSize, 24)}px`,
+                                letterSpacing: `${resolveTitleTracking(titleTracking, -0.02)}em`,
                                 textDecoration,
                             }}
                         >
@@ -99,7 +108,12 @@ export default function AppShowcase({
                     <div className="relative w-[700px] aspect-video overflow-hidden flex items-center justify-center">
                         {hasImage ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={image} alt="full app UI preview" className="h-full w-full object-contain object-center" />
+                            <img
+                                src={image}
+                                alt="full app UI preview"
+                                className="h-full w-full object-center"
+                                style={{ objectFit: imageFit, borderRadius: resolveImageRadius(imageRadius) }}
+                            />
                         ) : (
                             <div className="text-center px-10">
                                 <p className="text-[32px] tracking-[-0.032em] leading-[1.05]" style={{ color: placeholderColor }}>

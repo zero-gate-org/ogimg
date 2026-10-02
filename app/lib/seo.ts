@@ -3,8 +3,16 @@ import type { Metadata } from "next";
 export const SITE_NAME = "ogimg.in";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ogimg.in";
 export const SITE_URL_OBJECT = new URL(SITE_URL);
-export const DEFAULT_OG_IMAGE = "/ogimg-og.png";
-export const DEFAULT_OG_IMAGE_ALT = "ogimg.in Open Graph image generator preview";
+/**
+ * Site card, 1200x630.
+ *
+ * When this artwork changes, publish the new file under a new name and update
+ * this constant. X, LinkedIn, Slack, and Discord cache OG images by URL for
+ * months, so overwriting the same path leaves the old card visible everywhere.
+ */
+export const DEFAULT_OG_IMAGE = "/og-card.png";
+export const DEFAULT_OG_IMAGE_ALT =
+    "ogimg.in, an Open Graph image generator with templates and a free canvas";
 
 type CreateMetadataInput = {
     title: string;

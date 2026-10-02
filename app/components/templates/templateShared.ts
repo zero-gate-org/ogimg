@@ -306,6 +306,8 @@ export const BACKGROUND_PRESETS: BackgroundPreset[] = [
 
 export const DEFAULT_BACKGROUND_PRESET_ID: BackgroundPresetId = "studio-sky";
 
+export type TemplateImageFit = "cover" | "contain" | "fill";
+
 export interface TemplateProps {
     title: string;
     textColor?: string;
@@ -329,7 +331,22 @@ export interface TemplateProps {
     gridColor?: string;
     gridOpacity?: number;
     gridBlur?: number;
+    /** Headline size override in px. Falls back to the template default. */
+    titleSize?: number | null;
+    /** Headline tracking override in em. Falls back to the template default. */
+    titleTracking?: number;
+    imageFit?: TemplateImageFit;
+    imageRadius?: number;
 }
+
+export const resolveTitleFontSize = (titleSize: number | null | undefined, fallbackPx: number) =>
+    typeof titleSize === "number" && Number.isFinite(titleSize) && titleSize > 0 ? titleSize : fallbackPx;
+
+export const resolveTitleTracking = (titleTracking: number | undefined, fallbackEm: number) =>
+    typeof titleTracking === "number" && Number.isFinite(titleTracking) ? titleTracking : fallbackEm;
+
+export const resolveImageRadius = (imageRadius: number | undefined) =>
+    typeof imageRadius === "number" && Number.isFinite(imageRadius) && imageRadius > 0 ? `${imageRadius}px` : undefined;
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(value, max));
 

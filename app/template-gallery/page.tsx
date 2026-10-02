@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
-import { GeistPixelSquare } from "geist/font/pixel";
+import { CaretLeft } from "@phosphor-icons/react/ssr";
 import { TEMPLATE_LIBRARY } from "../components/templates/templateRegistry";
 import TemplateGalleryPreview from "../components/TemplateGalleryPreview";
+import { Reveal } from "../components/landing/landingPrimitives";
 import { createMetadata } from "../lib/seo";
 
 export const metadata: Metadata = createMetadata({
     title: "Template Gallery",
-    description: "Browse ready-to-edit Open Graph image templates for product launches, blog posts, changelogs, podcasts, and more.",
+    description:
+        "Browse ready-to-edit Open Graph image templates for product launches, blog posts, changelogs, podcasts, and more. Each one opens with full copy, type, colour, and background controls.",
     path: "/template-gallery",
     keywords: [
         "open graph templates",
@@ -20,46 +21,54 @@ export const metadata: Metadata = createMetadata({
 
 export default function TemplateGalleryPage() {
     return (
-        <div className="min-h-screen bg-background text-foreground px-6 py-10">
-            <div className="max-w-6xl mx-auto">
-                <div className="flex items-center justify-between gap-4 mb-10">
-                    <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                        <span aria-hidden="true">{"<"}</span>
-                        Back to home
+        <div className="min-h-[100dvh] bg-background text-foreground">
+            <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-md">
+                <div className="shell flex h-16 items-center justify-between gap-4">
+                    <Link
+                        href="/"
+                        className="inline-flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                        <CaretLeft size={14} />
+                        Home
                     </Link>
-                    <div className="flex items-center gap-2">
-                        <Image src="/ogimg.png" alt="ogimg logo" width={24} height={24} className="rounded-sm bg-white p-0.5" />
-                        <span className={`text-xl ${GeistPixelSquare.className} tracking-[-0.05em]`}>ogimg.in</span>
-                    </div>
+                    <Link
+                        href="/studio"
+                        className="text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                        Free canvas
+                    </Link>
                 </div>
+            </header>
 
-                <div className="mb-10">
-                    <h1 className={`text-3xl md:text-5xl font-bold mb-4 ${GeistPixelSquare.className} tracking-[-0.05em]`}>
-                        Template Gallery
+            <main className="shell py-14 md:py-20">
+                <Reveal className="max-w-[52ch]">
+                    <h1 className="text-[34px] font-semibold leading-[1.06] tracking-[-0.04em] text-foreground md:text-[46px]">
+                        Template gallery
                     </h1>
-                    <p className="text-muted-foreground text-base md:text-lg max-w-2xl tracking-[-0.03em]">
-                        Pick a template to start editing. Every template opens in the editor with full controls.
+                    <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground md:text-base">
+                        Every layout below is live rendered. Open one to edit its copy, type, colour, and
+                        background, then export at the size you need.
                     </p>
-                </div>
+                </Reveal>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {TEMPLATE_LIBRARY.map((template) => (
                         <Link
                             key={template.id}
                             href={`/editor/${template.id}`}
-                            className="group relative rounded-xl border border-border bg-card overflow-hidden hover:border-ring transition-colors"
+                            className="group block border border-border bg-surface transition-colors hover:border-border-strong"
                         >
-                            <TemplateGalleryPreview templateId={template.id} />
-                            <div className="px-4 py-3 border-t border-border/60 bg-card/95">
-                                <p className="text-sm font-semibold text-foreground group-hover:text-foreground/90 transition-colors">
-                                    {template.name}
-                                </p>
-                                <p className="text-xs text-muted-foreground mt-1">{template.subtitle}</p>
+                            <div className="overflow-hidden">
+                                <TemplateGalleryPreview templateId={template.id} />
+                            </div>
+                            <div className="border-t border-border px-4 py-3">
+                                <p className="text-[14px] font-semibold text-foreground">{template.name}</p>
+                                <p className="mt-0.5 text-[12px] text-muted-foreground">{template.subtitle}</p>
                             </div>
                         </Link>
                     ))}
                 </div>
-            </div>
+            </main>
         </div>
     );
 }

@@ -8,6 +8,8 @@ import {
     getGridOverlayStyle,
     hexToRgba,
     resolveFontWeight,
+    resolveTitleFontSize,
+    resolveTitleTracking,
 } from "./templateShared";
 
 export default function CenteredContainer({
@@ -28,6 +30,8 @@ export default function CenteredContainer({
     gridColor = "#94A3B8",
     gridOpacity = 0.16,
     gridBlur = 0.4,
+    titleSize,
+    titleTracking,
 }: TemplateProps) {
     const subtext = (tag || "").trim();
 
@@ -75,6 +79,8 @@ export default function CenteredContainer({
                             color: textColor,
                             fontStyle,
                             fontWeight: headlineWeight,
+                            fontSize: `${resolveTitleFontSize(titleSize, 44)}px`,
+                            letterSpacing: `${resolveTitleTracking(titleTracking, -0.028)}em`,
                             textDecoration,
                         }}
                     >

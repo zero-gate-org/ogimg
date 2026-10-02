@@ -8,6 +8,8 @@ import {
     getGridOverlayStyle,
     hexToRgba,
     resolveFontWeight,
+    resolveTitleFontSize,
+    resolveTitleTracking,
 } from "./templateShared";
 
 export default function Changelog({
@@ -32,6 +34,8 @@ export default function Changelog({
     gridColor = "#34D399",
     gridOpacity = 0.2,
     gridBlur = 0.4,
+    titleSize,
+    titleTracking,
 }: TemplateProps) {
     const brandLabel = (logo || "").trim();
     const footerCta = (tag || "").trim();
@@ -84,6 +88,8 @@ export default function Changelog({
                             color: textColor,
                             fontStyle,
                             fontWeight: headingWeight,
+                            fontSize: `${resolveTitleFontSize(titleSize, 42)}px`,
+                            letterSpacing: `${resolveTitleTracking(titleTracking, -0.024)}em`,
                             textDecoration,
                         }}
                     >

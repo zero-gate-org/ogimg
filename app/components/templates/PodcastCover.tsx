@@ -8,6 +8,9 @@ import {
     getGridOverlayStyle,
     hexToRgba,
     resolveFontWeight,
+    resolveImageRadius,
+    resolveTitleFontSize,
+    resolveTitleTracking,
 } from "./templateShared";
 
 export default function PodcastCover({
@@ -30,6 +33,10 @@ export default function PodcastCover({
     gridColor = "#A78BFA",
     gridOpacity = 0.28,
     gridBlur = 1.1,
+    titleSize,
+    titleTracking,
+    imageFit = "contain",
+    imageRadius,
 }: TemplateProps) {
     const hasImage = Boolean(image);
     const brandLabel = (logo || "").trim();
@@ -70,8 +77,13 @@ export default function PodcastCover({
                 <div className="w-[50%] h-full overflow-hidden flex items-center justify-center">
                     {hasImage ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={image} alt="guest portrait" className="w-full h-full object-contain object-center" />
-                    ) : null}
+                        <img
+                                src={image}
+                                alt="guest portrait"
+                                className="w-full h-full object-center"
+                                style={{ objectFit: imageFit, borderRadius: resolveImageRadius(imageRadius) }}
+                            />
+                        ) : null}
                 </div>
 
                 <div className="w-[50%] h-full flex flex-col justify-center">
@@ -81,6 +93,8 @@ export default function PodcastCover({
                             color: textColor,
                             fontStyle,
                             fontWeight: headlineWeight,
+                            fontSize: `${resolveTitleFontSize(titleSize, 46)}px`,
+                            letterSpacing: `${resolveTitleTracking(titleTracking, -0.03)}em`,
                             textDecoration,
                         }}
                     >

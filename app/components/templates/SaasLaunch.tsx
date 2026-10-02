@@ -8,6 +8,9 @@ import {
     getGridOverlayStyle,
     hexToRgba,
     resolveFontWeight,
+    resolveImageRadius,
+    resolveTitleFontSize,
+    resolveTitleTracking,
 } from "./templateShared";
 
 export default function SaasLaunch({
@@ -32,6 +35,10 @@ export default function SaasLaunch({
     gridColor = "#60A5FA",
     gridOpacity = 0.2,
     gridBlur = 0.8,
+    titleSize,
+    titleTracking,
+    imageFit = "contain",
+    imageRadius,
 }: TemplateProps) {
     const hasImage = Boolean(image);
     const brandLabel = (logo || "").trim();
@@ -72,7 +79,12 @@ export default function SaasLaunch({
                 <div className="w-[54%] h-full overflow-hidden flex items-center justify-center">
                     {hasImage ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={image} alt="dashboard screenshot" className="w-full h-full object-contain object-center" />
+                        <img
+                            src={image}
+                            alt="dashboard screenshot"
+                            className="w-full h-full object-center"
+                            style={{ objectFit: imageFit, borderRadius: resolveImageRadius(imageRadius) }}
+                        />
                     ) : null}
                 </div>
 
@@ -95,6 +107,8 @@ export default function SaasLaunch({
                             color: textColor,
                             fontStyle,
                             fontWeight: headlineWeight,
+                            fontSize: `${resolveTitleFontSize(titleSize, 38)}px`,
+                            letterSpacing: `${resolveTitleTracking(titleTracking, -0.03)}em`,
                             textDecoration,
                         }}
                     >

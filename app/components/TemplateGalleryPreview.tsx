@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { TemplateId, getTemplateById } from "./templates/templateRegistry";
+import { getTemplateById } from "./templates/templateRegistry";
 import MinimalistTech from "./templates/MinimalistTech";
 import AppShowcase from "./templates/AppShowcase";
 import CenteredContainer from "./templates/CenteredContainer";
@@ -13,38 +12,20 @@ import PodcastCover from "./templates/PodcastCover";
 import Changelog from "./templates/Changelog";
 import type { TemplateProps } from "./templates/templateShared";
 import { getTemplateDefaultFontId, getTemplateFontFamily } from "./templates/fontCatalog";
+import ScaledCanvas from "./editor/ScaledCanvas";
 
 export default function TemplateGalleryPreview({
     templateId,
 }: {
-    templateId: TemplateId;
+    templateId: Parameters<typeof getTemplateById>[0];
 }) {
-    const previewContainerRef = useRef<HTMLDivElement>(null);
-    const [previewScale, setPreviewScale] = useState(1);
     const template = getTemplateById(templateId);
     const defaults = template.defaults;
-
-    useEffect(() => {
-        const container = previewContainerRef.current;
-        if (!container) return;
-
-        const calculateScale = () => {
-            const widthScale = container.clientWidth / 1200;
-            const heightScale = container.clientHeight / 630;
-            setPreviewScale(Math.min(widthScale, heightScale, 1));
-        };
-
-        calculateScale();
-
-        const observer = new ResizeObserver(calculateScale);
-        observer.observe(container);
-        return () => observer.disconnect();
-    }, []);
 
     const templateProps: TemplateProps = {
         title: defaults.title,
         textColor: defaults.textColor,
-        logoImage: "/ogimg.png",
+        logoImage: "/icon.png",
         image: template.supportsImage ? defaults.image || undefined : undefined,
         tag: defaults.tag,
         logo: defaults.logo,
@@ -91,18 +72,8 @@ export default function TemplateGalleryPreview({
     };
 
     return (
-        <div ref={previewContainerRef} className="aspect-1200/630 relative overflow-hidden flex items-center justify-center">
-            <div
-                className="shrink-0"
-                style={{
-                    width: "1200px",
-                    height: "630px",
-                    transform: `scale(${previewScale})`,
-                    transformOrigin: "center center",
-                }}
-            >
-                {renderTemplate()}
-            </div>
-        </div>
+        <ScaledCanvas width={1200} height={630} maxWidth={1200}>
+            {renderTemplate()}
+        </ScaledCanvas>
     );
 }

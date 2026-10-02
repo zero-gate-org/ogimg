@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Editor from "../../components/Editor";
+import TemplateEditor from "../../components/editor/TemplateEditor";
 import { TEMPLATE_LIBRARY, TemplateId } from "../../components/templates/templateRegistry";
 import { createMetadata } from "../../lib/seo";
 
@@ -54,5 +54,5 @@ export default async function TemplateEditorPage({
         notFound();
     }
 
-    return <Editor templateId={templateId as TemplateId} backHref="/template-gallery" />;
+    return <TemplateEditor templateId={templateId as TemplateId} backHref="/template-gallery" />;
 }

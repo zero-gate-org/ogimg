@@ -2,12 +2,16 @@
 
 import {
     DEFAULT_BACKGROUND_PRESET_ID,
+    TemplateImageFit,
     TemplateProps,
     clampGridBlur,
     getBackgroundFill,
     getGridOverlayStyle,
     hexToRgba,
     resolveFontWeight,
+    resolveImageRadius,
+    resolveTitleFontSize,
+    resolveTitleTracking,
 } from "./templateShared";
 
 export default function MinimalistTech({
@@ -29,6 +33,10 @@ export default function MinimalistTech({
     gridColor = "#6B7280",
     gridOpacity = 0.4,
     gridBlur = 1.2,
+    titleSize,
+    titleTracking,
+    imageFit = "contain" as TemplateImageFit,
+    imageRadius,
 }: TemplateProps) {
     const hasImage = Boolean(image);
     const tagLabel = (tag || "").trim();
@@ -95,6 +103,8 @@ export default function MinimalistTech({
                                 fontStyle,
                                 fontWeight: resolveFontWeight(fontWeight, 700),
                                 textDecoration,
+                                fontSize: `${resolveTitleFontSize(titleSize, 46)}px`,
+                                letterSpacing: `${resolveTitleTracking(titleTracking, -0.035)}em`,
                             }}
                         >
                             {title}
@@ -105,7 +115,12 @@ export default function MinimalistTech({
                 <div className="flex items-end justify-end w-full">
                     {image && (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={image} alt="app screenshot" className="absolute right-0 top-[98px] w-[700px] h-[460px] object-contain object-center" />
+                        <img
+                            src={image}
+                            alt="app screenshot"
+                            className="absolute right-0 top-[98px] w-[700px] h-[460px] object-center"
+                            style={{ objectFit: imageFit, borderRadius: resolveImageRadius(imageRadius) }}
+                        />
                     )}
                 </div>
             </div>
