@@ -150,6 +150,163 @@ export const TEMPLATE_SCHEMAS: Record<TemplateId, TemplateSchema> = {
             { slot: "detailThree", label: "Entry 3", placeholder: "Fixed: something" },
         ],
     },
+    "neon-grid": {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "Upload a logo to replace the mark beside the wordmark.",
+        fields: [
+            headline("Wordmark", "Never Settle"),
+            {
+                slot: "tag",
+                label: "Tagline",
+                placeholder: "A short line under the wordmark",
+                multiline: true,
+            },
+        ],
+    },
+    spotlight: {
+        supportsLogoImage: true,
+        supportsImage: true,
+        imageHint: "Product screenshot shown inside a dark device frame that bleeds off the right edge.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            headline("Headline", "Built for teams that ship weekly"),
+            {
+                slot: "tag",
+                label: "Support line",
+                placeholder: "One sentence of supporting detail",
+                multiline: true,
+            },
+        ],
+    },
+    "grid-glow": {
+        supportsLogoImage: true,
+        supportsImage: true,
+        imageHint: "Dashboard or product shot anchored along the bottom edge, bleeding off it.",
+        fields: [
+            headline("Headline", "One editor for every social card"),
+            {
+                slot: "tag",
+                label: "Subtext",
+                placeholder: "One sentence of supporting detail",
+                multiline: true,
+            },
+        ],
+    },
+    arc: {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Wordmark", "ogimg.in"),
+            headline("Headline", "Design that never leaves the browser"),
+            { slot: "tag", label: "Domain line", placeholder: "ogimg.in" },
+        ],
+    },
+    "teal-grid": {
+        supportsLogoImage: true,
+        supportsImage: true,
+        imageHint: "Wide dashboard shot anchored along the bottom edge, bleeding off it.",
+        fields: [
+            headline("Headline", "Your dashboard, framed for the feed"),
+            {
+                slot: "tag",
+                label: "Subtext",
+                placeholder: "One sentence of supporting detail",
+                multiline: true,
+            },
+        ],
+    },
+    mesh: {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            headline("Headline", "A launch card people stop on"),
+            {
+                slot: "tag",
+                label: "Support line",
+                placeholder: "One sentence of supporting detail",
+                multiline: true,
+            },
+        ],
+    },
+    dusk: {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            headline("Headline", "Quiet cards, loud results"),
+            {
+                slot: "tag",
+                label: "Support line",
+                placeholder: "One sentence of supporting detail",
+                multiline: true,
+            },
+        ],
+    },
+    spectrum: {
+        supportsLogoImage: true,
+        supportsImage: true,
+        imageHint: "Product shot anchored along the bottom edge, bleeding off it.",
+        fields: [
+            headline("Headline", "Every feed, one canvas"),
+            {
+                slot: "tag",
+                label: "Subtext",
+                placeholder: "One sentence of supporting detail",
+                multiline: true,
+            },
+        ],
+    },
+    ticket: {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Wordmark", "ogimg.in"),
+            headline("Headline", "The free canvas is open"),
+            { slot: "tag", label: "Domain line", placeholder: "ogimg.in" },
+        ],
+    },
+    deck: {
+        supportsLogoImage: true,
+        supportsImage: true,
+        imageHint: "Screenshot shown in the front card of a small stack at the bottom.",
+        fields: [
+            headline("Headline", "Stack your best work"),
+            {
+                slot: "tag",
+                label: "Subtext",
+                placeholder: "One sentence of supporting detail",
+                multiline: true,
+            },
+        ],
+    },
+    bento: {
+        supportsLogoImage: false,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            headline("Headline", "Numbers that sell the launch"),
+            brandName("Domain", "ogimg.in"),
+            { slot: "detailOne", label: "Stat 1", placeholder: "120k: followers on social" },
+            { slot: "detailTwo", label: "Stat 2", placeholder: "50+: templates and fonts" },
+            { slot: "detailThree", label: "Stat 3", placeholder: "0: servers to pay for" },
+        ],
+    },
+    crossglow: {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Wordmark", "ogimg.in"),
+            headline("Headline", "Made for people who ship"),
+            { slot: "tag", label: "Domain line", placeholder: "ogimg.in" },
+        ],
+    },
 };
 
 export const getTemplateSchema = (templateId: TemplateId): TemplateSchema => TEMPLATE_SCHEMAS[templateId];

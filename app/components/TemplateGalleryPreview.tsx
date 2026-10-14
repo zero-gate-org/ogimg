@@ -10,6 +10,18 @@ import SaasLaunch from "./templates/SaasLaunch";
 import BlogPost from "./templates/BlogPost";
 import PodcastCover from "./templates/PodcastCover";
 import Changelog from "./templates/Changelog";
+import NeonGrid from "./templates/NeonGrid";
+import Spotlight from "./templates/Spotlight";
+import GridGlow from "./templates/GridGlow";
+import AuroraArc from "./templates/AuroraArc";
+import TealGrid from "./templates/TealGrid";
+import ColorMesh from "./templates/ColorMesh";
+import Dusk from "./templates/Dusk";
+import Spectrum from "./templates/Spectrum";
+import NotchCard from "./templates/NotchCard";
+import StackedDeck from "./templates/StackedDeck";
+import StatBento from "./templates/StatBento";
+import GridBloom from "./templates/GridBloom";
 import type { TemplateProps } from "./templates/templateShared";
 import { getTemplateDefaultFontId, getTemplateFontFamily } from "./templates/fontCatalog";
 import ScaledCanvas from "./editor/ScaledCanvas";
@@ -69,6 +81,30 @@ export default function TemplateGalleryPreview({
                 return <PodcastCover {...templateProps} />;
             case "changelog":
                 return <Changelog {...templateProps} />;
+            case "neon-grid":
+                return <NeonGrid {...templateProps} />;
+            case "spotlight":
+                return <Spotlight {...templateProps} />;
+            case "grid-glow":
+                return <GridGlow {...templateProps} />;
+            case "arc":
+                return <AuroraArc {...templateProps} />;
+            case "teal-grid":
+                return <TealGrid {...templateProps} />;
+            case "mesh":
+                return <ColorMesh {...templateProps} />;
+            case "dusk":
+                return <Dusk {...templateProps} />;
+            case "spectrum":
+                return <Spectrum {...templateProps} />;
+            case "ticket":
+                return <NotchCard {...templateProps} />;
+            case "deck":
+                return <StackedDeck {...templateProps} />;
+            case "bento":
+                return <StatBento {...templateProps} />;
+            case "crossglow":
+                return <GridBloom {...templateProps} />;
             case "minimalist-tech":
             default:
                 return <MinimalistTech {...templateProps} />;

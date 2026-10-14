@@ -30,10 +30,22 @@ const writeJson = (key: string, value: unknown) => {
     }
 };
 
-const normalizeDocument = (document: EditorDocument): EditorDocument =>
-    document.kind === "free"
-        ? ({ ...document, background: normalizeCanvasBackground(document.background) } as FreeDocument)
-        : document;
+const normalizeDocument = (document: EditorDocument): EditorDocument => {
+    if (document.kind === "free") {
+        return { ...document, background: normalizeCanvasBackground(document.background) } as FreeDocument;
+    }
+
+    // A detached template carries its own canvas background, which needs the
+    // same backfill a free document gets.
+    if (document.layout) {
+        return {
+            ...document,
+            layout: { ...document.layout, background: normalizeCanvasBackground(document.layout.background) },
+        };
+    }
+
+    return document;
+};
 
 export const loadProjects = (): SavedProject[] => {
     const projects = readJson<SavedProject[]>(PROJECTS_KEY, []);

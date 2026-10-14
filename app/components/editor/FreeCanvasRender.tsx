@@ -138,6 +138,7 @@ function TextLayerView({ layer }: { layer: TextLayer }) {
                         color: layer.color,
                         textTransform: layer.uppercase ? "uppercase" : "none",
                         textShadow: layer.shadow ? "0 2px 10px rgba(0,0,0,0.45)" : undefined,
+                        textWrap: layer.balance ? "balance" : undefined,
                     }}
                 >
                     {line.length > 0 ? line : " "}

@@ -13,7 +13,7 @@ export default function TemplateShowcase() {
         <section className="scroll-mt-20 border-b border-border py-20 md:py-28">
             <div className="shell">
                 <SectionHeading
-                    title="Nine templates that already work"
+                    title="Ten templates that already work"
                     body="Each one opens in the editor with its own controls for copy, type, colour, and background."
                 />
 

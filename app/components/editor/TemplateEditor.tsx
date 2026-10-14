@@ -17,6 +17,15 @@ import {
 } from "@phosphor-icons/react";
 import CanvasStage from "./CanvasStage";
 import TemplateRender from "./TemplateRender";
+import InteractiveCanvas from "./InteractiveCanvas";
+import LayersPanel from "./LayersPanel";
+import LayerPropertiesPanel from "./LayerPropertiesPanel";
+import BackgroundPanel from "./BackgroundPanel";
+import {
+    CanvasBackgroundEffects,
+    FreeCanvasLayers,
+    getCanvasBackgroundStyle,
+} from "./FreeCanvasRender";
 import ExportPanel from "./ExportPanel";
 import ProjectsPanel from "./ProjectsPanel";
 import BrandKitsPanel from "./BrandKitsPanel";
@@ -46,29 +55,52 @@ import {
 import { getTemplateDefaultFontId, type TemplateFontId } from "../templates/fontCatalog";
 import {
     applyBrandKitToTemplate,
+    applyFieldsToLayout,
+    buildTemplateLayout,
     createId,
+    createImageLayer,
+    createShapeLayer,
     createTemplateDocument,
+    createTextLayer,
     exportDesignImage,
     formatSavedAt,
     getTemplateSchema,
+    isTemplateLayoutEditable,
+    layoutFontIds,
     loadBrandKits,
     loadProjects,
     saveBrandKits,
     saveProjects,
     slugify,
+    templateLayoutToFreeDocument,
     upsertProject,
     useDocumentHistory,
     type BrandKit,
+    type CanvasBackground,
     type ExportFormat,
+    type ImageLayer,
+    type Layer,
     type SavedProject,
+    type ShapeKind,
     type TemplateDocument,
+    type TemplateLayoutSlot,
+    type TextLayer,
 } from "../../lib/editor";
 
-type Tab = "content" | "type" | "background" | "export" | "files" | "kits";
+type Tab = "content" | "type" | "design" | "background" | "export" | "files" | "kits";
+type EditMode = "content" | "layout";
 
-const TABS: { id: Tab; label: string }[] = [
+const CONTENT_TABS: { id: Tab; label: string }[] = [
     { id: "content", label: "Content" },
     { id: "type", label: "Type" },
+    { id: "background", label: "Canvas" },
+    { id: "export", label: "Export" },
+    { id: "files", label: "Files" },
+    { id: "kits", label: "Kits" },
+];
+
+const LAYOUT_TABS: { id: Tab; label: string }[] = [
+    { id: "design", label: "Element" },
     { id: "background", label: "Canvas" },
     { id: "export", label: "Export" },
     { id: "files", label: "Files" },
@@ -81,6 +113,8 @@ const GRID_OPTIONS: { value: GridOverlay; label: string }[] = [
     { value: "graph", label: "Graph" },
     { value: "dots", label: "Dots" },
 ];
+
+const TEXT_FIELDS: TemplateLayoutSlot[] = ["title", "tag", "logo", "detailOne", "detailTwo", "detailThree"];
 
 const buildTemplateDocument = (templateId: TemplateId): TemplateDocument => {
     const template = getTemplateById(templateId);
@@ -126,6 +160,8 @@ export default function TemplateEditor({
     const imageInputRef = useRef<HTMLInputElement>(null);
 
     const [tab, setTab] = useState<Tab>("content");
+    const [editMode, setEditMode] = useState<EditMode>("content");
+    const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
     const [projects, setProjects] = useState<SavedProject[]>([]);
     const [kits, setKits] = useState<BrandKit[]>([]);
     const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
@@ -136,6 +172,7 @@ export default function TemplateEditor({
     const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
     const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [isUploadingLayerImage, setIsUploadingLayerImage] = useState(false);
 
     // Saved projects and kits live in local storage, so they are read after the
     // first paint. Deferring by a frame keeps hydration stable and keeps this
@@ -150,9 +187,15 @@ export default function TemplateEditor({
 
     const updateDocument = history.update;
 
+    // A detached template keeps `fields` as the content source of truth and
+    // mirrors every change onto the matching layer, so editing copy here never
+    // resets a placement the user chose in Layout mode.
     const patchFields = useCallback(
         (patch: Partial<TemplateDocument["fields"]>, mergeKey?: string) => {
-            updateDocument((current) => ({ ...current, fields: { ...current.fields, ...patch } }), mergeKey);
+            updateDocument((current) => {
+                const next = { ...current, fields: { ...current.fields, ...patch } };
+                return current.layout ? applyFieldsToLayout(next, Object.keys(patch)) : next;
+            }, mergeKey);
         },
         [updateDocument],
     );
@@ -160,6 +203,8 @@ export default function TemplateEditor({
     const switchTemplate = (nextId: TemplateId) => {
         history.replace({ ...buildTemplateDocument(nextId), name: getTemplateById(nextId).name });
         setCurrentProjectId(null);
+        setEditMode("content");
+        setSelectedLayerId(null);
         setTab("content");
         router.push(`/editor/${nextId}`);
     };
@@ -178,7 +223,10 @@ export default function TemplateEditor({
     const handleLogoUpload = async (file: File) => {
         try {
             const src = await readFile(file);
-            updateDocument((current) => ({ ...current, logoImage: src, logoImageName: file.name }));
+            updateDocument((current) => {
+                const next = { ...current, logoImage: src, logoImageName: file.name };
+                return current.layout ? applyFieldsToLayout(next, ["logoImage"]) : next;
+            });
         } catch (error) {
             setExportError(error instanceof Error ? error.message : "Could not read that file");
         }
@@ -187,10 +235,176 @@ export default function TemplateEditor({
     const handleImageUpload = async (file: File) => {
         try {
             const src = await readFile(file);
-            updateDocument((current) => ({ ...current, image: src, imageName: file.name }));
+            updateDocument((current) => {
+                const next = { ...current, image: src, imageName: file.name };
+                return current.layout ? applyFieldsToLayout(next, ["image"]) : next;
+            });
         } catch (error) {
             setExportError(error instanceof Error ? error.message : "Could not read that file");
         }
+    };
+
+    // The Layout canvas writes geometry and per-element style straight into the
+    // layer. When that layer is one the Content panel also owns, the change is
+    // mirrored back to `fields` so the two panels never disagree.
+    const patchLayer = useCallback(
+        (id: string, patch: Partial<Layer>, mergeKey?: string) => {
+            updateDocument((current) => {
+                if (!current.layout) return current;
+                const layers = current.layout.layers.map((layer) =>
+                    layer.id === id ? ({ ...layer, ...patch } as Layer) : layer,
+                );
+                let next: TemplateDocument = { ...current, layout: { ...current.layout, layers } };
+
+                const slot = (Object.keys(current.layout.slots) as TemplateLayoutSlot[]).find(
+                    (entry) => current.layout?.slots[entry] === id,
+                );
+                const text = (patch as Partial<TextLayer>).text;
+                const src = (patch as Partial<ImageLayer>).src;
+                if (slot && text !== undefined && TEXT_FIELDS.includes(slot)) {
+                    next = { ...next, fields: { ...next.fields, [slot]: text } };
+                }
+                if (slot === "logoImage" && src !== undefined) next = { ...next, logoImage: src };
+                if (slot === "image" && src !== undefined) next = { ...next, image: src };
+
+                return next;
+            }, mergeKey);
+        },
+        [updateDocument],
+    );
+
+    const mutateLayers = (fn: (layers: Layer[]) => Layer[]) => {
+        updateDocument((current) =>
+            current.layout ? { ...current, layout: { ...current.layout, layers: fn(current.layout!.layers) } } : current,
+        );
+    };
+
+    const addLayer = (layer: Layer) => {
+        mutateLayers((layers) => [...layers, layer]);
+        setSelectedLayerId(layer.id);
+    };
+
+    const deleteLayer = (id: string) => {
+        mutateLayers((layers) => layers.filter((layer) => layer.id !== id));
+        if (selectedLayerId === id) setSelectedLayerId(null);
+    };
+
+    const duplicateLayer = (id: string) => {
+        let copyId: string | null = null;
+        mutateLayers((layers) => {
+            const source = layers.find((layer) => layer.id === id);
+            if (!source) return layers;
+            const copy = { ...source, id: createId("tpl-layer"), x: source.x + 16, y: source.y + 16 } as Layer;
+            copyId = copy.id;
+            return [...layers, copy];
+        });
+        if (copyId) setSelectedLayerId(copyId);
+    };
+
+    const reorderLayer = (id: string, direction: "up" | "down") => {
+        mutateLayers((layers) => {
+            const index = layers.findIndex((layer) => layer.id === id);
+            if (index === -1) return layers;
+            const target = direction === "up" ? index + 1 : index - 1;
+            if (target < 0 || target >= layers.length) return layers;
+            const next = [...layers];
+            const [moved] = next.splice(index, 1);
+            next.splice(target, 0, moved);
+            return next;
+        });
+    };
+
+    const toggleLayerFlag = (id: string, key: "hidden" | "locked") => {
+        updateDocument((current) => {
+            if (!current.layout) return current;
+            return {
+                ...current,
+                layout: {
+                    ...current.layout,
+                    layers: current.layout.layers.map((layer) =>
+                        layer.id === id ? ({ ...layer, [key]: !layer[key] } as Layer) : layer,
+                    ),
+                },
+            };
+        });
+    };
+
+    const addTextLayer = () =>
+        addLayer(
+            createTextLayer({
+                text: "A headline worth pausing on",
+                x: 96,
+                y: 250,
+                width: 1008,
+                fontSize: 64,
+                color: document.fields.textColor,
+                fontId: document.fields.fontId,
+            }),
+        );
+
+    const addShapeLayer = (shape: ShapeKind) => addLayer(createShapeLayer(shape));
+
+    const uploadLayerImage = async (file: File) => {
+        if (!file.type.startsWith("image/")) {
+            setExportError("That file is not an image. Pick a PNG, JPEG, or WebP.");
+            return;
+        }
+        setIsUploadingLayerImage(true);
+        try {
+            const src = await readFile(file);
+            const selected = document.layout?.layers.find((layer) => layer.id === selectedLayerId);
+            if (selected?.kind === "image") {
+                patchLayer(selected.id, { src, alt: file.name, name: file.name, hidden: false } as Partial<Layer>);
+            } else {
+                addLayer(createImageLayer(src, file.name));
+            }
+        } catch (error) {
+            setExportError(error instanceof Error ? error.message : "Could not read that file");
+        } finally {
+            setIsUploadingLayerImage(false);
+        }
+    };
+
+    const patchBackground = (patch: Partial<CanvasBackground>) => {
+        updateDocument((current) =>
+            current.layout
+                ? { ...current, layout: { ...current.layout, background: { ...current.layout.background, ...patch } } }
+                : current,
+        );
+    };
+
+    const uploadBackgroundImage = async (file: File) => {
+        if (!file.type.startsWith("image/")) {
+            setExportError("That file is not an image. Pick a PNG, JPEG, or WebP.");
+            return;
+        }
+        setIsUploadingLayerImage(true);
+        try {
+            const src = await readFile(file);
+            patchBackground({ mode: "image", imageSrc: src, imageName: file.name });
+        } catch (error) {
+            setExportError(error instanceof Error ? error.message : "Could not read that file");
+        } finally {
+            setIsUploadingLayerImage(false);
+        }
+    };
+
+    const enterLayout = () => {
+        if (!isTemplateLayoutEditable(document.templateId)) return;
+        if (!document.layout) {
+            updateDocument((current) => {
+                const layout = buildTemplateLayout(current);
+                return layout ? { ...current, layout } : current;
+            });
+        }
+        setEditMode("layout");
+        setTab("design");
+    };
+
+    const exitToContent = () => {
+        setEditMode("content");
+        setSelectedLayerId(null);
+        setTab("content");
     };
 
     const saveProject = () => {
@@ -226,7 +440,7 @@ export default function TemplateEditor({
                 scale,
                 format,
                 quality: 0.95,
-                fontIds: [document.fields.fontId],
+                fontIds: document.layout ? layoutFontIds(document) : [document.fields.fontId],
                 name: document.name || template.name,
             });
         } catch (error) {
@@ -270,6 +484,13 @@ export default function TemplateEditor({
         return () => window.removeEventListener("keydown", onKeyDown);
     }, [history]);
 
+    // Once detached, the template's layers are handed to the shared canvas
+    // machinery through a FreeDocument shim, so the interactive surface and the
+    // exporter treat it exactly like a card built from scratch. These read the
+    // selection state, so they are derived after every hook has run.
+    const layoutFree = document.layout ? templateLayoutToFreeDocument(document) : null;
+    const selectedLayer = document.layout?.layers.find((layer) => layer.id === selectedLayerId) ?? null;
+
     return (
         <div className="flex h-[100dvh] flex-col overflow-hidden bg-background text-foreground">
             <header className="grid h-14 shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-surface px-3">
@@ -306,6 +527,22 @@ export default function TemplateEditor({
                         }}
                         className="hidden md:flex"
                     />
+
+                    {isTemplateLayoutEditable(document.templateId) ? (
+                        <>
+                            <span className="hidden h-5 w-px bg-border lg:block" />
+                            <SegmentedControl
+                                ariaLabel="Editing mode"
+                                value={editMode}
+                                options={[
+                                    { value: "content", label: "Content" },
+                                    { value: "layout", label: "Layout" },
+                                ]}
+                                onChange={(value) => (value === "layout" ? enterLayout() : exitToContent())}
+                                className="hidden lg:flex"
+                            />
+                        </>
+                    ) : null}
                 </div>
 
                 <div className="flex min-w-0 justify-start md:justify-center">
@@ -367,62 +604,102 @@ export default function TemplateEditor({
 
             <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
                 <aside className="flex w-full shrink-0 flex-col border-b border-border bg-surface lg:w-[228px] lg:border-b-0 lg:border-r">
-                    <PanelStateProvider>
-                    <div className="scroll-y min-h-0 flex-1">
-                        <PanelSection
-                            title="Templates"
-                            sectionKey="gallery-list"
-                            action={
-                                <span className="pr-1 font-mono text-[11px] text-muted-foreground">
-                                    {TEMPLATE_LIBRARY.length}
-                                </span>
-                            }
-                        >
-                        <ul className="space-y-1.5 pt-1">
-                            {TEMPLATE_LIBRARY.map((entry) => {
-                                const active = entry.id === document.templateId;
-                                return (
-                                    <li key={entry.id}>
-                                        <button
-                                            type="button"
-                                            onClick={() => switchTemplate(entry.id)}
-                                            aria-current={active}
-                                            className={`block w-full border text-left transition-colors ${
-                                                active
-                                                    ? "border-brand"
-                                                    : "border-border hover:border-border-strong"
-                                            }`}
-                                        >
-                                            <TemplateGalleryPreview templateId={entry.id} />
-                                            <span className="block border-t border-border px-2 py-1.5">
-                                                <span className="block truncate text-[11px] font-medium text-foreground">
-                                                    {entry.name}
+                    {editMode === "layout" && document.layout ? (
+                        <PanelStateProvider>
+                            <LayersPanel
+                                layers={document.layout.layers}
+                                selectedId={selectedLayerId}
+                                onSelect={setSelectedLayerId}
+                                onToggleHidden={(id) => toggleLayerFlag(id, "hidden")}
+                                onToggleLocked={(id) => toggleLayerFlag(id, "locked")}
+                                onReorder={reorderLayer}
+                                onDuplicate={duplicateLayer}
+                                onDelete={deleteLayer}
+                                onAddText={addTextLayer}
+                                onAddShape={addShapeLayer}
+                                onUploadImage={uploadLayerImage}
+                                isUploading={isUploadingLayerImage}
+                            />
+                        </PanelStateProvider>
+                    ) : (
+                        <PanelStateProvider>
+                        <div className="scroll-y min-h-0 flex-1">
+                            <PanelSection
+                                title="Templates"
+                                sectionKey="gallery-list"
+                                action={
+                                    <span className="pr-1 font-mono text-[11px] text-muted-foreground">
+                                        {TEMPLATE_LIBRARY.length}
+                                    </span>
+                                }
+                            >
+                            <ul className="space-y-1.5 pt-1">
+                                {TEMPLATE_LIBRARY.map((entry) => {
+                                    const active = entry.id === document.templateId;
+                                    return (
+                                        <li key={entry.id}>
+                                            <button
+                                                type="button"
+                                                onClick={() => switchTemplate(entry.id)}
+                                                aria-current={active}
+                                                className={`block w-full border text-left transition-colors ${
+                                                    active
+                                                        ? "border-brand"
+                                                        : "border-border hover:border-border-strong"
+                                                }`}
+                                            >
+                                                <TemplateGalleryPreview templateId={entry.id} />
+                                                <span className="block border-t border-border px-2 py-1.5">
+                                                    <span className="block truncate text-[11px] font-medium text-foreground">
+                                                        {entry.name}
+                                                    </span>
                                                 </span>
-                                            </span>
-                                        </button>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                        </PanelSection>
-                    </div>
-                    <div className="flex shrink-0 items-center justify-end border-t border-border px-4 py-2 text-[11px] text-muted-foreground">
-                        <PanelCollapseAll />
-                    </div>
-                    </PanelStateProvider>
+                                            </button>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                            </PanelSection>
+                        </div>
+                        <div className="flex shrink-0 items-center justify-end border-t border-border px-4 py-2 text-[11px] text-muted-foreground">
+                            <PanelCollapseAll />
+                        </div>
+                        </PanelStateProvider>
+                    )}
                 </aside>
 
                 <main className="flex min-h-[42vh] min-w-0 flex-1 flex-col bg-surface-sunken">
                     <CanvasStage width={1200} height={630}>
-                        <div ref={canvasRef} style={{ width: 1200, height: 630 }}>
-                            <TemplateRender document={document} />
-                        </div>
+                        {editMode === "layout" && document.layout && layoutFree ? (
+                            <InteractiveCanvas
+                                document={layoutFree}
+                                selectedId={selectedLayerId}
+                                onSelect={setSelectedLayerId}
+                                onChangeLayer={patchLayer}
+                                canvasRef={(node) => {
+                                    canvasRef.current = node;
+                                }}
+                                canvasStyle={getCanvasBackgroundStyle(document.layout.background)}
+                            >
+                                <CanvasBackgroundEffects background={document.layout.background} />
+                                <FreeCanvasLayers document={layoutFree} />
+                            </InteractiveCanvas>
+                        ) : (
+                            <div ref={canvasRef} style={{ width: 1200, height: 630 }}>
+                                <TemplateRender document={document} />
+                            </div>
+                        )}
                     </CanvasStage>
                 </main>
 
                 <aside className="flex w-full shrink-0 flex-col border-t border-border bg-surface lg:w-[320px] lg:border-l lg:border-t-0">
                     <PanelStateProvider>
-                    <PanelTabs tabs={TABS} value={tab} onChange={setTab} ariaLabel="Editor panels" />
+                    <PanelTabs
+                        tabs={editMode === "layout" ? LAYOUT_TABS : CONTENT_TABS}
+                        value={tab}
+                        onChange={setTab}
+                        ariaLabel="Editor panels"
+                    />
 
                     <div className="scroll-y min-h-0 flex-1">
                         {tab === "content" ? (
@@ -638,7 +915,27 @@ export default function TemplateEditor({
                             </div>
                         ) : null}
 
+                        {tab === "design" ? (
+                            <LayerPropertiesPanel
+                                layer={selectedLayer}
+                                documentSize={{ width: 1200, height: 630 }}
+                                onChange={(patch) =>
+                                    selectedLayerId && patchLayer(selectedLayerId, patch, `inspect-${selectedLayerId}`)
+                                }
+                                onDelete={() => selectedLayerId && deleteLayer(selectedLayerId)}
+                                onUploadReplacement={uploadLayerImage}
+                            />
+                        ) : null}
+
                         {tab === "background" ? (
+                            editMode === "layout" && document.layout ? (
+                                <BackgroundPanel
+                                    background={document.layout.background}
+                                    isUploading={isUploadingLayerImage}
+                                    onUploadImage={uploadBackgroundImage}
+                                    onChange={patchBackground}
+                                />
+                            ) : (
                             <div>
                                 <PanelSection title="Fill" sectionKey="tpl-fill">
                                     <Field label="Type">
@@ -774,6 +1071,7 @@ export default function TemplateEditor({
                                     ) : null}
                                 </PanelSection>
                             </div>
+                            )
                         ) : null}
 
                         {tab === "export" ? (
@@ -801,6 +1099,8 @@ export default function TemplateEditor({
                                         if (project.document.kind !== "template") return;
                                         history.replace({ ...project.document, id: createId("doc") });
                                         setCurrentProjectId(project.id);
+                                        setEditMode("content");
+                                        setSelectedLayerId(null);
                                         setTab("content");
                                     }}
                                     onDuplicate={(project) => {
@@ -838,7 +1138,26 @@ export default function TemplateEditor({
                                         setKits(next);
                                         saveBrandKits(next);
                                     }}
-                                    onApply={(kit) => updateDocument((current) => applyBrandKitToTemplate(current, kit))}
+                                    onApply={(kit) =>
+                                        updateDocument((current) => {
+                                            const next = applyBrandKitToTemplate(current, kit);
+                                            return next.layout
+                                                ? applyFieldsToLayout(next, [
+                                                      "textColor",
+                                                      "fontId",
+                                                      "logoImage",
+                                                      "backgroundMode",
+                                                      "gradientStart",
+                                                      "gradientEnd",
+                                                      "gradientAngle",
+                                                      "backgroundPresetId",
+                                                      "gridOverlay",
+                                                      "gridColor",
+                                                      "gridOpacity",
+                                                  ])
+                                                : next;
+                                        })
+                                    }
                                     onDelete={(kitId) => {
                                         const next = kits.filter((kit) => kit.id !== kitId);
                                         setKits(next);

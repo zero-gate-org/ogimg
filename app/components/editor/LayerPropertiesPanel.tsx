@@ -285,6 +285,12 @@ function TextProperties({
                         onChange={(shadow) => onChange({ shadow } as Partial<Layer>)}
                         label="Text shadow"
                     />
+                    <Toggle
+                        id="layer-balance"
+                        checked={!!layer.balance}
+                        onChange={(balance) => onChange({ balance } as Partial<Layer>)}
+                        label="Even line lengths"
+                    />
                 </div>
             </PanelSection>
 

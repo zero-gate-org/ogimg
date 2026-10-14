@@ -141,6 +141,18 @@ export const TEMPLATE_DEFAULT_FONT_BY_ID: Record<TemplateId, TemplateFontId> = {
     "blog-post": "playfair-display",
     "podcast-cover": "sora",
     "changelog": "geist-mono",
+    "neon-grid": "space-grotesk",
+    "spotlight": "space-grotesk",
+    "grid-glow": "space-grotesk",
+    "arc": "sora",
+    "teal-grid": "space-grotesk",
+    "mesh": "space-grotesk",
+    "dusk": "space-grotesk",
+    "spectrum": "space-grotesk",
+    "ticket": "poppins",
+    "deck": "outfit",
+    "bento": "manrope",
+    "crossglow": "space-grotesk",
 };
 
 const TEMPLATE_FONT_OPTION_BY_ID = new Map(

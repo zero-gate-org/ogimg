@@ -5,3 +5,4 @@ export * from "./persistence";
 export * from "./useDocumentHistory";
 export * from "./exportImage";
 export * from "./templateSchema";
+export * from "./templateLayout";

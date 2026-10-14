@@ -40,6 +40,8 @@ export interface TextLayer extends BaseLayer {
     color: string;
     uppercase: boolean;
     shadow: boolean;
+    /** Balances the wrapped lines, the way a centred display headline should. */
+    balance?: boolean;
 }
 
 export interface ShapeLayer extends BaseLayer {
@@ -119,6 +121,40 @@ export interface TemplateFields {
     gridBlur: number;
 }
 
+/**
+ * A template element that the content panel writes into and the layout panel
+ * positions. Every editable template maps these keys to a concrete layer id in
+ * `TemplateLayout.slots`, which is how a text field and the layer it lives in
+ * stay the same value across Content and Layout modes.
+ */
+export type TemplateLayoutSlot =
+    | "title"
+    | "tag"
+    | "logo"
+    | "detailOne"
+    | "detailTwo"
+    | "detailThree"
+    // Ledger templates pull a "Added:" style keyword into its own column, so one
+    // detail field becomes two layers. The label half gets its own slot key so the
+    // content panel can rewrite both halves when the field text changes.
+    | "detailOneLabel"
+    | "detailTwoLabel"
+    | "detailThreeLabel"
+    | "logoImage"
+    | "image";
+
+/**
+ * A template that has been rebuilt into canvas layers so every element can be
+ * dragged, resized, and restyled like the free canvas. Absent on templates that
+ * still render from their fixed JSX, so nothing changes for them.
+ */
+export interface TemplateLayout {
+    layers: Layer[];
+    background: CanvasBackground;
+    /** Slot key to the id of the layer that carries it. */
+    slots: Partial<Record<TemplateLayoutSlot, string>>;
+}
+
 export interface TemplateDocument {
     kind: "template";
     id: string;
@@ -129,6 +165,8 @@ export interface TemplateDocument {
     logoImageName: string;
     image: string;
     imageName: string;
+    /** Set once the user detaches the template into editable layers. */
+    layout?: TemplateLayout | null;
 }
 
 export type EditorDocument = FreeDocument | TemplateDocument;
