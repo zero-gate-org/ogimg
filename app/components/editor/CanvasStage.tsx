@@ -28,8 +28,17 @@ export default function CanvasStage({
         const frame = frameRef.current;
         if (!frame) return;
 
-        const availableWidth = frame.clientWidth - 80;
-        const availableHeight = frame.clientHeight - 80;
+        // The toolbar floats over the pasteboard, so the fit is based on the
+        // padded content box rather than the raw frame size.
+        const styles = window.getComputedStyle(frame);
+        const availableWidth =
+            frame.clientWidth -
+            parseFloat(styles.paddingLeft || "0") -
+            parseFloat(styles.paddingRight || "0");
+        const availableHeight =
+            frame.clientHeight -
+            parseFloat(styles.paddingTop || "0") -
+            parseFloat(styles.paddingBottom || "0");
         if (availableWidth <= 0 || availableHeight <= 0) return;
 
         const next = Math.min(availableWidth / width, availableHeight / height, 1);
@@ -49,7 +58,7 @@ export default function CanvasStage({
     return (
         <div
             ref={frameRef}
-            className="canvas-grid scroll-y relative flex min-h-0 flex-1 items-center justify-center overflow-auto p-10"
+            className="canvas-grid scroll-y relative flex min-h-0 flex-1 items-center justify-center overflow-auto px-6 pb-16 pt-20 sm:px-10 sm:pb-20 sm:pt-24"
         >
             <div
                 className="relative shrink-0 shadow-[0_28px_70px_-40px_rgba(0,0,0,0.95)] ring-1 ring-white/12"
@@ -67,8 +76,13 @@ export default function CanvasStage({
                 </div>
             </div>
 
-            <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2">
-                <div className="pointer-events-auto flex items-center gap-1 border border-border bg-surface px-1 py-1">
+            <div className="pointer-events-none absolute inset-x-0 bottom-3 z-10 flex justify-center px-2">
+                <div className="pointer-events-auto flex items-center gap-0.5 border border-border bg-surface/90 p-1 font-mono text-[11px] text-muted-foreground shadow-[0_14px_34px_-18px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-md">
+                    <span className="hidden px-2 tabular-nums sm:inline">
+                        {width} × {height}
+                    </span>
+                    <span className="mx-1 hidden h-4 w-px bg-border sm:block" />
+
                     {[0.25, 0.5, 1].map((preset) => (
                         <button
                             key={preset}
@@ -77,7 +91,7 @@ export default function CanvasStage({
                                 setZoom(preset);
                                 setIsFit(false);
                             }}
-                            className={`px-2 py-1 font-mono text-[11px] transition-colors ${
+                            className={`px-2 py-1 transition-colors ${
                                 !isFit && Math.abs(zoom - preset) < 0.02
                                     ? "bg-brand text-brand-ink"
                                     : "text-muted-foreground hover:text-foreground"
@@ -86,25 +100,27 @@ export default function CanvasStage({
                             {preset * 100}%
                         </button>
                     ))}
-                    <span className="px-1 font-mono text-[11px] text-muted-foreground">
+
+                    <span className="px-1.5 tabular-nums text-foreground">
                         {Math.round(zoom * 100)}%
                     </span>
-                    {isFit ? (
-                        <span className="border-l border-border pl-2 pr-1 font-mono text-[11px] text-muted-foreground">
-                            fit
-                        </span>
-                    ) : (
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setIsFit(true);
-                                fit();
-                            }}
-                            className="border-l border-border px-2 py-1 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
-                        >
-                            fit
-                        </button>
-                    )}
+
+                    <span className="mx-1 h-4 w-px bg-border" />
+
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setIsFit(true);
+                            fit();
+                        }}
+                        className={`px-2 py-1 transition-colors ${
+                            isFit
+                                ? "bg-brand text-brand-ink"
+                                : "text-muted-foreground hover:text-foreground"
+                        }`}
+                    >
+                        Fit
+                    </button>
                 </div>
             </div>
         </div>

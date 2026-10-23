@@ -6,47 +6,66 @@
   ogimg.in design tokens
   - Single theme: dark (brand-locked). The logo is a monochrome pixel mark, the
     canvas previews read best on near-black, so sections never invert.
-  - Single accent: volt lime, used identically on every surface.
+  - Black & white: one pure-white accent on a neutral gray scale. No hues are
+    used anywhere in the chrome; colour inside canvas previews is user content.
   - Single shape system: fully sharp (0px radius) for all chrome, matching the
     pixel wordmark. Canvas layers keep their own adjustable radius.
 */
 
 :root {
-  --brand: rgb(201, 242, 77);
-  --brand-strong: rgb(176, 226, 32);
-  --brand-ink: rgb(14, 16, 6);
+  --brand: rgb(10, 10, 10);
+  --brand-strong: rgb(31, 31, 31);
+  --brand-ink: rgb(255, 255, 255);
 
   --background: rgb(255, 255, 255);
-  --foreground: rgb(9, 9, 11);
+  --foreground: rgb(10, 10, 10);
   --surface: rgb(255, 255, 255);
-  --surface-raised: rgb(244, 244, 245);
+  --surface-raised: rgb(245, 245, 245);
   --surface-sunken: rgb(250, 250, 250);
-  --muted-foreground: rgb(82, 82, 91);
-  --border: rgb(228, 228, 231);
-  --border-strong: rgb(161, 161, 170);
+  --muted-foreground: rgb(115, 115, 115);
+  --border: rgb(229, 229, 229);
+  --border-strong: rgb(140, 140, 140);
   --input: rgb(255, 255, 255);
-  --ring: rgb(201, 242, 77);
+  --ring: rgb(10, 10, 10);
   --destructive: rgb(220, 38, 38);
-  --shadow-color: 240 5% 12%;
+  --shadow-color: 0 0% 0%;
+
+  /* The pasteboard: a light sheet inside the dark studio shell. Marketing
+     sections can borrow it, but the editor chrome stays dark. */
+  --paper: rgb(232, 232, 232);
+  --paper-raised: rgb(245, 245, 245);
+  --paper-ink: rgb(10, 10, 10);
+  --paper-muted: rgb(88, 88, 88);
+  --paper-line: rgb(10 10 10 / 0.12);
 
   --font-sans: "Geist Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
   --font-serif: "Lora", ui-serif, Georgia, serif;
   --font-pixel: "Geist Pixel Square", "Geist Mono", ui-monospace, monospace;
   --radius: 0rem;
+
+  /* Motion: strong ease-out for entries and feedback, an easy in-out for
+     on-screen movement. UI transitions stay under 300ms. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-inout: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .dark {
-  --background: rgb(9, 9, 11);
-  --foreground: rgb(244, 244, 245);
-  --surface: rgb(14, 14, 17);
-  --surface-raised: rgb(23, 23, 27);
-  --surface-sunken: rgb(11, 11, 13);
-  --muted-foreground: rgb(161, 161, 170);
-  --border: rgb(39, 39, 43);
-  --border-strong: rgb(82, 82, 91);
-  --input: rgb(9, 9, 11);
-  --ring: rgb(201, 242, 77);
+  --brand: rgb(255, 255, 255);
+  --brand-strong: rgb(234, 234, 234);
+  --brand-ink: rgb(10, 10, 10);
+
+  --background: rgb(0, 0, 0);
+  --foreground: rgb(245, 245, 245);
+  --surface: rgb(10, 10, 10);
+  --surface-raised: rgb(19, 19, 19);
+  --surface-sunken: rgb(4, 4, 4);
+  --muted-foreground: rgb(163, 163, 163);
+  --border: rgb(34, 34, 34);
+  --border-strong: rgb(96, 96, 96);
+  --input: rgb(0, 0, 0);
+  --ring: rgb(255, 255, 255);
   --destructive: rgb(248, 113, 113);
   --shadow-color: 0 0% 0%;
 }
@@ -66,6 +85,11 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-destructive: var(--destructive);
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-paper-ink: var(--paper-ink);
+  --color-paper-muted: var(--paper-muted);
+  --color-paper-line: var(--paper-line);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
@@ -76,6 +100,10 @@
 
   --shadow-panel: 0 1px 0 0 0 rgb(255 255 255 / 0.04) inset;
   --shadow-lift: 0 24px 60px -30px rgb(0 0 0 / 0.85);
+
+  --ease-out: var(--ease-out);
+  --ease-out-soft: var(--ease-out-soft);
+  --ease-inout: var(--ease-inout);
 }
 
 @layer base {
@@ -173,6 +201,134 @@
     }
   }
 
+  /*
+    The hero headline is sized by the column it sits in, not the viewport, so
+    the two-line break survives every split-layout width. The fallback keeps the
+    line height readable before container queries resolve.
+  */
+  .hero-copy-measure {
+    container-type: inline-size;
+  }
+
+  .hero-display {
+    font-size: clamp(2.125rem, 13.3cqw, 6.5rem);
+    line-height: 0.89;
+    letter-spacing: -0.055em;
+  }
+
+  /* The editable sample poster. Container units keep the type, padding, and
+     rules in proportion with the artboard at any size. */
+  .og-canvas {
+    container-type: inline-size;
+  }
+
+  .og-canvas-headline {
+    display: block;
+    width: 100%;
+    min-height: 2.2em;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: rgb(255, 255, 255);
+    font-family: var(--font-serif);
+    font-size: 8.4cqw;
+    font-weight: 400;
+    line-height: 0.98;
+    letter-spacing: -0.022em;
+    caret-color: rgb(255, 255, 255);
+    resize: none;
+    overflow: hidden;
+  }
+
+  .og-canvas-headline:focus {
+    outline: none;
+  }
+
+  /* The always-on selection is decoration; this is the real focus indicator for
+     keyboard visitors editing the sample poster. */
+  .og-selection:focus-within .og-selection-chrome {
+    outline: 1px solid rgb(255 255 255 / 0.45);
+    outline-offset: 4px;
+  }
+
+  .og-canvas-headline::selection {
+    background: rgb(255, 255, 255);
+    color: rgb(10, 10, 10);
+  }
+
+  /* Press feedback shared by every interactive element: scale on press, never
+     animated properties that trigger layout. */
+  .pressable {
+    transition:
+      transform 160ms var(--ease-out),
+      background-color 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease;
+  }
+
+  .pressable:active {
+    transform: scale(0.97);
+  }
+
+  .pressable:disabled {
+    transform: none;
+  }
+
+  /*
+    Transform-on-hover must be gated to true pointer devices: a touch screen
+    fires :hover on tap and would otherwise leave the element stuck lifted.
+  */
+  .hover-lift {
+    transition:
+      transform 260ms var(--ease-out-soft),
+      border-color 200ms ease,
+      color 200ms ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hover-lift:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  /* Underline that grows from the left on hover, instead of appearing. */
+  .link-underline {
+    position: relative;
+  }
+
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 220ms var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .link-underline:hover::after,
+    .link-underline[aria-current="page"]::after {
+      transform: scaleX(1);
+    }
+  }
+
+  /* Subtle preview zoom, gated to pointer devices and wrapped by .zoom-soft. */
+  .zoom-target {
+    transition: transform 320ms var(--ease-out-soft);
+    will-change: transform;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .zoom-soft:hover .zoom-target {
+      transform: scale(1.02);
+    }
+  }
+
   /* Hairline grid used to organise real content, never as decoration. */
   .rule-grid > * + * {
     border-top: 1px solid var(--border);
@@ -225,6 +381,94 @@
       linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
     background-size: 24px 24px;
   }
+
+  /*
+    Editor demo: a loose card slides toward the centre guides, settles, then
+    eases back out. Pure CSS so it runs independently of the main thread, and
+    paused under reduced motion.
+  */
+  @keyframes og-snap-recenter {
+    0% {
+      transform: translate(-36px, -20px);
+    }
+    38%,
+    72% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(36px, 18px);
+    }
+  }
+
+  @keyframes og-snap-guides {
+    0%,
+    18% {
+      opacity: 0.18;
+    }
+    40%,
+    70% {
+      opacity: 0.85;
+    }
+    88%,
+    100% {
+      opacity: 0.18;
+    }
+  }
+
+  .og-snap-card {
+    animation: og-snap-recenter 5.2s var(--ease-inout) infinite;
+  }
+
+  .og-snap-guide {
+    animation: og-snap-guides 5.2s ease infinite;
+  }
+
+  /*
+    The collaborator cursor: a slow drift that makes the canvas feel occupied
+    without looping a distracting demo. It fades in after the artboard, then
+    drifts; disabled by the global reduced-motion rule below.
+  */
+  @keyframes og-cursor-drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(-10px, -7px, 0);
+    }
+  }
+
+  @keyframes og-cursor-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .og-cursor {
+    animation:
+      og-cursor-fade 320ms ease-out 900ms both,
+      og-cursor-drift 7s var(--ease-inout) 1.2s infinite;
+  }
+
+  /* The selection arrives a beat after the artboard, as if it just snapped. */
+  @keyframes og-selection-in {
+    from {
+      opacity: 0;
+      transform: scale(0.965);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .og-selection-chrome {
+    transform-origin: center;
+    animation: og-selection-in 500ms var(--ease-out) 320ms both;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -238,5 +482,240 @@
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Bento feature scenes
+   The scene art is generated at build time from the isometric kit. These rules
+   give it the site's monochrome palette and let one scene fill whatever space
+   its card gives it. Geometry never ships to the client; only these SVG strings.
+--------------------------------------------------------------------------- */
+
+.feature-iso {
+  --anatomy-paper: #121212;
+  --anatomy-face: #181818;
+  --anatomy-top: #1d1d1d;
+  --anatomy-shade-0: #0c0c0c;
+  --anatomy-shade-1: #0f0f0f;
+  --anatomy-shade-2: #121212;
+  --anatomy-shade-3: #151515;
+  --anatomy-lit-top: #f5f5f5;
+  --anatomy-lit-shade: #d4d4d4;
+  --anatomy-hi: #e5e5e5;
+  --anatomy-mid: #8f8f8f;
+  --anatomy-lo: #4d4d4d;
+  --anatomy-faint: #2b2b2b;
+  --anatomy-lit: #ffffff;
+  --anatomy-halo: #000000;
+  --anatomy-halo-opacity: 0.85;
+  --anatomy-dot: #e5e5e5;
+  --anatomy-weight: 0.7px;
+  --anatomy-mono: var(--font-mono);
+}
+
+.iso-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.iso-svg path,
+.iso-svg circle {
+  vector-effect: non-scaling-stroke;
+}
+
+.iso-fill {
+  fill: var(--anatomy-paper);
+  stroke: none;
+}
+
+.iso-solid[data-lit] > .iso-fill {
+  fill: var(--anatomy-face);
+}
+
+.iso-shade,
+.iso-top {
+  stroke: none;
+}
+
+.iso-shade[data-shade="0"] {
+  fill: var(--anatomy-shade-0);
+}
+.iso-shade[data-shade="1"] {
+  fill: var(--anatomy-shade-1);
+}
+.iso-shade[data-shade="2"] {
+  fill: var(--anatomy-shade-2);
+}
+.iso-shade[data-shade="3"] {
+  fill: var(--anatomy-shade-3);
+}
+.iso-top {
+  fill: var(--anatomy-top);
+}
+.iso-solid[data-lit] > .iso-top {
+  fill: var(--anatomy-lit-top);
+}
+.iso-solid[data-lit] > .iso-shade {
+  fill: var(--anatomy-lit-shade);
+}
+.iso-solid[data-seamless] > .iso-shade,
+.iso-solid[data-seamless] > .iso-top {
+  stroke-width: 0.4;
+  stroke-linejoin: round;
+}
+.iso-solid[data-seamless] > .iso-shade[data-shade="0"] {
+  stroke: var(--anatomy-shade-0);
+}
+.iso-solid[data-seamless] > .iso-shade[data-shade="1"] {
+  stroke: var(--anatomy-shade-1);
+}
+.iso-solid[data-seamless] > .iso-shade[data-shade="2"] {
+  stroke: var(--anatomy-shade-2);
+}
+.iso-solid[data-seamless] > .iso-shade[data-shade="3"] {
+  stroke: var(--anatomy-shade-3);
+}
+.iso-solid[data-seamless] > .iso-top {
+  stroke: var(--anatomy-top);
+}
+.iso-solid[data-seamless][data-lit] > .iso-top {
+  stroke: var(--anatomy-lit-top);
+}
+.iso-solid[data-seamless][data-lit] > .iso-shade {
+  stroke: var(--anatomy-lit-shade);
+}
+.iso-solid[data-lit] > .iso-edge {
+  stroke: var(--anatomy-lit);
+}
+
+.iso-halo {
+  fill: var(--anatomy-halo);
+  stroke: none;
+  filter: blur(9px);
+  opacity: var(--anatomy-halo-opacity);
+  transform: translateY(3px);
+}
+
+.iso-line {
+  fill: none;
+  stroke: var(--anatomy-lo);
+  stroke-width: var(--anatomy-weight);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.iso-line[data-tone="hi"] {
+  stroke: var(--anatomy-hi);
+}
+.iso-line[data-tone="mid"] {
+  stroke: var(--anatomy-mid);
+}
+.iso-line[data-tone="lo"] {
+  stroke: var(--anatomy-lo);
+}
+.iso-line[data-tone="faint"] {
+  stroke: var(--anatomy-faint);
+}
+.iso-line[data-tone="lit"] {
+  stroke: var(--anatomy-lit);
+}
+.iso-line[data-dotted] {
+  stroke-dasharray: 0.01 3.5;
+  stroke-width: 1;
+}
+.iso-line[data-dashed] {
+  stroke-dasharray: 3 3;
+}
+
+.iso-wire-end {
+  fill: var(--anatomy-paper);
+  stroke: var(--anatomy-lo);
+  stroke-width: var(--anatomy-weight);
+}
+
+.iso-dots circle {
+  fill: var(--anatomy-dot);
+  stroke: none;
+  opacity: 0.32;
+}
+.iso-dots[data-tone="hi"] circle {
+  opacity: 0.85;
+}
+.iso-dots[data-tone="mid"] circle {
+  opacity: 0.45;
+}
+.iso-dots[data-tone="lo"] circle {
+  opacity: 0.22;
+}
+.iso-dots[data-tone="faint"] circle {
+  opacity: 0.12;
+}
+
+.iso-face-text {
+  fill: var(--anatomy-mid);
+  font-family: var(--anatomy-mono);
+  letter-spacing: 0.04em;
+}
+.iso-face-text[data-tone="hi"] {
+  fill: var(--anatomy-hi);
+}
+.iso-face-text[data-tone="lo"] {
+  fill: var(--anatomy-lo);
+}
+.iso-face-text[data-tone="faint"] {
+  fill: var(--anatomy-faint);
+}
+
+.bento-iso {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.bento-live {
+  width: 100%;
+}
+
+.bento-frame {
+  width: 100%;
+  aspect-ratio: var(--scene-aspect);
+}
+
+.bento-frame > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.bento-art-row {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+@media (min-width: 1280px) {
+  .bento-art {
+    flex: 1 1 0;
+    min-height: 0;
+    margin-top: auto;
+  }
+
+  .bento-art-row {
+    flex: 1 1 auto;
+    min-height: 0;
+    align-self: stretch;
+  }
+
+  .bento-art .bento-live,
+  .bento-art .bento-frame,
+  .bento-art-row .bento-live,
+  .bento-art-row .bento-frame {
+    height: 100%;
+  }
+
+  .bento-art .bento-frame,
+  .bento-art-row .bento-frame {
+    aspect-ratio: auto;
   }
 }

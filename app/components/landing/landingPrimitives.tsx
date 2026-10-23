@@ -128,7 +128,7 @@ export function SectionHeading({
     return (
         <Reveal className={`max-w-[60ch] ${alignment} ${className}`}>
             {eyebrow ? (
-                <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-brand">{eyebrow}</p>
+                <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">{eyebrow}</p>
             ) : null}
             <h2 className="text-3xl font-semibold leading-[1.08] tracking-[-0.035em] text-foreground md:text-[42px]">
                 {title}

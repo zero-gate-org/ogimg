@@ -136,7 +136,7 @@ export const createShapeLayer = (shape: ShapeKind = "rect"): Layer => {
         hidden: false,
         shape,
         fillEnabled: !isLine,
-        fill: "#C9F24D",
+        fill: "#FAFAFA",
         strokeEnabled: isLine,
         stroke: "#FAFAFA",
         strokeWidth: 4,

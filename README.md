@@ -37,7 +37,7 @@ PNG / JPEG / WebP export at 1x, 2x, or 3x.
 
 - Layer stack for text, shapes, and images with reorder, hide, lock, duplicate, and delete
 - Drag, resize, rotate, and arrow-key nudge with snapping to canvas edges and other layers
-- Typography per layer: 16 self-hosted families, weight, size, line height, tracking, case, alignment
+- Typography per layer: 17 self-hosted families, weight, size, line height, tracking, case, alignment
 - Canvas background from a solid colour, a gradient, one of 27 presets, or your own uploaded image, plus
   grid, graph, and dots overlays. An uploaded background gets fit, opacity, and a scrim that reuses the
   solid colour so type stays readable over a photo
@@ -111,7 +111,7 @@ app/
   components/
     editor/        shared editor shell: background, layers, canvas, export, preview simulator
     landing/       landing page sections
-    templates/     the nine template components plus shared background and font data
+    templates/     the template components plus shared background and font data
   lib/editor/      document types, history, persistence, platform sizes, export pipeline
   studio/          free canvas route
   editor/[templateId]/  template editor route

@@ -15,10 +15,16 @@ export default function PreviewShowcase() {
                 <SectionHeading
                     eyebrow="Preview simulator"
                     title="Check the card where it will land"
-                    body="Most image generators stop at the file. This one shows the rendered result inside X, LinkedIn, Discord, and Slack previews, next to the title and description people will read."
+                    body="Most image generators stop at the file. This one shows the rendered result inside X, LinkedIn, Discord, and Slack, next to the title and description people will read."
                 />
 
-                <div className="min-w-0 border border-border bg-surface p-4 md:p-6">
+                <div className="hover-lift border border-border bg-surface p-4 hover:border-border-strong md:p-6">
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                            Simulated, not screenshotted
+                        </p>
+                        <p className="font-mono text-[11px] text-muted-foreground">1 : 1.91</p>
+                    </div>
                     <SocialPreview
                         document={HERO_DOCUMENT}
                         title="Open Graph images your links deserve"

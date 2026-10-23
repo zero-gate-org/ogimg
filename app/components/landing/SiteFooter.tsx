@@ -13,33 +13,41 @@ const RESOURCE_LINKS = [
 export default function SiteFooter() {
     return (
         <>
-            <section className="border-b border-border bg-surface">
-                <div className="shell py-14 md:py-20">
-                    <Reveal className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-                        <div className="max-w-[44ch]">
-                            <h2 className="text-2xl font-semibold leading-[1.12] tracking-[-0.03em] text-foreground md:text-[32px]">
-                                Ship the link. The preview follows.
-                            </h2>
-                            <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
-                                Free to use, no account, no upload. Start from a blank canvas or a template.
-                            </p>
-                        </div>
+            {/* Closing CTA. The texture is the editor's own canvas grid — the
+                surface this product exports from. */}
+            <section className="canvas-grid border-b border-border bg-surface-sunken">
+                <div className="shell flex flex-col items-start justify-between gap-8 py-16 md:flex-row md:items-end md:py-24">
+                    <Reveal className="max-w-[46ch]">
+                        <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                            No account. No upload. No watermark.
+                        </p>
+                        <h2 className="text-[30px] font-semibold leading-[1.08] tracking-[-0.03em] text-foreground md:text-[40px]">
+                            Ship the link. The preview follows.
+                        </h2>
+                        <p className="mt-4 max-w-[44ch] text-[14px] leading-relaxed text-muted-foreground">
+                            Start from a blank canvas or a template, and leave with a card that looks like it was
+                            art-directed — because you did.
+                        </p>
+                    </Reveal>
 
-                        <div className="flex shrink-0 flex-wrap gap-3">
-                            <Link
-                                href="/studio"
-                                className="inline-flex h-11 items-center gap-2 bg-brand px-5 text-[14px] font-semibold text-brand-ink transition-colors hover:bg-brand-strong active:translate-y-px"
-                            >
-                                Open the canvas
-                                <ArrowRight size={16} weight="bold" />
-                            </Link>
-                            <Link
-                                href="/template-gallery"
-                                className="inline-flex h-11 items-center border border-border px-5 text-[14px] font-medium text-foreground transition-colors hover:border-border-strong active:translate-y-px"
-                            >
-                                Browse templates
-                            </Link>
-                        </div>
+                    <Reveal className="flex shrink-0 flex-wrap items-center gap-3">
+                        <Link
+                            href="/studio"
+                            className="group pressable inline-flex h-11 items-center gap-2 bg-brand px-5 text-[14px] font-semibold text-brand-ink hover:bg-brand-strong"
+                        >
+                            Open the canvas
+                            <ArrowRight
+                                size={15}
+                                weight="bold"
+                                className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+                            />
+                        </Link>
+                        <Link
+                            href="/template-gallery"
+                            className="pressable inline-flex h-11 items-center border border-border bg-surface px-5 text-[14px] font-medium text-foreground hover:border-border-strong"
+                        >
+                            Browse templates
+                        </Link>
                     </Reveal>
                 </div>
             </section>

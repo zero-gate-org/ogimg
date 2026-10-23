@@ -8,7 +8,7 @@ as done so the list can be used as a backlog without rewriting history.
 ### Free canvas editor
 - Layer based canvas for text, shapes, and images with reorder, hide, lock, duplicate, and delete.
 - Drag, resize, rotate, and arrow-key nudge with snapping to canvas centres and other layer edges.
-- Per-layer typography: 16 self-hosted families, weight, size, line height, tracking, case, alignment.
+- Per-layer typography: 17 self-hosted families, weight, size, line height, tracking, case, alignment.
 - Undo and redo with coalesced steps, so dragging or typing collapses into one undo.
 
 ### Uploaded canvas background
@@ -37,8 +37,16 @@ as done so the list can be used as a backlog without rewriting history.
 ### Template variables and layout rules
 - Each template declares its fields in a control schema instead of branching on `templateId`.
 - Headline size, headline tracking, image fit, and corner radius are adjustable per template.
-- Each template now has its own composition and headline baseline, and the nine share one card frame
+- Each template now has its own composition and headline baseline, and all thirty-three share one card frame
   (`TemplateCard.tsx`) so hierarchy stays consistent without repeating accent colours.
+
+### Twelve templates adapted from supplied artwork
+- Built one template per exported vector in `refs/`, from Horizon Bloom through Soft Mesh, keeping each
+  card's own light treatment rather than merging the similar ones.
+- Headline size, leading, and tracking were read off the vectors' glyph outlines, so the type lands on the
+  reference's own lines at 1200 x 630.
+- Every layer is drawn with CSS gradients and hairlines instead of blur, so the cards survive the
+  `foreignObject` export unchanged.
 
 ## Next
 

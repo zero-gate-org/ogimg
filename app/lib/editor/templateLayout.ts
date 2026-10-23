@@ -42,6 +42,18 @@ export const LAYOUT_EDITABLE_TEMPLATE_IDS: TemplateId[] = [
     "deck",
     "bento",
     "crossglow",
+    "horizon-bloom",
+    "corner-flare",
+    "solar-mesh",
+    "violet-rail",
+    "tilt-plate",
+    "stat-rail",
+    "prism-frame",
+    "arch-glow",
+    "facet-field",
+    "cyan-rim",
+    "light-column",
+    "soft-mesh",
 ];
 
 export const isTemplateLayoutEditable = (templateId: TemplateId) =>
@@ -1006,6 +1018,440 @@ const buildPresetLayers = (templateId: TemplateId, document: TemplateDocument): 
             { slot: "tag", text: fields.tag, name: "Domain", x: 0, y: 520, width: 1200, height: 32, fontSize: 32, fontWeight: 500, lineHeight: 1, letterSpacing: -0.005, align: "center", verticalAlign: "middle" },
             fontId,
             hexToRgba(color, 0.86),
+        );
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [logoImage, wordmark, title, domain],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id, tag: domain.id },
+        };
+    }
+
+    if (templateId === "horizon-bloom") {
+        // The bloom and the 160px hairline grid are background paint the canvas model
+        // cannot reproduce, so a detached Horizon Bloom keeps the gradient fill, the mark,
+        // the wordmark and the headline, and drops those.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 497, y: 127, width: 42, height: 56 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 553, y: 127, width: 150, height: 56, fontSize: 36, fontWeight: 700, lineHeight: 0.85, letterSpacing: -0.01, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 150, y: 249, width: 900, height: 224, fontSize: headlineSize, fontWeight: 700, lineHeight: 0.966, letterSpacing: headlineTracking, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [logoImage, wordmark, title],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id },
+        };
+    }
+
+    if (templateId === "corner-flare") {
+        // The three flare fields and the panel bezel are background paint the canvas model
+        // cannot express, so a detached Corner Flare keeps the gradient fill, the mark, the
+        // wordmark, the headline block and the shot inside the panel's inset, and drops
+        // those. The rail centres the headline and its support line as one group, so both
+        // boxes solve against the rail band rather than the canvas.
+        const RAIL_TOP = 108;
+        const RAIL_HEIGHT = 430;
+        const TAG_GAP = 26;
+        const support = (fields.tag || "").trim();
+        const titleHeight = Math.round(headlineSize * 1.02 * 3);
+        const supportHeight = support ? Math.round(22 * 1.45 * 2) : 0;
+        const groupHeight = titleHeight + (support ? TAG_GAP + supportHeight : 0);
+        const groupTop = Math.round(RAIL_TOP + (RAIL_HEIGHT - groupHeight) / 2);
+
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 68, y: 62, width: 28, height: 38 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 108, y: 62, width: 240, height: 38, fontSize: 21, fontWeight: 600, lineHeight: 1.1, letterSpacing: -0.015, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 68, y: groupTop, width: 620, height: titleHeight, fontSize: headlineSize, fontWeight: 700, lineHeight: 1.02, letterSpacing: headlineTracking, balance: true },
+            fontId,
+            color,
+        );
+        const image = makeImageLayer("image", "Screenshot", document.image, { x: 827.5, y: 89.5, width: 382.5, height: 550.5 }, fields.imageFit, fields.imageRadius > 0 ? fields.imageRadius : 8);
+
+        const layers: Layer[] = [image, logoImage, wordmark, title];
+        const slots: Partial<Record<TemplateLayoutSlot, string>> = { logoImage: logoImage.id, logo: wordmark.id, title: title.id, image: image.id };
+        if (support) {
+            const tag = makeTextLayer(
+                { slot: "tag", text: support, name: "Support line", x: 68, y: groupTop + titleHeight + TAG_GAP, width: 520, height: supportHeight, fontSize: 22, fontWeight: 500, lineHeight: 1.45, letterSpacing: -0.005 },
+                fontId,
+                hexToRgba(color, 0.68),
+            );
+            layers.push(tag);
+            slots.tag = tag.id;
+        }
+
+        return { background: fieldsToCanvasBackground(fields), layers, slots };
+    }
+
+    if (templateId === "solar-mesh") {
+        // The four quadrant rings, the diagonal band and the hairline grid are background
+        // paint the canvas model cannot reproduce, so a detached Solar Mesh keeps the
+        // gradient fill, the mark, the wordmark, the headline and the domain line.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 497, y: 80, width: 42, height: 56 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 553, y: 80, width: 150, height: 56, fontSize: 36, fontWeight: 700, lineHeight: 0.85, letterSpacing: -0.01, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 190, y: 213, width: 820, height: 225, fontSize: headlineSize, fontWeight: 700, lineHeight: 0.95, letterSpacing: headlineTracking, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+        const domain = makeTextLayer(
+            { slot: "tag", text: fields.tag, name: "Domain", x: 0, y: 524, width: 1200, height: 30, fontSize: 30, fontWeight: 600, lineHeight: 1, letterSpacing: -0.01, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [logoImage, wordmark, title, domain],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id, tag: domain.id },
+        };
+    }
+
+    if (templateId === "violet-rail") {
+        // The violet floor pool, the seam light and the panel bezel are background paint
+        // the canvas model cannot express, so a detached Violet Rail keeps the gradient
+        // fill, the mark, the wordmark and the shot inside the panel's inset.
+        const BOTTOM = 76;
+        const titleHeight = Math.round(headlineSize * 1.04 * 2);
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 64, y: 72, width: 33, height: 44 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 115, y: 72, width: 150, height: 44, fontSize: 26, fontWeight: 700, lineHeight: 0.88, letterSpacing: -0.01, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 64, y: 630 - BOTTOM - titleHeight, width: 506, height: titleHeight, fontSize: headlineSize, fontWeight: 700, lineHeight: 1.04, letterSpacing: headlineTracking, verticalAlign: "bottom", balance: true },
+            fontId,
+            color,
+        );
+        const image = makeImageLayer("image", "Screenshot", document.image, { x: 658.5, y: 89.5, width: 592, height: 552 }, fields.imageFit, fields.imageRadius > 0 ? fields.imageRadius : 8);
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [image, logoImage, wordmark, title],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id, image: image.id },
+        };
+    }
+
+    if (templateId === "tilt-plate") {
+        // The tilted plate, its rim bands and the two corner pools are background paint
+        // the canvas model cannot reproduce, so a detached Tilted Plate keeps the gradient
+        // fill, the mark, the wordmark, the headline and the domain line.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 506, y: 99, width: 36, height: 48 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 554, y: 99, width: 140, height: 48, fontSize: 29, fontWeight: 700, lineHeight: 0.87, letterSpacing: -0.01, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 290, y: 108, width: 620, height: 430, fontSize: headlineSize, fontWeight: 700, lineHeight: 0.98, letterSpacing: headlineTracking, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+        const domain = makeTextLayer(
+            { slot: "tag", text: fields.tag, name: "Domain", x: 0, y: 514, width: 1200, height: 40, fontSize: 40, fontWeight: 500, lineHeight: 1, letterSpacing: -0.005, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            hexToRgba(color, 0.86),
+        );
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [logoImage, wordmark, title, domain],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id, tag: domain.id },
+        };
+    }
+
+    if (templateId === "stat-rail") {
+        // The violet wash and the three card panels are background paint the canvas model
+        // cannot reproduce, so a detached Stat Rail keeps the gradient fill, the mark, the
+        // wordmark, the headline and every value and caption as plain text layers. The card
+        // boxes still follow the component's reflow: three stack as an L, two split the
+        // field into full height columns, one takes all of it.
+        const GRID_X = 537;
+        const GRID_Y = 48;
+        const GRID_W = 615;
+        const GRID_H = 542;
+        const GUTTER = 24;
+        const NARROW_W = 209;
+        const ROW_H = (GRID_H - GUTTER) / 2;
+        const PAD_X = 64;
+        const CARD_PAD_TOP = 44;
+        const CARD_PAD_BOTTOM = 34;
+        const CARD_PAD_X = 26;
+        const CARD_GAP = 28;
+
+        const rows = [
+            { field: fields.detailOne, base: "detailOne" as TemplateLayoutSlot, label: "detailOneLabel" as TemplateLayoutSlot },
+            { field: fields.detailTwo, base: "detailTwo" as TemplateLayoutSlot, label: "detailTwoLabel" as TemplateLayoutSlot },
+            { field: fields.detailThree, base: "detailThree" as TemplateLayoutSlot, label: "detailThreeLabel" as TemplateLayoutSlot },
+        ];
+        const shown = rows.filter((row) => row.field.trim());
+        const half = Math.round((GRID_W - GUTTER) / 2);
+        const boxes =
+            shown.length >= 3
+                ? [
+                      { x: GRID_X, y: GRID_Y, width: NARROW_W, height: ROW_H },
+                      { x: GRID_X + NARROW_W + GUTTER, y: GRID_Y, width: GRID_W - NARROW_W - GUTTER, height: ROW_H },
+                      { x: GRID_X, y: GRID_Y + ROW_H + GUTTER, width: GRID_W, height: ROW_H },
+                  ]
+                : shown.length === 2
+                  ? [
+                        { x: GRID_X, y: GRID_Y, width: half, height: GRID_H },
+                        { x: GRID_X + half + GUTTER, y: GRID_Y, width: GRID_W - half - GUTTER, height: GRID_H },
+                    ]
+                  : shown.length === 1
+                    ? [{ x: GRID_X, y: GRID_Y, width: GRID_W, height: GRID_H }]
+                    : [];
+
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: PAD_X, y: 72, width: 33, height: 44 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 108, y: 72, width: 168, height: 48, fontSize: 28, fontWeight: 700, lineHeight: 0.86, letterSpacing: -0.01, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const titleHeight = Math.round(headlineSize * 2);
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: PAD_X, y: 630 - 64 - titleHeight, width: 440, height: titleHeight, fontSize: headlineSize, fontWeight: 700, lineHeight: 1, letterSpacing: headlineTracking, verticalAlign: "bottom", balance: true },
+            fontId,
+            color,
+        );
+
+        const slots: Partial<Record<TemplateLayoutSlot, string>> = { logoImage: logoImage.id, logo: wordmark.id, title: title.id };
+        const cards: Layer[] = [];
+        shown.forEach((row, i) => {
+            const box = boxes[i];
+            if (!box) return;
+            const { label, body } = splitPrefixedLine(row.field);
+            const hasValue = Boolean(label);
+            const valueSize = Math.round(
+                Math.max(26, Math.min(92, (box.width - CARD_PAD_X * 2) / (Math.max((hasValue ? label : body).length, 2) * 0.58))),
+            );
+            const captionSize = Math.round(
+                Math.max(12, Math.min(18, (box.width - CARD_PAD_X * 2) / (Math.max(body.length, 6) * 0.66))),
+            );
+            const valueHeight = Math.round(valueSize);
+            const captionLine = Math.round(captionSize * 1.3);
+            const pinned = hasValue && box.height <= ROW_H;
+            const centerY = box.y + box.height / 2;
+            const valueY = pinned ? box.y + CARD_PAD_TOP : Math.round(centerY - (CARD_GAP + captionLine) / 2 - valueHeight);
+            const captionY = pinned
+                ? Math.round(box.y + box.height - CARD_PAD_BOTTOM - captionLine * 2)
+                : Math.round(centerY + (valueHeight + CARD_GAP) / 2);
+
+            const valueLayer = makeTextLayer(
+                { slot: row.label, text: label, name: `Stat ${i + 1}`, x: box.x, y: valueY, width: box.width, height: valueHeight, fontSize: valueSize, fontWeight: 640, lineHeight: 1, letterSpacing: -0.04, align: "center", verticalAlign: pinned ? "top" : "bottom" },
+                fontId,
+                color,
+            );
+            const captionLayer = makeTextLayer(
+                { slot: row.base, text: body, name: `Caption ${i + 1}`, x: box.x, y: captionY, width: box.width, height: captionLine * 2, fontSize: captionSize, fontWeight: 600, lineHeight: 1.3, letterSpacing: 0.12, align: "center", uppercase: true, verticalAlign: pinned ? "bottom" : "top" },
+                fontId,
+                hasValue ? hexToRgba(color, 0.46) : color,
+            );
+
+            cards.push(valueLayer, captionLayer);
+            slots[row.label] = valueLayer.id;
+            slots[row.base] = captionLayer.id;
+        });
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [logoImage, wordmark, title, ...cards],
+            slots,
+        };
+    }
+
+    if (templateId === "prism-frame") {
+        // The rainbow band, the ink panel and its bezel are background paint the canvas
+        // model cannot reproduce, so a detached Prism Frame keeps the gradient fill, the
+        // mark, the wordmark and the shot inside the bezel's inset.
+        const BOTTOM = 76;
+        const titleHeight = Math.round(headlineSize * 0.95 * 2);
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 64, y: 80, width: 33, height: 44 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 108, y: 80, width: 112, height: 48, fontSize: 27, fontWeight: 700, lineHeight: 0.88, letterSpacing: -0.02, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 64, y: 630 - BOTTOM - titleHeight, width: 480, height: titleHeight, fontSize: headlineSize, fontWeight: 700, lineHeight: 0.95, letterSpacing: headlineTracking, verticalAlign: "bottom", balance: true },
+            fontId,
+            color,
+        );
+        const image = makeImageLayer("image", "Screenshot", document.image, { x: 673, y: 64, width: 1106, height: 802 }, fields.imageFit, fields.imageRadius > 0 ? fields.imageRadius : 8);
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [image, logoImage, wordmark, title],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id, image: image.id },
+        };
+    }
+
+    if (templateId === "arch-glow") {
+        // The arch and the hairline grid are background paint the canvas model cannot
+        // reproduce, so a detached Arch Glow keeps the gradient fill plus the headline and
+        // the tagline. The two are centred as one group inside the band, so an empty
+        // tagline lets the headline hold the middle on its own.
+        const BAND_TOP = 166;
+        const BAND_HEIGHT = 630 - BAND_TOP - 174;
+        const TAG_GAP = 40;
+        const tagline = (fields.tag || "").trim();
+        const titleHeight = Math.round(headlineSize * 0.98 * 2);
+        const groupHeight = titleHeight + (tagline ? TAG_GAP + 26 : 0);
+        const groupTop = Math.round(BAND_TOP + (BAND_HEIGHT - groupHeight) / 2);
+
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 130, y: groupTop, width: 940, height: titleHeight, fontSize: headlineSize, fontWeight: 700, lineHeight: 0.98, letterSpacing: headlineTracking, align: "center", balance: true },
+            fontId,
+            color,
+        );
+
+        const layers: Layer[] = [title];
+        const slots: Partial<Record<TemplateLayoutSlot, string>> = { title: title.id };
+        if (tagline) {
+            const tag = makeTextLayer(
+                { slot: "tag", text: tagline, name: "Tagline", x: 240, y: groupTop + titleHeight + TAG_GAP, width: 720, height: 26, fontSize: 26, fontWeight: 600, lineHeight: 1, letterSpacing: 0.18, align: "center", uppercase: true, verticalAlign: "middle", balance: true },
+                fontId,
+                hexToRgba(color, 0.68),
+            );
+            layers.push(tag);
+            slots.tag = tag.id;
+        }
+
+        return { background: fieldsToCanvasBackground(fields), layers, slots };
+    }
+
+    if (templateId === "facet-field") {
+        // The three opaque plates and the veil below y 200 are background paint the canvas
+        // model cannot reproduce, so a detached Facet Field keeps the gradient fill, the mark,
+        // the wordmark, the headline and the domain line.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 506, y: 99, width: 36, height: 48 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 554, y: 99, width: 140, height: 48, fontSize: 29, fontWeight: 700, lineHeight: 0.87, letterSpacing: -0.01, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 240, y: 156, width: 720, height: 362, fontSize: headlineSize, fontWeight: 700, lineHeight: 0.98, letterSpacing: headlineTracking, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+        const domain = makeTextLayer(
+            { slot: "tag", text: fields.tag, name: "Domain", x: 0, y: 518, width: 1200, height: 40, fontSize: 40, fontWeight: 500, lineHeight: 1, letterSpacing: -0.005, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [logoImage, wordmark, title, domain],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id, tag: domain.id },
+        };
+    }
+
+    if (templateId === "cyan-rim") {
+        // The rim lit disc, the tilted beam and the panel's edge light are background paint
+        // the canvas model cannot express, so a detached Cyan Rim keeps the gradient fill,
+        // the mark, the wordmark, the headline block and the shot. The support line hangs
+        // off the headline's own box, so it and the hairline sit just under it.
+        const RAIL_TOP = 92;
+        const RAIL_HEIGHT = 630 - RAIL_TOP * 2;
+        const TAG_GAP = 28;
+        const support = (fields.tag || "").trim();
+        const titleHeight = Math.round(headlineSize * 0.92 * 2);
+        const titleTop = Math.round(RAIL_TOP + (RAIL_HEIGHT - titleHeight) / 2);
+
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 68, y: 64, width: 24, height: 32 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 103, y: 64, width: 200, height: 32, fontSize: 20, fontWeight: 600, lineHeight: 1.1, letterSpacing: -0.015, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 68, y: RAIL_TOP, width: 600, height: RAIL_HEIGHT, fontSize: headlineSize, fontWeight: 700, lineHeight: 0.92, letterSpacing: headlineTracking, verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+        const image = makeImageLayer("image", "Screenshot", document.image, { x: 695.5, y: 65.5, width: 538.5, height: 598.5 }, fields.imageFit, fields.imageRadius > 0 ? fields.imageRadius : 26);
+
+        const layers: Layer[] = [image, logoImage, wordmark, title];
+        const slots: Partial<Record<TemplateLayoutSlot, string>> = { logoImage: logoImage.id, logo: wordmark.id, title: title.id, image: image.id };
+        if (support) {
+            const ruleY = titleTop + titleHeight + TAG_GAP;
+            layers.push(makeRule(68, ruleY, 56, tone.hairline));
+            const tag = makeTextLayer(
+                { slot: "tag", text: support, name: "Support line", x: 68, y: ruleY + 21, width: 452, height: Math.round(20 * 1.45 * 2), fontSize: 20, fontWeight: 500, lineHeight: 1.45, letterSpacing: -0.005 },
+                fontId,
+                hexToRgba(color, 0.68),
+            );
+            layers.push(tag);
+            slots.tag = tag.id;
+        }
+
+        return { background: fieldsToCanvasBackground(fields), layers, slots };
+    }
+
+    if (templateId === "light-column") {
+        // The shaft of light and its spill are background paint the canvas model cannot
+        // reproduce, so a detached Light Column keeps the gradient fill, the mark, the
+        // wordmark, the headline and the domain line.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 517, y: 99, width: 36, height: 48 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 565, y: 99, width: 118, height: 52, fontSize: 30, fontWeight: 700, lineHeight: 0.87, letterSpacing: -0.03, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 160, y: 192, width: 880, height: 262, fontSize: headlineSize, fontWeight: 700, lineHeight: 0.9, letterSpacing: headlineTracking, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+        const domain = makeTextLayer(
+            { slot: "tag", text: fields.tag, name: "Domain", x: 0, y: 515, width: 1200, height: 38, fontSize: 38, fontWeight: 500, lineHeight: 1, letterSpacing: -0.01, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [logoImage, wordmark, title, domain],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id, tag: domain.id },
+        };
+    }
+
+    if (templateId === "soft-mesh") {
+        // The blurred colour field is background paint the canvas model cannot reproduce,
+        // so a detached Soft Mesh keeps the gradient fill, the mark, the wordmark, the
+        // headline and the domain line.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 509, y: 80, width: 42, height: 56 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 565, y: 80, width: 126, height: 34, fontSize: 34, fontWeight: 700, lineHeight: 0.89, letterSpacing: -0.01, uppercase: true, verticalAlign: "top" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 130, y: 150, width: 940, height: 325, fontSize: headlineSize, fontWeight: 700, lineHeight: 0.95, letterSpacing: headlineTracking, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+        const domain = makeTextLayer(
+            { slot: "tag", text: fields.tag, name: "Domain", x: 0, y: 522, width: 1200, height: 28, fontSize: 28, fontWeight: 500, lineHeight: 1, letterSpacing: -0.01, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            hexToRgba(color, 0.95),
         );
 
         return {

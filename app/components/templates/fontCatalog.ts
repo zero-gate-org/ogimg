@@ -153,6 +153,18 @@ export const TEMPLATE_DEFAULT_FONT_BY_ID: Record<TemplateId, TemplateFontId> = {
     "deck": "outfit",
     "bento": "manrope",
     "crossglow": "space-grotesk",
+    "horizon-bloom": "space-grotesk",
+    "corner-flare": "space-grotesk",
+    "solar-mesh": "space-grotesk",
+    "violet-rail": "space-grotesk",
+    "tilt-plate": "space-grotesk",
+    "stat-rail": "space-grotesk",
+    "prism-frame": "space-grotesk",
+    "arch-glow": "space-grotesk",
+    "facet-field": "space-grotesk",
+    "cyan-rim": "space-grotesk",
+    "light-column": "space-grotesk",
+    "soft-mesh": "space-grotesk",
 };
 
 const TEMPLATE_FONT_OPTION_BY_ID = new Map(

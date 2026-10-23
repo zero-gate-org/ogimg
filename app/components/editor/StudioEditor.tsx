@@ -1,19 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-    ArrowCounterClockwise,
-    ArrowClockwise,
-    Eye,
-    FloppyDisk,
-    PencilSimple,
-    SquaresFour,
-    TextT,
-} from "@phosphor-icons/react";
+import { SquaresFour, TextT } from "@phosphor-icons/react";
 import CanvasStage from "./CanvasStage";
+import CanvasToolbar from "./CanvasToolbar";
+import PanelToggle from "./PanelToggle";
 import InteractiveCanvas from "./InteractiveCanvas";
 import {
     CanvasBackgroundEffects,
@@ -83,6 +75,8 @@ export default function StudioEditor({ backHref = "/" }: { backHref?: string }) 
 
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [tab, setTab] = useState<Tab>("design");
+    const [leftOpen, setLeftOpen] = useState(true);
+    const [rightOpen, setRightOpen] = useState(true);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [projects, setProjects] = useState<SavedProject[]>([]);
     const [kits, setKits] = useState<BrandKit[]>([]);
@@ -474,19 +468,11 @@ export default function StudioEditor({ backHref = "/" }: { backHref?: string }) 
     };
 
     return (
-        <div className="flex h-[100dvh] flex-col overflow-hidden bg-background text-foreground">
-            <header className="grid h-14 shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-surface px-3">
-                <div className="flex min-w-0 items-center gap-2">
-                    <Link
-                        href={backHref}
-                        className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                        <Image src="/icon.png" alt="" width={22} height={22} />
-                        <span className="hidden font-pixel text-sm sm:inline">ogimg.in</span>
-                    </Link>
-
-                    <span className="hidden h-5 w-px bg-border sm:block" />
-
+        <div className="flex min-h-[100dvh] flex-col bg-background text-foreground lg:h-[100dvh] lg:min-h-0 lg:flex-row lg:overflow-hidden">
+            <aside className={`order-2 flex w-full shrink-0 flex-col overflow-hidden border-t border-border bg-surface transition-[width] duration-300 ease-out lg:order-1 lg:h-auto lg:border-r lg:border-t-0 ${
+                leftOpen ? "lg:w-[clamp(268px,18vw,288px)]" : "lg:invisible lg:w-0 lg:border-r-0"
+            }`}>
+                <div className="flex shrink-0 items-center gap-2 border-b border-border p-2">
                     <SegmentedControl
                         ariaLabel="Editor mode"
                         value="studio"
@@ -497,79 +483,12 @@ export default function StudioEditor({ backHref = "/" }: { backHref?: string }) 
                         onChange={(value) => {
                             if (value === "templates") router.push("/template-gallery");
                         }}
-                        className="hidden md:flex"
+                        className="min-w-0 flex-1"
                     />
+                    <PanelToggle side="left" open={leftOpen} onToggle={() => setLeftOpen((open) => !open)} />
                 </div>
 
-                <div className="flex min-w-0 justify-start md:justify-center">
-                    <div className="flex min-w-0 items-center gap-1.5 px-2 py-1 transition-colors hover:bg-surface-raised focus-within:bg-surface-raised">
-                    <PencilSimple size={12} className="shrink-0 text-muted-foreground" />
-                    <input
-                        type="text"
-                        value={document.name}
-                        aria-label="Design name"
-                        title={document.name}
-                        onChange={(event) =>
-                            updateDocument((current) => ({ ...current, name: event.target.value }), "name")
-                        }
-                        className="min-w-0 w-full max-w-[220px] truncate border-0 bg-transparent p-0 text-[13px] font-medium text-foreground focus:outline-none"
-                    />
-                </div>
-                </div>
-
-                <div className="flex items-center justify-end gap-1.5">
-                    <span className="hidden font-mono text-[11px] text-muted-foreground lg:inline">
-                        {document.width} x {document.height}
-                    </span>
-
-                    <button
-                        type="button"
-                        onClick={history.undo}
-                        disabled={!history.canUndo}
-                        aria-label="Undo"
-                        title="Undo (Ctrl+Z)"
-                        className="flex h-8 w-8 items-center justify-center border border-border text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                        <ArrowCounterClockwise size={15} />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={history.redo}
-                        disabled={!history.canRedo}
-                        aria-label="Redo"
-                        title="Redo (Ctrl+Shift+Z)"
-                        className="flex h-8 w-8 items-center justify-center border border-border text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                        <ArrowClockwise size={15} />
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={() => setIsPreviewOpen(true)}
-                        className="flex h-8 items-center gap-1.5 border border-border bg-surface px-2.5 text-[12px] font-medium text-foreground transition-colors hover:border-border-strong"
-                    >
-                        <Eye size={14} />
-                        Preview
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={saveProject}
-                        className="flex h-8 items-center gap-1.5 border border-border bg-surface px-2.5 text-[12px] font-medium text-foreground transition-colors hover:border-border-strong"
-                    >
-                        <FloppyDisk size={14} />
-                        {saveState === "saving"
-                            ? "Saving"
-                            : saveState === "saved"
-                              ? "Saved"
-                              : "Save"}
-                    </button>
-                </div>
-            </header>
-
-            <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-                <aside className="flex w-full shrink-0 flex-col border-b border-border bg-surface lg:h-auto lg:w-[248px] lg:border-b-0 lg:border-r">
-                    <PanelStateProvider>
+                <PanelStateProvider>
                     <LayersPanel
                         layers={document.layers}
                         selectedId={selectedId}
@@ -596,12 +515,46 @@ export default function StudioEditor({ backHref = "/" }: { backHref?: string }) 
                         onUploadImage={uploadImage}
                         isUploading={isUploading}
                     />
-                    </PanelStateProvider>
-                </aside>
+                </PanelStateProvider>
+            </aside>
 
-                <main className="relative flex min-h-[46vh] min-w-0 flex-1 flex-col bg-surface-sunken">
-                    {draftRecovered && document.layers.length > 0 ? (
-                        <div className="flex items-center justify-between gap-3 border-b border-border bg-surface px-4 py-2 text-[12px] text-muted-foreground">
+            <main className="relative order-1 flex h-[58dvh] min-h-[420px] min-w-0 flex-col bg-surface-sunken lg:order-2 lg:h-auto lg:min-h-0 lg:flex-1">
+                <CanvasToolbar
+                    backHref={backHref}
+                    backLabel="Back to ogimg.in"
+                    name={document.name}
+                    onNameChange={(name) =>
+                        updateDocument((current) => ({ ...current, name }), "name")
+                    }
+                    canUndo={history.canUndo}
+                    canRedo={history.canRedo}
+                    onUndo={history.undo}
+                    onRedo={history.redo}
+                    onPreview={() => setIsPreviewOpen(true)}
+                    onSave={saveProject}
+                    saveState={saveState}
+                />
+
+                {!leftOpen ? (
+                    <PanelToggle
+                        side="left"
+                        open={leftOpen}
+                        onToggle={() => setLeftOpen(true)}
+                        variant="handle"
+                    />
+                ) : null}
+                {!rightOpen ? (
+                    <PanelToggle
+                        side="right"
+                        open={rightOpen}
+                        onToggle={() => setRightOpen(true)}
+                        variant="handle"
+                    />
+                ) : null}
+
+                {draftRecovered && document.layers.length > 0 ? (
+                    <div className="absolute inset-x-0 top-[58px] z-20 flex justify-center px-3 sm:top-[68px]">
+                        <div className="flex w-full max-w-[520px] items-center justify-between gap-3 border border-border bg-surface/95 px-3 py-2 text-[12px] text-muted-foreground shadow-[0_14px_34px_-18px_rgba(0,0,0,0.95)] backdrop-blur-md">
                             <span>Recovered your last session from this browser.</span>
                             <button
                                 type="button"
@@ -614,7 +567,8 @@ export default function StudioEditor({ backHref = "/" }: { backHref?: string }) 
                                 Start fresh
                             </button>
                         </div>
-                    ) : null}
+                    </div>
+                ) : null}
 
                     <CanvasStage width={document.width} height={document.height}>
                         <InteractiveCanvas
@@ -683,9 +637,24 @@ export default function StudioEditor({ backHref = "/" }: { backHref?: string }) 
                     ) : null}
                 </main>
 
-                <aside className="flex w-full shrink-0 flex-col border-t border-border bg-surface lg:h-auto lg:w-[320px] lg:border-l lg:border-t-0">
-                    <PanelStateProvider>
-                    <PanelTabs tabs={TABS} value={tab} onChange={setTab} ariaLabel="Editor panels" />
+            <aside className={`order-3 flex w-full shrink-0 flex-col overflow-hidden border-t border-border bg-surface transition-[width] duration-300 ease-out lg:h-auto lg:border-l lg:border-t-0 ${
+                rightOpen ? "lg:w-[clamp(336px,23vw,368px)]" : "lg:invisible lg:w-0 lg:border-l-0"
+            }`}>
+                <PanelStateProvider>
+                    <PanelTabs
+                        tabs={TABS}
+                        value={tab}
+                        onChange={setTab}
+                        ariaLabel="Editor panels"
+                        action={
+                            <PanelToggle
+                                side="right"
+                                open={rightOpen}
+                                onToggle={() => setRightOpen((open) => !open)}
+                                variant="bare"
+                            />
+                        }
+                    />
 
                     <div className="scroll-y min-h-0 flex-1">
                         {tab === "design" ? (
@@ -783,9 +752,8 @@ export default function StudioEditor({ backHref = "/" }: { backHref?: string }) 
                             </>
                         )}
                     </div>
-                    </PanelStateProvider>
-                </aside>
-            </div>
+                </PanelStateProvider>
+            </aside>
 
             <PreviewDrawer
                 design={document}

@@ -2,8 +2,8 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "@phosphor-icons/react";
+import Image from "next/image";
 import Link from "next/link";
-import { HERO_DOCUMENT, DocumentPreview } from "./LiveCard";
 import { useAfterPaint } from "./useAfterPaint";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -19,77 +19,86 @@ export default function Hero() {
     const enter = (delay: number) =>
         animate
             ? {
-                  initial: { opacity: 0, y: 20 },
+                  initial: { opacity: 0, y: 18 },
                   animate: { opacity: 1, y: 0 },
                   transition: { duration: 0.7, delay, ease: EASE },
               }
             : {};
 
     return (
-        <section className="relative overflow-hidden border-b border-border">
-            <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 opacity-[0.5]"
-                style={{
-                    backgroundImage:
-                        "radial-gradient(circle at 78% 12%, rgba(201,242,77,0.12) 0%, transparent 38%), radial-gradient(circle at 8% 88%, rgba(29,78,216,0.14) 0%, transparent 42%)",
-                }}
-            />
-
-            <div className="shell relative grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:gap-16 lg:py-28">
-                <div className="min-w-0 max-w-[36rem]">
-                    <motion.p
-                        {...enter(0)}
-                        className="mb-5 inline-flex items-center gap-2 border border-border bg-surface px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
-                    >
-                        <span className="h-1.5 w-1.5 rounded-full bg-brand" aria-hidden="true" />
-                        Free, open source, no upload
-                    </motion.p>
-
+        <section className="relative overflow-hidden pb-16 pt-14 md:pb-24 md:pt-20">
+            <div className="shell relative">
+                {/* One centered statement, one action. The product itself sits
+                    underneath as a real screenshot rather than a mock canvas. */}
+                <div className="mx-auto max-w-[1000px] text-center">
                     <motion.h1
-                        {...enter(0.06)}
-                        className="text-[38px] font-semibold leading-[1.04] tracking-[-0.04em] text-foreground sm:text-[52px] lg:text-[60px]"
+                        {...enter(0)}
+                        className="text-[clamp(2.5rem,11vw,7rem)] font-semibold leading-[0.91] tracking-[-0.055em] text-foreground"
                     >
-                        Open Graph images your links deserve
+                        <span className="block">Give every link</span>
+                        <span className="block">a poster.</span>
                     </motion.h1>
 
                     <motion.p
-                        {...enter(0.12)}
-                        className="mt-5 max-w-[46ch] text-[16px] leading-relaxed text-muted-foreground md:text-[17px]"
+                        {...enter(0.1)}
+                        className="mx-auto mt-6 max-w-[58ch] text-pretty text-[16px] leading-[1.55] text-muted-foreground md:text-[17px]"
                     >
-                        Start from a template or compose one from scratch. Every layer stays editable until you
-                        export.
+                        A browser canvas for the image that shows up when someone shares your work.
+                        Start from a template or a blank canvas, then export the PNG.
                     </motion.p>
 
-                    <motion.div {...enter(0.18)} className="mt-8 flex flex-wrap items-center gap-3">
+                    <motion.div
+                        {...enter(0.18)}
+                        className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6"
+                    >
                         <Link
                             href="/studio"
-                            className="inline-flex h-11 items-center gap-2 bg-brand px-5 text-[14px] font-semibold text-brand-ink transition-colors hover:bg-brand-strong active:translate-y-px"
+                            className="group pressable inline-flex h-12 items-center gap-2 rounded-full bg-brand px-6 text-[14px] font-semibold text-brand-ink hover:bg-brand-strong"
                         >
-                            Open the canvas
-                            <ArrowRight size={16} weight="bold" />
+                            Make a poster
+                            <ArrowRight
+                                size={15}
+                                weight="bold"
+                                className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+                            />
                         </Link>
                         <Link
                             href="/template-gallery"
-                            className="inline-flex h-11 items-center border border-border bg-surface px-5 text-[14px] font-medium text-foreground transition-colors hover:border-border-strong active:translate-y-px"
+                            className="group link-underline inline-flex items-center gap-2 text-[14px] font-medium text-foreground"
                         >
                             Browse templates
+                            <ArrowRight
+                                size={14}
+                                className="transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+                            />
                         </Link>
                     </motion.div>
+
+                    <motion.p
+                        {...enter(0.26)}
+                        className="mt-8 text-[13px] leading-relaxed text-muted-foreground"
+                    >
+                        Free and open source, with no account and nothing uploaded.
+                    </motion.p>
                 </div>
 
+                {/* A real capture of the template editor: Aurora Arc is open on
+                    the canvas, with the template controls on the right. */}
                 <motion.figure
                     {...enter(0.24)}
-                    className="relative min-w-0"
-                    aria-label="Preview of a generated Open Graph image"
+                    className="mx-auto mt-14 w-full max-w-[1320px] md:mt-20"
                 >
-                    <div className="border border-border bg-surface p-2 shadow-[0_28px_70px_-40px_rgba(0,0,0,0.9)] md:p-3">
-                        <DocumentPreview document={HERO_DOCUMENT} maxWidth={560} />
+                    <div className="border border-border bg-surface p-1.5 md:p-2">
+                        <Image
+                            src="/hero-editor-aurora.png"
+                            alt="The ogimg.in template editor with the Aurora Arc template open on the canvas, showing its wordmark, headline, and domain line."
+                            width={2560}
+                            height={1600}
+                            preload
+                            sizes="(max-width: 767px) calc(100vw - 3rem), (max-width: 1400px) calc(100vw - 5rem), 1316px"
+                            className="block h-auto w-full"
+                        />
                     </div>
-                    <figcaption className="mt-3 flex items-center justify-between font-mono text-[11px] text-muted-foreground">
-                        <span>og-image-1200x630.png</span>
-                        <span>2x</span>
-                    </figcaption>
                 </motion.figure>
             </div>
         </section>

@@ -1,21 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-    ArrowCounterClockwise,
-    ArrowClockwise,
-    CaretLeft,
     CheckCircle,
-    Eye,
-    FloppyDisk,
     ImageSquare,
-    PencilSimple,
     UploadSimple,
 } from "@phosphor-icons/react";
 import CanvasStage from "./CanvasStage";
+import CanvasToolbar from "./CanvasToolbar";
+import PanelToggle from "./PanelToggle";
 import TemplateRender from "./TemplateRender";
 import InteractiveCanvas from "./InteractiveCanvas";
 import LayersPanel from "./LayersPanel";
@@ -161,6 +155,8 @@ export default function TemplateEditor({
 
     const [tab, setTab] = useState<Tab>("content");
     const [editMode, setEditMode] = useState<EditMode>("content");
+    const [leftOpen, setLeftOpen] = useState(true);
+    const [rightOpen, setRightOpen] = useState(true);
     const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
     const [projects, setProjects] = useState<SavedProject[]>([]);
     const [kits, setKits] = useState<BrandKit[]>([]);
@@ -492,29 +488,11 @@ export default function TemplateEditor({
     const selectedLayer = document.layout?.layers.find((layer) => layer.id === selectedLayerId) ?? null;
 
     return (
-        <div className="flex h-[100dvh] flex-col overflow-hidden bg-background text-foreground">
-            <header className="grid h-14 shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-surface px-3">
-                <div className="flex min-w-0 items-center gap-2">
-                    <Link
-                        href="/"
-                        className="flex shrink-0 items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                        <Image src="/icon.png" alt="" width={20} height={20} />
-                        <span className="hidden font-pixel text-sm lg:inline">ogimg.in</span>
-                    </Link>
-
-                    <span className="hidden h-5 w-px bg-border sm:block" />
-
-                    <Link
-                        href={backHref}
-                        className="hidden items-center gap-1 text-[13px] text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
-                    >
-                        <CaretLeft size={14} />
-                        Gallery
-                    </Link>
-
-                    <span className="hidden h-5 w-px bg-border md:block" />
-
+        <div className="flex min-h-[100dvh] flex-col bg-background text-foreground lg:h-[100dvh] lg:min-h-0 lg:flex-row lg:overflow-hidden">
+            <aside className={`order-2 flex w-full shrink-0 flex-col overflow-hidden border-t border-border bg-surface transition-[width] duration-300 ease-out lg:order-1 lg:h-auto lg:border-r lg:border-t-0 ${
+                leftOpen ? "lg:w-[clamp(268px,18vw,288px)]" : "lg:invisible lg:w-0 lg:border-r-0"
+            }`}>
+                <div className="flex shrink-0 items-center gap-2 border-b border-border p-2">
                     <SegmentedControl
                         ariaLabel="Editor mode"
                         value="templates"
@@ -525,86 +503,27 @@ export default function TemplateEditor({
                         onChange={(value) => {
                             if (value === "studio") router.push("/studio");
                         }}
-                        className="hidden md:flex"
+                        className="min-w-0 flex-1"
                     />
-
-                    {isTemplateLayoutEditable(document.templateId) ? (
-                        <>
-                            <span className="hidden h-5 w-px bg-border lg:block" />
-                            <SegmentedControl
-                                ariaLabel="Editing mode"
-                                value={editMode}
-                                options={[
-                                    { value: "content", label: "Content" },
-                                    { value: "layout", label: "Layout" },
-                                ]}
-                                onChange={(value) => (value === "layout" ? enterLayout() : exitToContent())}
-                                className="hidden lg:flex"
-                            />
-                        </>
-                    ) : null}
+                    <PanelToggle side="left" open={leftOpen} onToggle={() => setLeftOpen((open) => !open)} />
                 </div>
 
-                <div className="flex min-w-0 justify-start md:justify-center">
-                    <div className="flex min-w-0 items-center gap-1.5 px-2 py-1 transition-colors hover:bg-surface-raised focus-within:bg-surface-raised">
-                        <PencilSimple size={12} className="shrink-0 text-muted-foreground" />
-                        <input
-                            type="text"
-                            value={document.name}
-                            aria-label="Design name"
-                            title={document.name}
-                            onChange={(event) =>
-                                updateDocument((current) => ({ ...current, name: event.target.value }), "name")
-                            }
-                            className="min-w-0 w-full max-w-[220px] truncate border-0 bg-transparent p-0 text-[13px] font-medium text-foreground focus:outline-none"
+                {isTemplateLayoutEditable(document.templateId) ? (
+                    <div className="shrink-0 border-b border-border p-2">
+                        <SegmentedControl
+                            ariaLabel="Editing mode"
+                            value={editMode}
+                            options={[
+                                { value: "content", label: "Content" },
+                                { value: "layout", label: "Layout" },
+                            ]}
+                            onChange={(value) => (value === "layout" ? enterLayout() : exitToContent())}
+                            className="w-full"
                         />
                     </div>
-                </div>
+                ) : null}
 
-                <div className="flex items-center justify-end gap-1.5">
-                    <button
-                        type="button"
-                        onClick={history.undo}
-                        disabled={!history.canUndo}
-                        aria-label="Undo"
-                        title="Undo (Ctrl+Z)"
-                        className="flex h-8 w-8 items-center justify-center border border-border text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                        <ArrowCounterClockwise size={15} />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={history.redo}
-                        disabled={!history.canRedo}
-                        aria-label="Redo"
-                        title="Redo (Ctrl+Shift+Z)"
-                        className="flex h-8 w-8 items-center justify-center border border-border text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                        <ArrowClockwise size={15} />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setIsPreviewOpen(true)}
-                        className="flex h-8 items-center gap-1.5 border border-border bg-surface px-2.5 text-[12px] font-medium text-foreground transition-colors hover:border-border-strong"
-                    >
-                        <Eye size={14} />
-                        Preview
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={saveProject}
-                        className="flex h-8 items-center gap-1.5 border border-border bg-surface px-2.5 text-[12px] font-medium text-foreground transition-colors hover:border-border-strong"
-                    >
-                        <FloppyDisk size={14} />
-                        {saveState === "saving" ? "Saving" : saveState === "saved" ? "Saved" : "Save"}
-                    </button>
-                </div>
-            </header>
-
-            <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-                <aside className="flex w-full shrink-0 flex-col border-b border-border bg-surface lg:w-[228px] lg:border-b-0 lg:border-r">
-                    {editMode === "layout" && document.layout ? (
+                {editMode === "layout" && document.layout ? (
                         <PanelStateProvider>
                             <LayersPanel
                                 layers={document.layout.layers}
@@ -666,10 +585,41 @@ export default function TemplateEditor({
                         </div>
                         </PanelStateProvider>
                     )}
-                </aside>
+            </aside>
 
-                <main className="flex min-h-[42vh] min-w-0 flex-1 flex-col bg-surface-sunken">
-                    <CanvasStage width={1200} height={630}>
+            <main className="relative order-1 flex h-[58dvh] min-h-[420px] min-w-0 flex-col bg-surface-sunken lg:order-2 lg:h-auto lg:min-h-0 lg:flex-1">
+                <CanvasToolbar
+                    backHref={backHref}
+                    backLabel="Back to the template gallery"
+                    name={document.name}
+                    onNameChange={(name) => updateDocument((current) => ({ ...current, name }), "name")}
+                    canUndo={history.canUndo}
+                    canRedo={history.canRedo}
+                    onUndo={history.undo}
+                    onRedo={history.redo}
+                    onPreview={() => setIsPreviewOpen(true)}
+                    onSave={saveProject}
+                    saveState={saveState}
+                />
+
+                {!leftOpen ? (
+                    <PanelToggle
+                        side="left"
+                        open={leftOpen}
+                        onToggle={() => setLeftOpen(true)}
+                        variant="handle"
+                    />
+                ) : null}
+                {!rightOpen ? (
+                    <PanelToggle
+                        side="right"
+                        open={rightOpen}
+                        onToggle={() => setRightOpen(true)}
+                        variant="handle"
+                    />
+                ) : null}
+
+                <CanvasStage width={1200} height={630}>
                         {editMode === "layout" && document.layout && layoutFree ? (
                             <InteractiveCanvas
                                 document={layoutFree}
@@ -692,13 +642,23 @@ export default function TemplateEditor({
                     </CanvasStage>
                 </main>
 
-                <aside className="flex w-full shrink-0 flex-col border-t border-border bg-surface lg:w-[320px] lg:border-l lg:border-t-0">
-                    <PanelStateProvider>
+            <aside className={`order-3 flex w-full shrink-0 flex-col overflow-hidden border-t border-border bg-surface transition-[width] duration-300 ease-out lg:h-auto lg:border-l lg:border-t-0 ${
+                rightOpen ? "lg:w-[clamp(336px,23vw,368px)]" : "lg:invisible lg:w-0 lg:border-l-0"
+            }`}>
+                <PanelStateProvider>
                     <PanelTabs
                         tabs={editMode === "layout" ? LAYOUT_TABS : CONTENT_TABS}
                         value={tab}
                         onChange={setTab}
                         ariaLabel="Editor panels"
+                        action={
+                            <PanelToggle
+                                side="right"
+                                open={rightOpen}
+                                onToggle={() => setRightOpen((open) => !open)}
+                                variant="bare"
+                            />
+                        }
                     />
 
                     <div className="scroll-y min-h-0 flex-1">
@@ -1184,9 +1144,8 @@ export default function TemplateEditor({
                             </>
                         )}
                     </div>
-                    </PanelStateProvider>
-                </aside>
-            </div>
+                </PanelStateProvider>
+            </aside>
 
             <PreviewDrawer
                 design={document}

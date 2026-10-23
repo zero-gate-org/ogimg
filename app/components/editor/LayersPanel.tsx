@@ -53,7 +53,7 @@ export default function LayersPanel({
     isUploading: boolean;
 }) {
     return (
-        <div className="flex h-full flex-col">
+        <div className="flex min-h-0 flex-1 flex-col">
             <div className="scroll-y min-h-0 flex-1">
                 <PanelSection title="Add layer" sectionKey="layers-add">
                     <div className="flex flex-wrap items-center gap-1 pt-2">

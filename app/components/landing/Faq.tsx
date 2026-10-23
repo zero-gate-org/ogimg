@@ -27,8 +27,7 @@ const FAQS = [
     },
     {
         question: "Is it really free?",
-        answer:
-            "Yes. There is no account, no watermark, and no paid tier. Everything runs in your browser tab.",
+        answer: "Yes. There is no account, no watermark, and no paid tier. Everything runs in your browser tab.",
     },
     {
         question: "Do you store my uploads or my text?",
@@ -51,6 +50,14 @@ export default function Faq() {
                     <p className="mt-4 max-w-[42ch] text-[14px] leading-relaxed text-muted-foreground">
                         Still stuck? The repo has the template sources and the export pipeline.
                     </p>
+                    <a
+                        href="https://github.com/GxAditya/ogimg"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group mt-4 inline-flex items-center gap-2 text-[13px] font-medium text-foreground link-underline"
+                    >
+                        Read the source
+                    </a>
                 </div>
 
                 <ul className="border-t border-border">
@@ -63,14 +70,23 @@ export default function Faq() {
                                     type="button"
                                     onClick={() => setOpenIndex(isOpen ? null : index)}
                                     aria-expanded={isOpen}
-                                    className="flex w-full items-start justify-between gap-4 py-4 text-left"
+                                    className={`group grid w-full grid-cols-[2.5rem_1fr_auto] items-start gap-3 px-2 py-4 text-left transition-colors duration-200 hover:bg-surface-sunken ${
+                                        index === 0 ? "mt-0" : ""
+                                    }`}
                                 >
-                                    <span className="text-[15px] font-medium text-foreground">
+                                    <span className="pt-0.5 font-mono text-[11px] text-border-strong transition-colors duration-200 group-hover:text-foreground">
+                                        {String(index + 1).padStart(2, "0")}
+                                    </span>
+                                    <span
+                                        className={`text-[15px] transition-colors duration-200 ${
+                                            isOpen ? "text-foreground" : "text-foreground/90 group-hover:text-foreground"
+                                        }`}
+                                    >
                                         {faq.question}
                                     </span>
                                     <Plus
                                         size={16}
-                                        className={`mt-0.5 shrink-0 text-muted-foreground transition-transform duration-200 ${
+                                        className={`mt-0.5 shrink-0 text-muted-foreground transition-transform duration-200 ease-out group-hover:text-foreground ${
                                             isOpen ? "rotate-45" : ""
                                         }`}
                                     />
@@ -79,15 +95,20 @@ export default function Faq() {
                                 <AnimatePresence initial={false}>
                                     {isOpen ? (
                                         <motion.div
-                                            initial={reduce ? false : { height: 0, opacity: 0 }}
-                                            animate={{ height: "auto", opacity: 1 }}
-                                            exit={reduce ? undefined : { height: 0, opacity: 0 }}
-                                            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                                            initial={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                                            animate={reduce ? { opacity: 1 } : { height: "auto", opacity: 1 }}
+                                            exit={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.32, ease: [0.23, 1, 0.32, 1] }}
                                             className="overflow-hidden"
                                         >
-                                            <p className="max-w-[62ch] pb-5 text-[14px] leading-relaxed text-muted-foreground">
+                                            <motion.p
+                                                initial={reduce ? false : { opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={reduce ? undefined : { opacity: 0, transition: { duration: 0.16, ease: "easeOut" } }}
+                                                className="max-w-[62ch] pb-5 pl-[3.25rem] pr-4 text-[14px] leading-relaxed text-muted-foreground"
+                                            >
                                                 {faq.answer}
-                                            </p>
+                                            </motion.p>
                                         </motion.div>
                                     ) : null}
                                 </AnimatePresence>

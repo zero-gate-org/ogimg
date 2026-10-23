@@ -307,6 +307,134 @@ export const TEMPLATE_SCHEMAS: Record<TemplateId, TemplateSchema> = {
             { slot: "tag", label: "Domain line", placeholder: "ogimg.in" },
         ],
     },
+    "horizon-bloom": {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Wordmark", "ogimg.in"),
+            headline("Headline", "Cards that hold up in every feed"),
+        ],
+    },
+    "corner-flare": {
+        supportsLogoImage: true,
+        supportsImage: true,
+        imageHint: "Product shot in a tall panel that runs off the right and bottom edges.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            headline("Headline", "Designed for teams that ship weekly"),
+            {
+                slot: "tag",
+                label: "Support line",
+                placeholder: "One canvas for every feed size",
+                multiline: true,
+            },
+        ],
+    },
+    "solar-mesh": {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Wordmark", "ogimg.in"),
+            headline("Headline", "The launch card, done"),
+            { slot: "tag", label: "Domain line", placeholder: "ogimg.in" },
+        ],
+    },
+    "violet-rail": {
+        supportsLogoImage: true,
+        supportsImage: true,
+        imageHint: "Screenshot in a large panel that fills the right half.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            headline("Headline", "Your app, at 2x"),
+        ],
+    },
+    "tilt-plate": {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Wordmark", "ogimg.in"),
+            headline("Headline", "A frame for the work you just shipped"),
+            { slot: "tag", label: "Domain line", placeholder: "ogimg.in" },
+        ],
+    },
+    "stat-rail": {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            headline("Headline", "What the card did in a week"),
+            { slot: "detailOne", label: "Stat 1", placeholder: "3x: click through from links" },
+            { slot: "detailTwo", label: "Stat 2", placeholder: "18k: previews served" },
+            { slot: "detailThree", label: "Stat 3", placeholder: "0: servers to pay for" },
+        ],
+    },
+    "prism-frame": {
+        supportsLogoImage: true,
+        supportsImage: true,
+        imageHint: "Screenshot inside a rainbow bezel that runs off the right edge.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            headline("Headline", "Your product, framed for the feed"),
+        ],
+    },
+    "arch-glow": {
+        supportsLogoImage: false,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            headline("Headline", "One card, every feed"),
+            { slot: "tag", label: "Tagline", placeholder: "ogimg.in" },
+        ],
+    },
+    "facet-field": {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Wordmark", "ogimg.in"),
+            headline("Headline", "Built for launch day"),
+            { slot: "tag", label: "Domain line", placeholder: "ogimg.in" },
+        ],
+    },
+    "cyan-rim": {
+        supportsLogoImage: true,
+        supportsImage: true,
+        imageHint: "Product shot in a tall panel that fills the right side.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            headline("Headline", "Every size, from one canvas"),
+            {
+                slot: "tag",
+                label: "Support line",
+                placeholder: "Open Graph, X, LinkedIn and more",
+                multiline: true,
+            },
+        ],
+    },
+    "light-column": {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Wordmark", "ogimg.in"),
+            headline("Headline", "Ship the card first"),
+            { slot: "tag", label: "Domain line", placeholder: "ogimg.in" },
+        ],
+    },
+    "soft-mesh": {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Wordmark", "ogimg.in"),
+            headline("Headline", "A card worth clicking"),
+            { slot: "tag", label: "Domain line", placeholder: "ogimg.in" },
+        ],
+    },
 };
 
 export const getTemplateSchema = (templateId: TemplateId): TemplateSchema => TEMPLATE_SCHEMAS[templateId];

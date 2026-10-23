@@ -125,7 +125,7 @@ export default function SocialPreview({
                 </p>
             ) : null}
 
-            <div className="border border-border bg-surface-sunken p-4">
+            <div>
                 <div className="mx-auto w-full min-w-0" style={{ maxWidth: cardWidth }}>
                     {surface === "x" ? (
                         <article className="border border-border bg-[#000000] p-4">

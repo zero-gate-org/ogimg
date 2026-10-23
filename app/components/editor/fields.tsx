@@ -434,41 +434,52 @@ export function FontSelect({
 }
 
 /**
- * Panel tab strip. Tabs wrap onto a second row instead of scrolling sideways,
- * so the rail never needs a horizontal scrollbar.
+ * Panel tab strip.
+ *
+ * The rail runs the full height of the window now, so the tabs stay on one
+ * line and share the width evenly instead of wrapping into a second row.
  */
 export function PanelTabs<T extends string>({
     tabs,
     value,
     onChange,
     ariaLabel,
+    action,
 }: {
     tabs: readonly { id: T; label: string }[];
     value: T;
     onChange: (value: T) => void;
     ariaLabel: string;
+    /** Optional trailing control, e.g. a panel collapse button. */
+    action?: ReactNode;
 }) {
     return (
-        <div role="tablist" aria-label={ariaLabel} className="flex shrink-0 flex-wrap border-b border-border">
-            {tabs.map((tab) => {
-                const active = tab.id === value;
-                return (
-                    <button
-                        key={tab.id}
-                        type="button"
-                        role="tab"
-                        aria-selected={active}
-                        onClick={() => onChange(tab.id)}
-                        className={`min-w-[86px] flex-1 basis-[30%] border-b-2 px-2 py-2.5 text-[11px] font-medium transition-colors ${
-                            active
-                                ? "border-brand text-foreground"
-                                : "border-transparent text-muted-foreground hover:text-foreground"
-                        }`}
-                    >
-                        {tab.label}
-                    </button>
-                );
-            })}
+        <div className="flex shrink-0 items-stretch border-b border-border">
+            <div role="tablist" aria-label={ariaLabel} className="flex min-w-0 flex-1">
+                {tabs.map((tab) => {
+                    const active = tab.id === value;
+                    return (
+                        <button
+                            key={tab.id}
+                            type="button"
+                            role="tab"
+                            aria-selected={active}
+                            onClick={() => onChange(tab.id)}
+                            className={`min-w-0 flex-1 truncate border-b-2 px-1 py-2.5 text-[11px] font-medium transition-colors ${
+                                active
+                                    ? "border-brand text-foreground"
+                                    : "border-transparent text-muted-foreground hover:text-foreground"
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    );
+                })}
+            </div>
+
+            {action ? (
+                <div className="flex shrink-0 items-center border-l border-border px-1">{action}</div>
+            ) : null}
         </div>
     );
 }

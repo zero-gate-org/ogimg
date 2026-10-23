@@ -1,80 +1,11 @@
 "use client";
 
-import MinimalistTech from "../templates/MinimalistTech";
-import AppShowcase from "../templates/AppShowcase";
-import CenteredContainer from "../templates/CenteredContainer";
-import BrandPitch from "../templates/BrandPitch";
-import EditorialPixel from "../templates/EditorialPixel";
-import SaasLaunch from "../templates/SaasLaunch";
-import BlogPost from "../templates/BlogPost";
-import PodcastCover from "../templates/PodcastCover";
-import Changelog from "../templates/Changelog";
-import NeonGrid from "../templates/NeonGrid";
-import Spotlight from "../templates/Spotlight";
-import GridGlow from "../templates/GridGlow";
-import AuroraArc from "../templates/AuroraArc";
-import TealGrid from "../templates/TealGrid";
-import ColorMesh from "../templates/ColorMesh";
-import Dusk from "../templates/Dusk";
-import Spectrum from "../templates/Spectrum";
-import NotchCard from "../templates/NotchCard";
-import StackedDeck from "../templates/StackedDeck";
-import StatBento from "../templates/StatBento";
-import GridBloom from "../templates/GridBloom";
+import { renderTemplateComponent } from "../templates/templateRenderers";
 import { getTemplateFontFamily } from "../templates/fontCatalog";
 import FreeCanvasRender from "./FreeCanvasRender";
-import { templateLayoutToFreeDocument } from "../../lib/editor";
+import { templateLayoutToFreeDocument } from "../../lib/editor/templateLayout";
 import type { TemplateProps } from "../templates/templateShared";
-import type { TemplateId } from "../templates/templateRegistry";
 import type { TemplateDocument } from "../../lib/editor/types";
-
-export const renderTemplateComponent = (templateId: TemplateId, props: TemplateProps) => {
-    switch (templateId) {
-        case "app-showcase":
-            return <AppShowcase {...props} />;
-        case "centered-container":
-            return <CenteredContainer {...props} />;
-        case "brand-pitch":
-            return <BrandPitch {...props} />;
-        case "editorial-pixel":
-            return <EditorialPixel {...props} />;
-        case "saas-launch":
-            return <SaasLaunch {...props} />;
-        case "blog-post":
-            return <BlogPost {...props} />;
-        case "podcast-cover":
-            return <PodcastCover {...props} />;
-        case "changelog":
-            return <Changelog {...props} />;
-        case "neon-grid":
-            return <NeonGrid {...props} />;
-        case "spotlight":
-            return <Spotlight {...props} />;
-        case "grid-glow":
-            return <GridGlow {...props} />;
-        case "arc":
-            return <AuroraArc {...props} />;
-        case "teal-grid":
-            return <TealGrid {...props} />;
-        case "mesh":
-            return <ColorMesh {...props} />;
-        case "dusk":
-            return <Dusk {...props} />;
-        case "spectrum":
-            return <Spectrum {...props} />;
-        case "ticket":
-            return <NotchCard {...props} />;
-        case "deck":
-            return <StackedDeck {...props} />;
-        case "bento":
-            return <StatBento {...props} />;
-        case "crossglow":
-            return <GridBloom {...props} />;
-        case "minimalist-tech":
-        default:
-            return <MinimalistTech {...props} />;
-    }
-};
 
 export const templateDocumentToProps = (document: TemplateDocument): TemplateProps => {
     const fields = document.fields;
