@@ -448,6 +448,14 @@ export const TEMPLATE_SCHEMAS: Record<TemplateId, TemplateSchema> = {
             { slot: "tag", label: "URL", placeholder: "ogimg.in" },
         ],
     },
+    "og-image-studio": {
+        supportsLogoImage: false,
+        supportsImage: true,
+        imageHint: "Replace the full dashboard artwork with your own image; the hero copy remains editable.",
+        fields: [
+            headline("Hero headline", "Create cards that get clicked"),
+        ],
+    },
 };
 
 export const getTemplateSchema = (templateId: TemplateId): TemplateSchema => TEMPLATE_SCHEMAS[templateId];

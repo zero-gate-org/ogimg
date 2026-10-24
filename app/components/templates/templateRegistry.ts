@@ -37,7 +37,8 @@ export type TemplateId =
     | "cyan-rim"
     | "light-column"
     | "soft-mesh"
-    | "agile-startup";
+    | "agile-startup"
+    | "og-image-studio";
 
 interface TemplateDefaults {
     title: string;
@@ -1016,6 +1017,33 @@ export const TEMPLATE_LIBRARY: TemplateDefinition[] = [
             gridOverlay: "none",
             gridColor: "#FAFAFA",
             gridOpacity: 0.2,
+            gridBlur: 0,
+        },
+    },
+    {
+        id: "og-image-studio",
+        defaultImageFit: "cover",
+        defaultTitleTracking: -0.045,
+        defaultTitleSize: 68,
+        name: "OG Image Studio",
+        subtitle: "Violet-lit image studio with an editable app shell",
+        previewGradient: ["#7419E7", "#050505"],
+        supportsImage: true,
+        defaults: {
+            title: "Create cards that get clicked",
+            textColor: "#F5F5F5",
+            tag: "Tuesday, October 24",
+            logo: "ogimg.in",
+            image: "/templates/og-image-studio-dashboard.svg",
+            imageFileName: "og-image-studio-dashboard.svg",
+            backgroundMode: "Gradient",
+            gradientStart: "#050505",
+            gradientEnd: "#16042B",
+            gradientAngle: 160,
+            backgroundPresetId: DEFAULT_BACKGROUND_PRESET_ID,
+            gridOverlay: "none",
+            gridColor: "#F5F5F5",
+            gridOpacity: 0.14,
             gridBlur: 0,
         },
     },

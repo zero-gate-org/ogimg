@@ -55,6 +55,7 @@ const LAYOUT_EDITABLE_TEMPLATE_IDS: TemplateId[] = [
     "light-column",
     "soft-mesh",
     "agile-startup",
+    "og-image-studio",
 ];
 
 export const isTemplateLayoutEditable = (templateId: TemplateId) =>
@@ -191,6 +192,7 @@ const makeImageLayer = (
     box: { x: number; y: number; width: number; height: number },
     fit: ImageLayer["fit"],
     radius: number,
+    objectPosition = "center",
 ): ImageLayer => ({
     id: createId("tpl-layer"),
     kind: "image",
@@ -206,6 +208,7 @@ const makeImageLayer = (
     src,
     alt: name,
     fit,
+    objectPosition,
     radius,
 });
 
@@ -1506,6 +1509,28 @@ const buildPresetLayers = (templateId: TemplateId, document: TemplateDocument): 
             background: fieldsToCanvasBackground(fields),
             layers: [logoImage, wordmark, title, domain],
             slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id, tag: domain.id },
+        };
+    }
+
+    if (templateId === "og-image-studio") {
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Hero headline", x: 320, y: 102, width: 560, height: 140, fontSize: headlineSize, fontWeight: 700, lineHeight: 0.96, letterSpacing: headlineTracking, align: "center", balance: true },
+            fontId,
+            color,
+        );
+        const dashboardImage = makeImageLayer(
+            "image",
+            "Dashboard artwork",
+            document.image,
+            { x: 59, y: 275, width: 1082, height: 346 },
+            fields.imageFit,
+            23,
+            "top center",
+        );
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [dashboardImage, title],
+            slots: { title: title.id, image: dashboardImage.id },
         };
     }
 

@@ -196,6 +196,7 @@ function ImageLayerView({ layer }: { layer: ImageLayer }) {
                 width: "100%",
                 height: "100%",
                 objectFit: layer.fit,
+                objectPosition: layer.objectPosition ?? "center",
                 borderRadius: layer.radius,
                 display: "block",
             }}

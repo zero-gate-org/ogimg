@@ -166,6 +166,7 @@ const TEMPLATE_DEFAULT_FONT_BY_ID: Record<TemplateId, TemplateFontId> = {
     "light-column": "space-grotesk",
     "soft-mesh": "space-grotesk",
     "agile-startup": "space-grotesk",
+    "og-image-studio": "geist-sans",
 };
 
 const TEMPLATE_FONT_OPTION_BY_ID = new Map(

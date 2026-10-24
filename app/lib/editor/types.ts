@@ -60,6 +60,7 @@ export interface ImageLayer extends BaseLayer {
     src: string;
     alt: string;
     fit: ImageFit;
+    objectPosition?: string;
     radius: number;
 }
 

@@ -124,6 +124,7 @@ export const ImageSlot = ({
     radius,
     tone,
     emptyLabel = "Add an image",
+    objectPosition = "center",
     className = "",
     style,
 }: {
@@ -134,6 +135,7 @@ export const ImageSlot = ({
     radius?: number;
     tone: CardTone;
     emptyLabel?: string;
+    objectPosition?: string;
     className?: string;
     style?: CSSProperties;
 }) => {
@@ -155,7 +157,7 @@ export const ImageSlot = ({
                     src={image}
                     alt={alt}
                     className="h-full w-full"
-                    style={{ objectFit: fit, borderRadius }}
+                    style={{ objectFit: fit, objectPosition, borderRadius }}
                 />
             ) : (
                 <div className="flex h-full w-full items-center justify-center px-8">

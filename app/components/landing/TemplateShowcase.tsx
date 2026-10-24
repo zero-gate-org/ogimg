@@ -19,6 +19,7 @@ const SHOWCASE_TEMPLATE_IDS = [
     "dusk",
     "horizon-bloom",
     "agile-startup",
+    "og-image-studio",
 ] as const;
 
 const SHOWCASE_TEMPLATES = SHOWCASE_TEMPLATE_IDS.map((id) => getTemplateById(id));

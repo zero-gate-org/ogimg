@@ -34,6 +34,7 @@ import CyanRim from "./CyanRim";
 import LightColumn from "./LightColumn";
 import SoftMesh from "./SoftMesh";
 import AgileStartup from "./AgileStartup";
+import OgImageStudio from "./OgImageStudio";
 import type { TemplateProps } from "./templateShared";
 import type { TemplateId } from "./templateRegistry";
 
@@ -111,6 +112,8 @@ export const renderTemplateComponent = (templateId: TemplateId, props: TemplateP
             return <SoftMesh {...props} />;
         case "agile-startup":
             return <AgileStartup {...props} />;
+        case "og-image-studio":
+            return <OgImageStudio {...props} />;
         case "minimalist-tech":
         default:
             return <MinimalistTech {...props} />;

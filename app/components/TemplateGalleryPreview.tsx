@@ -21,7 +21,12 @@ export default function TemplateGalleryPreview({
         title: defaults.title,
         textColor: defaults.textColor,
         logoImage: "/icon.png",
-        image: template.supportsImage ? defaults.image || undefined : undefined,
+        image:
+            templateId === "og-image-studio"
+                ? "/hero-editor-aurora.png"
+                : template.supportsImage
+                  ? defaults.image || undefined
+                  : undefined,
         tag: defaults.tag,
         logo: defaults.logo,
         detailOne: defaults.detailOne,
