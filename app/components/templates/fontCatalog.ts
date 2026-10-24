@@ -19,7 +19,7 @@ export type TemplateFontId =
     | "manrope"
     | "sora";
 
-export interface TemplateFontOption {
+interface TemplateFontOption {
     id: TemplateFontId;
     label: string;
     fontFaceName: string;
@@ -131,7 +131,7 @@ export const TEMPLATE_FONT_OPTIONS: TemplateFontOption[] = [
     },
 ];
 
-export const TEMPLATE_DEFAULT_FONT_BY_ID: Record<TemplateId, TemplateFontId> = {
+const TEMPLATE_DEFAULT_FONT_BY_ID: Record<TemplateId, TemplateFontId> = {
     "minimalist-tech": "manrope",
     "app-showcase": "geist-sans",
     "centered-container": "space-grotesk",
@@ -177,8 +177,4 @@ export const getTemplateDefaultFontId = (templateId: TemplateId): TemplateFontId
 
 export const getTemplateFontFamily = (fontId: TemplateFontId): string => {
     return TEMPLATE_FONT_OPTION_BY_ID.get(fontId)?.fontFamily ?? TEMPLATE_FONT_OPTIONS[0].fontFamily;
-};
-
-export const getTemplateFontFaceName = (fontId: TemplateFontId): string => {
-    return TEMPLATE_FONT_OPTION_BY_ID.get(fontId)?.fontFaceName ?? TEMPLATE_FONT_OPTIONS[0].fontFaceName;
 };

@@ -15,7 +15,7 @@ interface ExportFontDefinition {
     sources: ExportFontSource[];
 }
 
-export const EXPORT_FONT_FILES: Record<TemplateFontId, ExportFontDefinition> = {
+const EXPORT_FONT_FILES: Record<TemplateFontId, ExportFontDefinition> = {
     "geist-sans": {
         family: "Geist Sans",
         sources: [{ path: "/fonts/geist-sans/geist-sans-variable.woff2", weight: "100 900" }],
@@ -126,7 +126,7 @@ export const EXPORT_FONT_FILES: Record<TemplateFontId, ExportFontDefinition> = {
     },
 };
 
-export const EXPORT_FONT_WEIGHTS = ["400", "600", "700"] as const;
+const EXPORT_FONT_WEIGHTS = ["400", "600", "700"] as const;
 
 const inlineFontCssCache = new Map<TemplateFontId, string>();
 
@@ -146,7 +146,7 @@ const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
 const fontIdsToEmbed = (fontId: TemplateFontId): TemplateFontId[] =>
     fontId.startsWith("geist-pixel") ? [fontId, "geist-mono"] : [fontId];
 
-export const waitForFonts = async (fontIds: TemplateFontId[]) => {
+const waitForFonts = async (fontIds: TemplateFontId[]) => {
     const faces = new Set<string>();
 
     for (const fontId of fontIds) {
@@ -334,7 +334,7 @@ const canvasToBlob = (canvas: HTMLCanvasElement, format: ExportFormat, quality: 
         );
     });
 
-export interface ExportDesignOptions {
+interface ExportDesignOptions {
     sourceNode: HTMLElement;
     width: number;
     height: number;

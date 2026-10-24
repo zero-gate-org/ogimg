@@ -68,10 +68,10 @@ The site card, rendered by the app itself:
   <img src="./public/og-card.png" alt="ogimg.in Open Graph card" width="720" />
 </p>
 
-The free canvas editor:
+The template editor, with the Aurora Arc template open:
 
 <p align="center">
-  <img src="./public/editor-preview.png" alt="ogimg.in free canvas editor" width="900" />
+  <img src="./public/hero-editor-aurora.png" alt="ogimg.in template editor with the Aurora Arc template open" width="900" />
 </p>
 
 Every template in the gallery is rendered live from its React component, so there are no
@@ -119,7 +119,7 @@ app/
   changelog/
 public/
   icon.png             app icon, also used as the in-app brand mark
-  editor-preview.png   screenshot of the canvas editor
+  hero-editor-aurora.png  screenshot of the template editor
   og-card.png           the site card
 ```
 

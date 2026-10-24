@@ -1,9 +1,9 @@
-export type ChangelogGroup = {
+type ChangelogGroup = {
     label: "New" | "Improved" | "Fixed";
     items: string[];
 };
 
-export type ChangelogEntry = {
+type ChangelogEntry = {
     version: string;
     date: string;
     summary: string;

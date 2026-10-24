@@ -41,7 +41,7 @@ export default function Faq() {
     const reduce = useReducedMotion();
 
     return (
-        <section id="faq" className="scroll-mt-20 border-b border-border py-20 md:py-28">
+        <section id="faq" className="scroll-mt-20 py-20 md:py-28">
             <div className="shell grid gap-10 lg:grid-cols-[minmax(0,0.62fr)_minmax(0,1fr)] lg:gap-16">
                 <div>
                     <h2 className="text-3xl font-semibold leading-[1.08] tracking-[-0.035em] text-foreground md:text-[40px]">

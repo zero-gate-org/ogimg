@@ -101,10 +101,6 @@ export default function CanvasStage({
                         </button>
                     ))}
 
-                    <span className="px-1.5 tabular-nums text-foreground">
-                        {Math.round(zoom * 100)}%
-                    </span>
-
                     <span className="mx-1 h-4 w-px bg-border" />
 
                     <button

@@ -13,7 +13,7 @@ import { usePanelSection, usePanelState } from "./panelState";
  * so no field relies on placeholder text as its label.
  */
 
-export const inputClass =
+const inputClass =
     "w-full h-10 bg-surface-sunken border border-border px-3 text-[13px] text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none transition-colors";
 
 const PANEL_EASE = [0.16, 1, 0.3, 1] as const;

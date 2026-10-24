@@ -36,6 +36,7 @@ export default function TemplateCard({
     gridOpacity = 0.14,
     gridBlur = 0,
     tone,
+    showLift = true,
     className = "",
     style,
 }: {
@@ -53,6 +54,8 @@ export default function TemplateCard({
     gridBlur?: number;
     /** Pass a tone down to children so the whole card agrees on one palette. */
     tone?: CardTone;
+    /** Some references sit on a flat field with no ambient lift; those opt out. */
+    showLift?: boolean;
     className?: string;
     style?: CSSProperties;
 }) {
@@ -83,14 +86,16 @@ export default function TemplateCard({
               One soft lift toward the text colour, so a flat fill still has
               depth. Deliberately the only decorative layer.
             */}
-            <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                    background: resolvedTone.isDarkText
-                        ? `radial-gradient(120% 90% at 50% 0%, ${hexToRgba(textColor, 0.07)} 0%, ${hexToRgba(textColor, 0)} 62%)`
-                        : `radial-gradient(120% 90% at 50% 0%, ${hexToRgba("#ffffff", 0.6)} 0%, ${hexToRgba("#ffffff", 0)} 62%)`,
-                }}
-            />
+            {showLift && (
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        background: resolvedTone.isDarkText
+                            ? `radial-gradient(120% 90% at 50% 0%, ${hexToRgba(textColor, 0.07)} 0%, ${hexToRgba(textColor, 0)} 62%)`
+                            : `radial-gradient(120% 90% at 50% 0%, ${hexToRgba("#ffffff", 0.6)} 0%, ${hexToRgba("#ffffff", 0)} 62%)`,
+                    }}
+                />
+            )}
 
             {gridOverlay !== "none" && (
                 <div
@@ -107,11 +112,6 @@ export default function TemplateCard({
         </div>
     );
 }
-
-/** A hairline. Structure comes from rules, not from boxes and shadows. */
-export const Rule = ({ tone, className = "" }: { tone: CardTone; className?: string }) => (
-    <div className={`w-full shrink-0 ${className}`} style={{ height: 1, backgroundColor: tone.hairline }} />
-);
 
 /**
  * Image slot with a considered empty state. Templates that reserve space for

@@ -1,8 +1,8 @@
 import type { TemplateId } from "../../components/templates/templateRegistry";
 
-export type TemplateTextSlot = "title" | "tag" | "logo" | "detailOne" | "detailTwo" | "detailThree";
+type TemplateTextSlot = "title" | "tag" | "logo" | "detailOne" | "detailTwo" | "detailThree";
 
-export interface TemplateTextField {
+interface TemplateTextField {
     slot: TemplateTextSlot;
     label: string;
     placeholder: string;
@@ -16,7 +16,7 @@ export interface TemplateTextField {
  * `templateId === ...` in JSX, so adding a template means adding an entry here
  * rather than editing the editor.
  */
-export interface TemplateSchema {
+interface TemplateSchema {
     supportsLogoImage: boolean;
     supportsImage: boolean;
     imageHint: string;
@@ -367,9 +367,12 @@ export const TEMPLATE_SCHEMAS: Record<TemplateId, TemplateSchema> = {
         fields: [
             brandName("Brand", "ogimg.in"),
             headline("Headline", "What the card did in a week"),
-            { slot: "detailOne", label: "Stat 1", placeholder: "3x: click through from links" },
+            { slot: "detailOne", label: "Stat 1", placeholder: "3x: clicks" },
             { slot: "detailTwo", label: "Stat 2", placeholder: "18k: previews served" },
             { slot: "detailThree", label: "Stat 3", placeholder: "0: servers to pay for" },
+            // The tag slot carries the fourth stat so the field can hold the
+            // reference's full four panel grid.
+            { slot: "tag", label: "Stat 4", placeholder: "10M: downloads" },
         ],
     },
     "prism-frame": {

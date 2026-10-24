@@ -31,7 +31,7 @@ export type BackgroundPresetId =
     | "ripple-rings"
     | "cinema-stripes";
 
-export interface BackgroundPreset {
+interface BackgroundPreset {
     id: BackgroundPresetId;
     name: string;
     background: string;
@@ -405,9 +405,6 @@ export const splitPrefixedLine = (line: string) => {
 
 export const resolveTitleTracking = (titleTracking: number | undefined, fallbackEm: number) =>
     typeof titleTracking === "number" && Number.isFinite(titleTracking) ? titleTracking : fallbackEm;
-
-export const resolveImageRadius = (imageRadius: number | undefined) =>
-    typeof imageRadius === "number" && Number.isFinite(imageRadius) && imageRadius > 0 ? `${imageRadius}px` : undefined;
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(value, max));
 

@@ -319,7 +319,15 @@ function lineEnds({ select = null, tolerance = 1, root: rootSlack = 2, mark = 7,
     }
     document.body.append(overlay);
   }
-  return { ends, lines: lines.length, problems: problems.map(({ client, ...rest }) => rest) };
+  return {
+    ends,
+    lines: lines.length,
+    problems: problems.map((problem) => {
+      const rest = { ...problem };
+      delete rest.client;
+      return rest;
+    }),
+  };
 }
 
 export const LINE_ENDS = lineEnds.toString();

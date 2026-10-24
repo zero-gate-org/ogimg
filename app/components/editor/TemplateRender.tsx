@@ -7,7 +7,7 @@ import { templateLayoutToFreeDocument } from "../../lib/editor/templateLayout";
 import type { TemplateProps } from "../templates/templateShared";
 import type { TemplateDocument } from "../../lib/editor/types";
 
-export const templateDocumentToProps = (document: TemplateDocument): TemplateProps => {
+const templateDocumentToProps = (document: TemplateDocument): TemplateProps => {
     const fields = document.fields;
 
     return {

@@ -719,3 +719,616 @@
     aspect-ratio: auto;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Workflow: step connectors and animated diagrams
+   Each connector occupies its own grid gap, so the hairline and its pulse can
+   only ever travel between two blocks. The pulse is a bright head with a
+   trailing fade; the four edge nodes brighten as it leaves and arrives.
+--------------------------------------------------------------------------- */
+
+.step-link {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 3rem;
+}
+
+.step-link-rail {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.step-link-line,
+.step-link-pulse {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.step-link-line {
+  background: var(--border-strong);
+  opacity: 0.4;
+}
+
+.step-link-pulse::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -32%;
+  width: 2px;
+  height: 32%;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.25) 38%, #ffffff 94%);
+  box-shadow: 0 0 9px 1px rgba(255, 255, 255, 0.55);
+  transform: translateX(-50%);
+  opacity: 0;
+  animation: step-link-sweep-y 4.8s var(--ease-inout) infinite;
+  animation-delay: var(--link-delay, 0s);
+}
+
+.step-link-node {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: var(--border-strong);
+  opacity: 0.85;
+  animation: step-node-flash 4.8s ease-in-out infinite;
+}
+
+.step-link-node-start {
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+  animation-delay: var(--link-delay, 0s);
+}
+
+.step-link-node-end {
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 50%) rotate(45deg);
+  animation-delay: calc(var(--link-delay, 0s) + 1.25s);
+}
+
+@keyframes step-link-sweep-y {
+  0% {
+    top: -32%;
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  30% {
+    top: 68%;
+    opacity: 1;
+  }
+  36%,
+  100% {
+    top: 68%;
+    opacity: 0;
+  }
+}
+
+@keyframes step-node-flash {
+  0%,
+  100% {
+    background: var(--border-strong);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    opacity: 0.85;
+  }
+  4% {
+    background: #ffffff;
+    box-shadow: 0 0 8px 1px rgba(255, 255, 255, 0.65);
+    opacity: 1;
+  }
+  13% {
+    background: var(--border-strong);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    opacity: 0.85;
+  }
+}
+
+@media (min-width: 768px) {
+  .step-link {
+    height: auto;
+  }
+
+  .step-link-line,
+  .step-link-pulse {
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    transform: translateY(-50%);
+  }
+
+  .step-link-pulse::before {
+    left: -32%;
+    top: 50%;
+    width: 32%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25) 38%, #ffffff 94%);
+    transform: translateY(-50%);
+    animation-name: step-link-sweep-x;
+  }
+
+  .step-link-node-start {
+    left: 0;
+    top: 50%;
+    bottom: auto;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .step-link-node-end {
+    left: auto;
+    right: 0;
+    top: 50%;
+    bottom: auto;
+    transform: translate(50%, -50%) rotate(45deg);
+  }
+}
+
+@keyframes step-link-sweep-x {
+  0% {
+    left: -32%;
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  30% {
+    left: 68%;
+    opacity: 1;
+  }
+  36%,
+  100% {
+    left: 68%;
+    opacity: 0;
+  }
+}
+
+/* Diagrams ----------------------------------------------------------------- */
+
+.step-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  overflow: visible;
+}
+
+.step-art rect,
+.step-art line,
+.step-art path,
+.step-art circle {
+  vector-effect: non-scaling-stroke;
+}
+
+.step-art-back-a,
+.step-art-back-b,
+.step-art-front,
+.step-art-select,
+.step-art-cursor,
+.step-art-click,
+.step-art-type-line2,
+.step-art-select-2,
+.step-art-knob-a,
+.step-art-knob-b,
+.step-art-knob-c,
+.step-art-fill-a,
+.step-art-fill-b,
+.step-art-fill-c,
+.step-art-file,
+.step-art-file-flash,
+.step-art-dot-a,
+.step-art-dot-b,
+.step-art-meta {
+  transform-box: fill-box;
+}
+
+/* 01 — pick a template from the fan. */
+.step-art-back-a {
+  animation: step-art-waft-a 9s ease-in-out infinite;
+}
+
+.step-art-back-b {
+  animation: step-art-waft-b 8.2s ease-in-out infinite;
+}
+
+@keyframes step-art-waft-a {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes step-art-waft-b {
+  0%,
+  100% {
+    transform: translateY(-1px);
+  }
+  50% {
+    transform: translateY(1.5px);
+  }
+}
+
+.step-art-front {
+  animation: step-art-lift 6.8s var(--ease-out-soft) infinite;
+}
+
+@keyframes step-art-lift {
+  0%,
+  18% {
+    transform: translateY(0);
+  }
+  30%,
+  76% {
+    transform: translateY(-4px);
+  }
+  88%,
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.step-art-select {
+  transform-origin: center;
+  opacity: 0;
+  animation: step-art-select 6.8s var(--ease-out-soft) infinite;
+}
+
+@keyframes step-art-select {
+  0%,
+  16% {
+    opacity: 0;
+    transform: scale(0.965);
+  }
+  26%,
+  72% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  84%,
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+.step-art-cursor {
+  opacity: 0;
+  animation: step-art-cursor 6.8s ease-in-out infinite;
+}
+
+@keyframes step-art-cursor {
+  0%,
+  30% {
+    opacity: 0;
+    transform: translate(12px, 9px);
+  }
+  38%,
+  62% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  72%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+}
+
+.step-art-click {
+  transform-origin: center;
+  opacity: 0;
+  animation: step-art-click 6.8s ease-out infinite;
+}
+
+@keyframes step-art-click {
+  0%,
+  39% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  44% {
+    opacity: 0.85;
+    transform: scale(0.7);
+  }
+  56%,
+  100% {
+    opacity: 0;
+    transform: scale(2.1);
+  }
+}
+
+/* 02 — the type controls move the headline. */
+.step-art-type text {
+  animation: step-art-track 6.2s var(--ease-inout) infinite;
+}
+
+@keyframes step-art-track {
+  0%,
+  14% {
+    letter-spacing: 0px;
+  }
+  36%,
+  66% {
+    letter-spacing: 0.8px;
+  }
+  88%,
+  100% {
+    letter-spacing: 0px;
+  }
+}
+
+.step-art-type-line2 {
+  animation: step-art-leading 6.2s var(--ease-inout) infinite;
+}
+
+@keyframes step-art-leading {
+  0%,
+  14% {
+    transform: translateY(0);
+  }
+  36%,
+  66% {
+    transform: translateY(3px);
+  }
+  88%,
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.step-art-select-2 {
+  animation: step-art-select-pulse 6.2s ease-in-out infinite;
+}
+
+@keyframes step-art-select-pulse {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  36%,
+  66% {
+    opacity: 1;
+  }
+}
+
+.step-art-knob-a,
+.step-art-knob-b,
+.step-art-knob-c {
+  transform-origin: center;
+}
+
+.step-art-knob-a {
+  animation: step-art-knob-a 6.2s var(--ease-inout) infinite;
+}
+
+.step-art-knob-b {
+  animation: step-art-knob-b 6.2s var(--ease-inout) infinite;
+}
+
+.step-art-knob-c {
+  animation: step-art-knob-c 6.2s var(--ease-inout) infinite;
+}
+
+.step-art-fill-a,
+.step-art-fill-b,
+.step-art-fill-c {
+  transform-origin: left center;
+}
+
+.step-art-fill-a {
+  animation: step-art-fill-a 6.2s var(--ease-inout) infinite;
+}
+
+.step-art-fill-b {
+  animation: step-art-fill-b 6.2s var(--ease-inout) infinite;
+}
+
+.step-art-fill-c {
+  animation: step-art-fill-c 6.2s var(--ease-inout) infinite;
+}
+
+@keyframes step-art-knob-a {
+  0%,
+  14% {
+    transform: translateX(0);
+  }
+  36%,
+  66% {
+    transform: translateX(14px);
+  }
+  88%,
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes step-art-knob-b {
+  0%,
+  14% {
+    transform: translateX(0);
+  }
+  36%,
+  66% {
+    transform: translateX(-10px);
+  }
+  88%,
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes step-art-knob-c {
+  0%,
+  14% {
+    transform: translateX(0);
+  }
+  36%,
+  66% {
+    transform: translateX(8px);
+  }
+  88%,
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes step-art-fill-a {
+  0%,
+  14% {
+    transform: scaleX(1);
+  }
+  36%,
+  66% {
+    transform: scaleX(1.65);
+  }
+  88%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes step-art-fill-b {
+  0%,
+  14% {
+    transform: scaleX(1);
+  }
+  36%,
+  66% {
+    transform: scaleX(0.72);
+  }
+  88%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes step-art-fill-c {
+  0%,
+  14% {
+    transform: scaleX(1);
+  }
+  36%,
+  66% {
+    transform: scaleX(1.6);
+  }
+  88%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+/* 03 — the image becomes a file, then a head tag. */
+.step-art-dot-a,
+.step-art-dot-b {
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.85));
+  opacity: 0;
+}
+
+.step-art-dot-a {
+  animation: step-art-dot-a 6.4s linear infinite;
+}
+
+.step-art-dot-b {
+  animation: step-art-dot-b 6.4s linear infinite;
+}
+
+@keyframes step-art-dot-a {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  3% {
+    opacity: 1;
+  }
+  16% {
+    opacity: 1;
+    transform: translateX(18px);
+  }
+  21%,
+  100% {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+}
+
+@keyframes step-art-dot-b {
+  0%,
+  23% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  25% {
+    opacity: 1;
+  }
+  38% {
+    opacity: 1;
+    transform: translateX(20px);
+  }
+  43%,
+  100% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+.step-art-file-flash {
+  opacity: 0;
+  animation: step-art-file-flash 6.4s ease-out infinite;
+}
+
+@keyframes step-art-file-flash {
+  0%,
+  16% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  30%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.step-art-meta {
+  animation: step-art-meta 6.4s ease-in-out infinite;
+}
+
+@keyframes step-art-meta {
+  0%,
+  34% {
+    opacity: 0.45;
+  }
+  44%,
+  72% {
+    opacity: 1;
+  }
+  86%,
+  100% {
+    opacity: 0.45;
+  }
+}
+
+/*
+  The diagrams hold their resting state when motion is off. Step 1's selection
+  and cursor live only inside the loop, so they would otherwise disappear with
+  the animation; everything transient stays hidden.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .step-art-select,
+  .step-art-cursor {
+    opacity: 1;
+    transform: none;
+  }
+}

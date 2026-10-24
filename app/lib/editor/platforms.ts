@@ -1,4 +1,4 @@
-export interface SizePreset {
+interface SizePreset {
     id: string;
     label: string;
     hint: string;
@@ -62,16 +62,11 @@ export const SIZE_PRESETS: SizePreset[] = [
     },
 ];
 
-export const DEFAULT_SIZE_PRESET_ID = "og";
-
-export const MIN_CANVAS_EDGE = 64;
-export const MAX_CANVAS_EDGE = 3000;
+const MIN_CANVAS_EDGE = 64;
+const MAX_CANVAS_EDGE = 3000;
 
 export const clampDimension = (value: number) =>
     Math.round(Math.min(MAX_CANVAS_EDGE, Math.max(MIN_CANVAS_EDGE, value || MIN_CANVAS_EDGE)));
-
-export const getSizePresetById = (id: string) =>
-    SIZE_PRESETS.find((preset) => preset.id === id) ?? SIZE_PRESETS[0];
 
 export const matchSizePreset = (width: number, height: number) =>
     SIZE_PRESETS.find((preset) => preset.width === width && preset.height === height);

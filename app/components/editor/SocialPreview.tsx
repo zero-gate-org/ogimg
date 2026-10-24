@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { CheckCircle, Copy, Globe, XLogo } from "@phosphor-icons/react";
 import FreeCanvasRender from "./FreeCanvasRender";
 import ScaledCanvas from "./ScaledCanvas";
@@ -17,6 +18,41 @@ const SURFACES: { id: SurfaceId; label: string; note: string; ratio: number }[] 
 ];
 
 const CARD_IMAGE_MAX_HEIGHT = 300;
+const SURFACE_DWELL = 4200;
+const EASE = [0.23, 1, 0.32, 1] as const;
+
+/**
+ * Every surface stays mounted in the same grid cell so cycling never changes
+ * the card height; only the active one is visible and interactive.
+ */
+function SurfaceCard({ active, children }: { active: boolean; children: ReactNode }) {
+    const reduceMotion = useReducedMotion();
+
+    return (
+        <motion.div
+            className="col-start-1 row-start-1"
+            aria-hidden={!active}
+            inert={!active}
+            initial={false}
+            animate={active ? "active" : "idle"}
+            variants={{
+                active: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: reduceMotion ? 0 : 0.4, ease: EASE },
+                },
+                idle: {
+                    opacity: 0,
+                    y: reduceMotion ? 0 : 10,
+                    transition: { duration: reduceMotion ? 0 : 0.28, ease: EASE },
+                },
+            }}
+            style={{ pointerEvents: active ? "auto" : "none" }}
+        >
+            {children}
+        </motion.div>
+    );
+}
 
 function CanvasThumb({ document, maxWidth }: { document: EditorDocument; maxWidth: number }) {
     const width = document.kind === "free" ? document.width : 1200;
@@ -51,6 +87,7 @@ export default function SocialPreview({
     onDescriptionChange,
     onUrlChange,
     compact = false,
+    autoAdvance = false,
     cardWidth = 460,
 }: {
     document: EditorDocument;
@@ -61,11 +98,34 @@ export default function SocialPreview({
     onDescriptionChange?: (value: string) => void;
     onUrlChange?: (value: string) => void;
     compact?: boolean;
+    /** Cycles through the surfaces until the visitor hovers or picks a tab. */
+    autoAdvance?: boolean;
     /** Width of the simulated card. Thumb sizes are derived from it. */
     cardWidth?: number;
 }) {
     const [surface, setSurface] = useState<SurfaceId>("x");
     const [copied, setCopied] = useState(false);
+    const [hovered, setHovered] = useState(false);
+    const [userSelected, setUserSelected] = useState(false);
+    const reduceMotion = useReducedMotion();
+
+    useEffect(() => {
+        if (!autoAdvance || userSelected || hovered || reduceMotion) return;
+
+        const timer = window.setInterval(() => {
+            setSurface((current) => {
+                const index = SURFACES.findIndex((entry) => entry.id === current);
+                return SURFACES[(index + 1) % SURFACES.length].id;
+            });
+        }, SURFACE_DWELL);
+
+        return () => window.clearInterval(timer);
+    }, [autoAdvance, userSelected, hovered, reduceMotion]);
+
+    const selectSurface = (next: SurfaceId) => {
+        setUserSelected(true);
+        setSurface(next);
+    };
 
     const editable = Boolean(onTitleChange);
     const host = url.replace(/^https?:\/\//, "").replace(/\/$/, "") || "your-site.com";
@@ -99,15 +159,33 @@ export default function SocialPreview({
     };
 
     return (
-        <div>
-            <div className="mb-4 flex flex-wrap gap-1.5" role="tablist" aria-label="Preview surface">
+        <div
+            onPointerEnter={(event) => {
+                if (event.pointerType === "mouse") setHovered(true);
+            }}
+            onPointerLeave={(event) => {
+                if (event.pointerType === "mouse") setHovered(false);
+            }}
+            onFocusCapture={() => setHovered(true)}
+            onBlurCapture={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                    setHovered(false);
+                }
+            }}
+        >
+            <div
+                className="mx-auto mb-4 flex w-full min-w-0 flex-wrap gap-1.5"
+                style={{ maxWidth: cardWidth }}
+                role="tablist"
+                aria-label="Preview surface"
+            >
                 {SURFACES.map((entry) => (
                     <button
                         key={entry.id}
                         type="button"
                         role="tab"
                         aria-selected={surface === entry.id}
-                        onClick={() => setSurface(entry.id)}
+                        onClick={() => selectSurface(entry.id)}
                         className={`border px-3 py-1.5 text-[12px] font-medium transition-colors ${
                             surface === entry.id
                                 ? "border-brand bg-brand text-brand-ink"
@@ -120,14 +198,17 @@ export default function SocialPreview({
             </div>
 
             {cropNote ? (
-                <p className="mb-3 border-l-2 border-brand bg-surface-raised px-3 py-2 text-[12px] leading-relaxed text-muted-foreground">
+                <p
+                    className="mx-auto mb-3 w-full border-l-2 border-brand bg-surface-raised px-3 py-2 text-[12px] leading-relaxed text-muted-foreground"
+                    style={{ maxWidth: cardWidth }}
+                >
                     {cropNote}
                 </p>
             ) : null}
 
             <div>
-                <div className="mx-auto w-full min-w-0" style={{ maxWidth: cardWidth }}>
-                    {surface === "x" ? (
+                <div className="mx-auto grid w-full min-w-0" style={{ maxWidth: cardWidth }}>
+                    <SurfaceCard active={surface === "x"}>
                         <article className="border border-border bg-[#000000] p-4">
                             <div className="flex items-center gap-2">
                                 <div className="h-8 w-8 shrink-0 border border-border bg-surface-raised" />
@@ -146,34 +227,34 @@ export default function SocialPreview({
                                 {description}
                             </p>
                         </article>
-                    ) : null}
+                    </SurfaceCard>
 
-                    {surface === "linkedin" ? (
-                        <article className="overflow-hidden border border-border bg-white text-[#000000]">
+                    <SurfaceCard active={surface === "linkedin"}>
+                        <article className="overflow-hidden border border-[#38434F] bg-[#1B1F23] text-[#E7E9EA]">
                             <div className="p-4">
                                 <div className="flex items-center gap-2">
-                                    <div className="h-8 w-8 shrink-0 border border-[#0000001a] bg-[#EEF1F5]" />
+                                    <div className="h-8 w-8 shrink-0 border border-[#38434F] bg-[#2E343B]" />
                                     <div className="min-w-0">
                                         <p className="truncate text-[13px] font-semibold">Your Product</p>
-                                        <p className="truncate text-[12px] text-[#00000099]">1,204 followers</p>
+                                        <p className="truncate text-[12px] text-[#9BA3AB]">1,204 followers</p>
                                     </div>
                                 </div>
                                 <p className="mt-3 line-clamp-2 text-[14px] leading-snug">{title}</p>
-                                <p className="mt-1 line-clamp-2 text-[13px] leading-snug text-[#00000099]">
+                                <p className="mt-1 line-clamp-2 text-[13px] leading-snug text-[#9BA3AB]">
                                     {description}
                                 </p>
                             </div>
-                            <div className="w-full overflow-hidden bg-[#F4F2EE]">
+                            <div className="w-full overflow-hidden bg-[#101316]">
                                 <CanvasThumb document={document} maxWidth={cardWidth} />
                             </div>
-                            <p className="flex items-center gap-1.5 border-t border-[#0000001a] px-4 py-2.5 text-[12px] text-[#00000099]">
+                            <p className="flex items-center gap-1.5 border-t border-[#38434F] px-4 py-2.5 text-[12px] text-[#9BA3AB]">
                                 <Globe size={13} />
                                 {host}
                             </p>
                         </article>
-                    ) : null}
+                    </SurfaceCard>
 
-                    {surface === "discord" ? (
+                    <SurfaceCard active={surface === "discord"}>
                         <article className="rounded-[4px] bg-[#313338] p-4 text-[#DBDEE1]">
                             <div className="flex gap-3">
                                 <div className="h-10 w-10 shrink-0 rounded-full bg-[#5865F2]" />
@@ -201,36 +282,36 @@ export default function SocialPreview({
                                 </div>
                             </div>
                         </article>
-                    ) : null}
+                    </SurfaceCard>
 
-                    {surface === "slack" ? (
-                        <article className="border border-border bg-white p-4 text-[#1D1C1D]">
+                    <SurfaceCard active={surface === "slack"}>
+                        <article className="border border-[#35373B] bg-[#1A1D21] p-4 text-[#D1D2D3]">
                             <div className="flex items-center gap-2">
-                                <div className="h-9 w-9 shrink-0 border border-[#0000001a] bg-[#F4F2EE]" />
+                                <div className="h-9 w-9 shrink-0 border border-[#35373B] bg-[#2C2D30]" />
                                 <div className="min-w-0">
                                     <p className="truncate text-[13px] font-bold">Your Product</p>
-                                    <p className="text-[12px] text-[#616061]">9:14 AM</p>
+                                    <p className="text-[12px] text-[#9B9C9F]">9:14 AM</p>
                                 </div>
                             </div>
                             <p className="mt-3 line-clamp-2 text-[14px] leading-snug font-medium">{title}</p>
-                            <p className="mt-1 line-clamp-2 text-[13px] leading-snug text-[#616061]">
+                            <p className="mt-1 line-clamp-2 text-[13px] leading-snug text-[#9B9C9F]">
                                 {description}
                             </p>
-                            <div className="mt-3 flex gap-3 border-t border-[#00000014] pt-3">
+                            <div className="mt-3 flex gap-3 border-t border-[#35373B] pt-3">
                                 <div className="w-[45%] shrink-0 overflow-hidden">
                                     <CanvasThumb document={document} maxWidth={Math.round(cardWidth * 0.36)} />
                                 </div>
-                                <p className="min-w-0 flex-1 text-[13px] leading-relaxed text-[#616061]">
-                                    <span className="block truncate font-semibold text-[#1264A3]">{host}</span>
+                                <p className="min-w-0 flex-1 text-[13px] leading-relaxed text-[#9B9C9F]">
+                                    <span className="block truncate font-semibold text-[#1D9BD1]">{host}</span>
                                     {description}
                                 </p>
                             </div>
-                            <p className="mt-3 flex items-center gap-1.5 text-[12px] text-[#616061]">
+                            <p className="mt-3 flex items-center gap-1.5 text-[12px] text-[#9B9C9F]">
                                 <CheckCircle size={13} className="text-[#2BAC76]" />
                                 Preview generated in your browser
                             </p>
                         </article>
-                    ) : null}
+                    </SurfaceCard>
                 </div>
             </div>
 

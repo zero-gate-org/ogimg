@@ -13,43 +13,57 @@ import {
 } from "./templateShared";
 
 /**
- * Stat Rail: a headline on the left, hairline stat cards on the right.
+ * Stat Rail: a headline on the left, a two by two field of glass stat panels on
+ * the right.
  *
- * The split follows the reference. A bare rail on the left carries the brand
- * lockup at the top and the headline down on the bottom edge, and the right two
- * thirds hold a bento of large rounded panels: a narrow card top-left, a wide
- * card top-right, and one card running the full width under them, all on a 24px
- * gutter with 28px corners. Each panel sets an oversized numeral over a small
- * uppercase caption. A field left empty drops its panel entirely and the
- * remaining ones grow into the space, so the grid never shows a hole.
+ * Measured off refs/06.svg. The rail carries the brand lockup on the top edge and
+ * the headline on the bottom one. The field starts at x 537.5 and runs to x 1151.5,
+ * with 258px rows, a 25px gutter and 28px corners. Its columns alternate: a narrow
+ * panel beside a wide one on the top row, then the same pair reversed underneath,
+ * so the field reads as a bento instead of a table. Every panel centres an
+ * oversized numeral near its top edge and a small uppercase caption 26px above its
+ * bottom edge.
  *
- * The reference paints its numerals with a violet to white ramp. Here that ramp
- * becomes a wash of violet light sitting behind the panels instead, and the type
- * stays on one colour: values in `tone.primary`, captions in `tone.tertiary`.
- * That is what keeps the card in a single family when the user changes the text
- * colour, and gradient clipped text would not survive the foreignObject export
- * anyway. The wash, the panel fills and every hairline are drawn in code.
+ * The numerals carry the reference's violet ramp, white at their top left through
+ * `#A900FF` into blue-violet at their bottom right. That ramp is the only colour
+ * on the card: the field is flat black, the panels are frosted black with a
+ * hairline edge and a radial glint along the top edge, and the type stays in the
+ * user's colour. The glint and the panel fills are drawn in code, and the ramp is
+ * a clipped background, which the SVG export rasterises correctly.
  */
-
-/** Violet hues lifted from the reference's numeral ramp. Background paint only, never applied to text. */
-const VIOLET = "#8B5CF6";
-const VIOLET_HOT = "#A900FF";
-const VIOLET_COOL = "#008CFF";
 
 /**
- * Card grid measured off refs/06.svg: x 537 to x 1152, y 48 to y 590, one 24px
- * gutter, 28px corners. The reference runs four panels; this app has three
- * detail slots, so the bottom row is a single full width card instead of a pair.
+ * The reference's numeral paint: blue-violet at the bottom right corner of a
+ * numeral, magenta at 46%, and white where it reaches the top left. `to top
+ * left` makes the ramp span each numeral's own box, the way the artwork fits one
+ * gradient to every glyph group.
  */
-const GRID_X = 537;
-const GRID_Y = 48;
-const GRID_W = 615;
-const GRID_H = 542;
-const GUTTER = 24;
+const NUMERAL_GRADIENT =
+    "linear-gradient(to top left, #008CFF 0%, #A900FF 46.28%, #FFFFFF 100%)";
+
+/** A panel's top edge catches a radial highlight that dies out well before each corner. */
+const TOP_GLINT =
+    "radial-gradient(28% 72px at 50% 10px, #FFFFFF 0%, rgba(255, 255, 255, 0) 100%)";
+
+/**
+ * Numerals are set in a light monospace, captions and the rail in the user's
+ * face. The reference pairs the two deliberately: the mono gives every stat the
+ * same rhythm while the wide captions stay readable.
+ */
+const NUMERAL_FAMILY = "\"Geist Mono\", ui-monospace, monospace";
+/** The reference's mono digits are a touch narrower than Geist Mono's. */
+const NUMERAL_SQUEEZE = 0.92;
+
+/** Card field measured off the reference: 614 x 541 inside a 25px gutter. */
+const GRID_X = 537.5;
+const GRID_Y = 48.5;
+const GRID_W = 614;
+const GRID_H = 541;
+const GUTTER = 25;
+const NARROW_W = 208;
+const WIDE_W = 381;
+const CARD_H = 258;
 const CARD_RADIUS = 28;
-const ROW_H = (GRID_H - GUTTER) / 2;
-const NARROW_W = 209;
-const WIDE_W = GRID_W - NARROW_W - GUTTER;
 
 /** Rail: lockup on the top edge, headline on the bottom one, nothing between. */
 const PAD_X = 64;
@@ -60,23 +74,25 @@ const LOCKUP_GAP = 11;
 const WORDMARK_SIZE = 28;
 /** Tight enough that two lines of the wordmark measure the mark's height. */
 const WORDMARK_LEADING = 0.86;
-const WORDMARK_WIDTH = 168;
+const WORDMARK_WIDTH = 104;
 const RAIL_WIDTH = 440;
 /** Anchored to the bottom: two lines at 67px put the ink on the reference's own
- *  cap line at y436.2. */
+ *  cap line at y436 and its second baseline at y549. */
 const HEADLINE_BOTTOM = 72;
 const HEADLINE_LINE = 0.95;
 
-/** Numeral sits 44px below a panel's top edge, caption 34px above the bottom one. */
-const CARD_PAD_TOP = 44;
-const CARD_PAD_BOTTOM = 34;
-const CARD_PAD_X = 26;
-const VALUE_MAX = 92;
+/** The numeral's cap lands 43px below a panel's top edge; the caption's ink stops
+ *  26px above the bottom one. */
+const CARD_PAD_TOP = 28;
+const CARD_PAD_BOTTOM = 20;
+const CARD_PAD_X = 24;
+/** Matched to the reference's 64px digit height at the measured cap ratio. */
+const VALUE_MAX = 87;
 const VALUE_LINE = 1;
-const CAPTION_MAX = 18;
+const CAPTION_MAX = 21;
+const CAPTION_MIN = 13;
 const CAPTION_LINE = 1.3;
-/** A card taller than a row centres its pair as one block rather than pinning it apart. */
-const SHORT_CARD_H = ROW_H;
+const CARD_GAP = 28;
 
 interface CardBox {
     x: number;
@@ -85,17 +101,26 @@ interface CardBox {
     height: number;
 }
 
+/** The reference's four positions, top narrow/wide then wide/narrow. */
+const BENTO_BOXES: CardBox[] = [
+    { x: GRID_X, y: GRID_Y, width: NARROW_W, height: CARD_H },
+    { x: GRID_X + NARROW_W + GUTTER, y: GRID_Y, width: WIDE_W, height: CARD_H },
+    { x: GRID_X, y: GRID_Y + CARD_H + GUTTER, width: WIDE_W, height: CARD_H },
+    { x: GRID_X + WIDE_W + GUTTER, y: GRID_Y + CARD_H + GUTTER, width: NARROW_W, height: CARD_H },
+];
+
 /**
- * Deliberately uneven, so the field reads as a bento and not as a row of tiles.
- * Fewer than three stats redistribute across the grid: two split it into full
- * height columns, one takes the whole field.
+ * Four stats reproduce the reference exactly. Fewer stats reflow so the field
+ * never shows a hole: three grow a full width panel along the bottom, two split
+ * the field into full height columns, one takes all of it.
  */
 const railBoxes = (count: number): CardBox[] => {
-    if (count >= 3) {
+    if (count >= 4) return BENTO_BOXES;
+    if (count === 3) {
         return [
-            { x: GRID_X, y: GRID_Y, width: NARROW_W, height: ROW_H },
-            { x: GRID_X + NARROW_W + GUTTER, y: GRID_Y, width: WIDE_W, height: ROW_H },
-            { x: GRID_X, y: GRID_Y + ROW_H + GUTTER, width: GRID_W, height: ROW_H },
+            BENTO_BOXES[0],
+            BENTO_BOXES[1],
+            { x: GRID_X, y: GRID_Y + CARD_H + GUTTER, width: GRID_W, height: CARD_H },
         ];
     }
     if (count === 2) {
@@ -115,17 +140,20 @@ const clamp = (value: number, min: number, max: number) => Math.max(min, Math.mi
 
 /** Numerals are set to fill their panel, so size solves against the box, not the slot. */
 const valueSizeFor = (text: string, width: number) =>
-    Math.round(clamp((width - CARD_PAD_X * 2) / (Math.max(text.length, 2) * 0.58), 26, VALUE_MAX));
+    Math.round(clamp((width - CARD_PAD_X * 2) / (Math.max(text.length, 1) * 0.6), 26, VALUE_MAX));
 
-/** Captions stay on one small step below each other and never outgrow the panel. */
+/** Captions stay on one step below the numerals and never outgrow the panel. */
 const captionSizeFor = (text: string, width: number) =>
-    Math.round(clamp((width - CARD_PAD_X * 2) / (Math.max(text.length, 6) * 0.66), 12, CAPTION_MAX));
+    Math.round(
+        clamp((width - CARD_PAD_X * 2) / (Math.max(text.length, 6) * 0.66), CAPTION_MIN, CAPTION_MAX),
+    );
 
 export default function StatRail({
     title,
     textColor = "#FAFAFA",
     logoImage,
     logo,
+    tag,
     detailOne,
     detailTwo,
     detailThree,
@@ -134,8 +162,8 @@ export default function StatRail({
     textDecoration,
     fontFamily,
     backgroundMode = "Gradient",
-    gradientStart = "#0A0A0C",
-    gradientEnd = "#0E0A16",
+    gradientStart = "#000000",
+    gradientEnd = "#000000",
     gradientAngle = 160,
     backgroundPresetId = DEFAULT_BACKGROUND_PRESET_ID,
     gridOverlay = "none",
@@ -149,8 +177,10 @@ export default function StatRail({
     const wordmark = (logo || "").trim();
 
     // Each field ships as "value: caption". The numeral is the label half, the
-    // caption is the body half, and an empty field simply gets no card.
-    const stats = [detailOne, detailTwo, detailThree]
+    // caption is the body half, and an empty field simply gets no panel. The
+    // fourth stat rides in the tag slot so the field can hold the reference's
+    // full two by two.
+    const stats = [detailOne, detailTwo, detailThree, tag]
         .map((line) => (line || "").trim())
         .filter(Boolean)
         .map((line) => {
@@ -160,14 +190,10 @@ export default function StatRail({
 
     const boxes = railBoxes(stats.length);
 
-    // Light falling on the field from the top-right, which is where the
-    // reference's ramp is hottest. Anchored to the right of the canvas so the
-    // rail stays near-black and the type never competes with the paint.
-    const wash = [
-        `radial-gradient(34% 46% at 95% 8%, ${hexToRgba(VIOLET_HOT, 0.15)} 0%, ${hexToRgba(VIOLET_HOT, 0)} 66%)`,
-        `radial-gradient(30% 44% at 62% 94%, ${hexToRgba(VIOLET_COOL, 0.09)} 0%, ${hexToRgba(VIOLET_COOL, 0)} 64%)`,
-        `linear-gradient(120deg, ${hexToRgba(VIOLET, 0)} 34%, ${hexToRgba(VIOLET, 0.045)} 64%, ${hexToRgba(VIOLET_HOT, 0.08)} 100%)`,
-    ].join(",");
+    // Flat black in the reference, so the panels do the work. `isDarkText` means
+    // the user chose light type, which in turn means the panels are dark glass.
+    const cardFill = tone.isDarkText ? "rgba(0, 0, 0, 0.7)" : "rgba(252, 252, 253, 0.7)";
+    const glint = tone.isDarkText ? TOP_GLINT : "none";
 
     return (
         <TemplateCard
@@ -183,9 +209,8 @@ export default function StatRail({
             gridColor={gridColor}
             gridOpacity={gridOpacity}
             gridBlur={gridBlur}
+            showLift={false}
         >
-            <div className="absolute inset-0 pointer-events-none" style={{ background: wash }} />
-
             {stats.map((stat, index) => {
                 const box = boxes[index];
                 if (!box) return null;
@@ -193,11 +218,11 @@ export default function StatRail({
                 const hasValue = Boolean(stat.value);
                 const valueSize = valueSizeFor(stat.value || stat.caption, box.width);
                 const captionSize = captionSizeFor(stat.caption, box.width);
-                // Short panels pin the numeral to the top edge and the caption to
-                // the bottom one, which is what gives the bento its empty middle.
-                // A full height panel would strand the caption 300px below the
-                // number, so it centres the pair as one block instead.
-                const pinned = hasValue && box.height <= SHORT_CARD_H;
+                // Only full height panels need their pair centred; the reference's
+                // rows pin the numeral to the top edge and the caption to the bottom.
+                // A lone caption centres instead of hanging off the top edge.
+                const pinned = box.height <= CARD_H;
+                const split = pinned && hasValue;
 
                 return (
                     <div
@@ -210,24 +235,45 @@ export default function StatRail({
                             height: box.height,
                             borderRadius: CARD_RADIUS,
                             padding: `${pinned ? CARD_PAD_TOP : 0}px ${CARD_PAD_X}px ${pinned ? CARD_PAD_BOTTOM : 0}px`,
-                            justifyContent: pinned ? "space-between" : "center",
-                            gap: pinned ? 0 : 28,
-                            // Translucent so the violet keeps reading through the
-                            // panel, the way the reference's cards sit on its glow.
-                            background: `linear-gradient(180deg, ${hexToRgba(tone.veil, 0.66)} 0%, ${hexToRgba(tone.veil, 0.4)} 100%)`,
-                            boxShadow: `inset 0 0 0 1px ${tone.hairline}`,
+                            justifyContent: split ? "space-between" : "center",
+                            gap: split ? 0 : CARD_GAP,
+                            background: cardFill,
+                            boxShadow: `inset 0 0 0 1px ${hexToRgba(textColor, 0.2)}`,
+                            backdropFilter: "blur(14px)",
+                            WebkitBackdropFilter: "blur(14px)",
                         }}
                     >
+                        {pinned && (
+                            <div
+                                aria-hidden="true"
+                                style={{
+                                    position: "absolute",
+                                    left: 0,
+                                    right: 0,
+                                    top: 0,
+                                    height: 1,
+                                    background: glint,
+                                }}
+                            />
+                        )}
+
                         {hasValue && (
                             <span
                                 style={{
-                                    color: tone.primary,
-                                    fontStyle,
-                                    fontWeight: resolveFontWeight(fontWeight, 640),
-                                    textDecoration,
+                                    display: "block",
+                                    whiteSpace: "nowrap",
+                                    backgroundImage: NUMERAL_GRADIENT,
+                                    WebkitBackgroundClip: "text",
+                                    backgroundClip: "text",
+                                    color: "transparent",
+                                    WebkitTextFillColor: "transparent",
+                                    fontFamily: NUMERAL_FAMILY,
+                                    fontWeight: 300,
                                     fontSize: `${valueSize}px`,
                                     lineHeight: VALUE_LINE,
-                                    letterSpacing: "-0.04em",
+                                    letterSpacing: 0,
+                                    transform: `scaleX(${NUMERAL_SQUEEZE})`,
+                                    transformOrigin: "center",
                                 }}
                             >
                                 {stat.value}
@@ -235,11 +281,11 @@ export default function StatRail({
                         )}
                         <span
                             style={{
-                                color: hasValue ? tone.tertiary : tone.primary,
+                                color: hasValue ? hexToRgba(textColor, 0.5) : tone.primary,
                                 fontSize: `${captionSize}px`,
                                 lineHeight: CAPTION_LINE,
-                                fontWeight: 600,
-                                letterSpacing: "0.12em",
+                                fontWeight: 400,
+                                letterSpacing: 0,
                                 textTransform: "uppercase",
                                 fontStyle,
                                 textDecoration,
@@ -303,7 +349,14 @@ export default function StatRail({
                 <h1
                     style={{
                         margin: 0,
-                        color: textColor,
+                        // The reference ramps its headline white into silver, and the
+                        // clipped gradient keeps that ramp while still following the
+                        // user's text colour.
+                        backgroundImage: `linear-gradient(112deg, ${textColor} 0%, ${hexToRgba(textColor, 0.78)} 100%)`,
+                        WebkitBackgroundClip: "text",
+                        backgroundClip: "text",
+                        color: "transparent",
+                        WebkitTextFillColor: "transparent",
                         fontStyle,
                         fontWeight: resolveFontWeight(fontWeight, 700),
                         textDecoration,

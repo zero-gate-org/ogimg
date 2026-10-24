@@ -13,7 +13,7 @@ interface HistoryState<T> {
     mergedAt: number;
 }
 
-export interface DocumentHistory<T> {
+interface DocumentHistory<T> {
     document: T;
     /** Apply a change. `mergeKey` collapses rapid edits (typing, dragging) into one undo step. */
     update: (updater: (current: T) => T, mergeKey?: string) => void;

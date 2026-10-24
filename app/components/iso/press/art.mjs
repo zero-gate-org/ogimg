@@ -100,7 +100,6 @@ const TEXT = (at, z, text, { size = 2, tone = "lo", anchor = "start", along = "x
   k.faceTextSvg(TOP(at, z, along), text, { size, tone, anchor });
 const LINE = (from, to, z, opts = {}) => k.lineSvg(k.lineOnTop(from, to, Z(z), P), opts);
 
-const put = (R, name, at, svg, shapes = []) => R.put({ name, piece: name, at, svg, shapes });
 const slabSolid = (plan, z, h, name, extra = {}) => A.slab(plan, Z(z), h, { name, ...extra });
 
 function baseAndPlate(R) {

@@ -10,7 +10,7 @@ import type { EditorDocument } from "../../lib/editor/types";
  * Pulls sensible starting values for the share metadata out of the design, so
  * opening the drawer shows the copy that is already on the card.
  */
-export const derivePreviewMeta = (design: EditorDocument) => {
+const derivePreviewMeta = (design: EditorDocument) => {
     if (design.kind === "template") {
         return {
             title: design.fields.title.trim(),

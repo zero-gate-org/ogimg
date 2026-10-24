@@ -20,7 +20,7 @@ import type {
  * is not listed here keeps rendering its fixed JSX, so nothing changes for it.
  * Each entry needs a matching preset branch in `buildPresetLayers`.
  */
-export const LAYOUT_EDITABLE_TEMPLATE_IDS: TemplateId[] = [
+const LAYOUT_EDITABLE_TEMPLATE_IDS: TemplateId[] = [
     "minimalist-tech",
     "app-showcase",
     "centered-container",
@@ -82,6 +82,8 @@ const DETAIL_LABEL_SLOT: Partial<Record<TemplateLayoutSlot, TemplateLayoutSlot>>
     detailOne: "detailOneLabel",
     detailTwo: "detailTwoLabel",
     detailThree: "detailThreeLabel",
+    // Only Stat Rail registers this slot; elsewhere the tag stays one layer.
+    tag: "tagLabel",
 };
 
 /**
@@ -99,7 +101,7 @@ const recolourKeepingAlpha = (previous: string, textColor: string): string => {
 };
 
 /** Maps the template's background fields onto the canvas background model. */
-export const fieldsToCanvasBackground = (fields: TemplateFields): CanvasBackground => {
+const fieldsToCanvasBackground = (fields: TemplateFields): CanvasBackground => {
     const mode =
         fields.backgroundMode === "Solid Color"
             ? "solid"
@@ -1176,56 +1178,70 @@ const buildPresetLayers = (templateId: TemplateId, document: TemplateDocument): 
     }
 
     if (templateId === "stat-rail") {
-        // The violet wash and the three card panels are background paint the canvas model
-        // cannot reproduce, so a detached Stat Rail keeps the gradient fill, the mark, the
-        // wordmark, the headline and every value and caption as plain text layers. The card
-        // boxes still follow the component's reflow: three stack as an L, two split the
-        // field into full height columns, one takes all of it.
-        const GRID_X = 537;
-        const GRID_Y = 48;
-        const GRID_W = 615;
-        const GRID_H = 542;
-        const GUTTER = 24;
-        const NARROW_W = 209;
-        const ROW_H = (GRID_H - GUTTER) / 2;
+        // The panel fills, their hairline edge and the top glint are background paint the
+        // canvas model cannot reproduce, so a detached Stat Rail keeps the background
+        // fill, the mark, the wordmark, the headline and every numeral and caption as
+        // plain text layers. The boxes follow the component's field exactly: four keep
+        // the reference's bento, three grow a full width panel along the bottom, two
+        // split the field into full height columns, one takes all of it.
+        const GRID_X = 537.5;
+        const GRID_Y = 48.5;
+        const GRID_W = 614;
+        const GRID_H = 541;
+        const GUTTER = 25;
+        const NARROW_W = 208;
+        const WIDE_W = 381;
+        const CARD_H = 258;
         const PAD_X = 64;
-        const CARD_PAD_TOP = 44;
-        const CARD_PAD_BOTTOM = 34;
-        const CARD_PAD_X = 26;
+        const CARD_PAD_TOP = 28;
+        const CARD_PAD_BOTTOM = 20;
+        const CARD_PAD_X = 24;
+        const VALUE_MAX = 87;
+        const CAPTION_MAX = 21;
+        const CAPTION_MIN = 13;
         const CARD_GAP = 28;
 
         const rows = [
             { field: fields.detailOne, base: "detailOne" as TemplateLayoutSlot, label: "detailOneLabel" as TemplateLayoutSlot },
             { field: fields.detailTwo, base: "detailTwo" as TemplateLayoutSlot, label: "detailTwoLabel" as TemplateLayoutSlot },
             { field: fields.detailThree, base: "detailThree" as TemplateLayoutSlot, label: "detailThreeLabel" as TemplateLayoutSlot },
+            // The fourth stat rides in the tag field, the same way the template holds it.
+            { field: fields.tag, base: "tag" as TemplateLayoutSlot, label: "tagLabel" as TemplateLayoutSlot },
         ];
         const shown = rows.filter((row) => row.field.trim());
         const half = Math.round((GRID_W - GUTTER) / 2);
         const boxes =
-            shown.length >= 3
+            shown.length >= 4
                 ? [
-                      { x: GRID_X, y: GRID_Y, width: NARROW_W, height: ROW_H },
-                      { x: GRID_X + NARROW_W + GUTTER, y: GRID_Y, width: GRID_W - NARROW_W - GUTTER, height: ROW_H },
-                      { x: GRID_X, y: GRID_Y + ROW_H + GUTTER, width: GRID_W, height: ROW_H },
+                      { x: GRID_X, y: GRID_Y, width: NARROW_W, height: CARD_H },
+                      { x: GRID_X + NARROW_W + GUTTER, y: GRID_Y, width: WIDE_W, height: CARD_H },
+                      { x: GRID_X, y: GRID_Y + CARD_H + GUTTER, width: WIDE_W, height: CARD_H },
+                      { x: GRID_X + WIDE_W + GUTTER, y: GRID_Y + CARD_H + GUTTER, width: NARROW_W, height: CARD_H },
                   ]
-                : shown.length === 2
+                : shown.length === 3
                   ? [
-                        { x: GRID_X, y: GRID_Y, width: half, height: GRID_H },
-                        { x: GRID_X + half + GUTTER, y: GRID_Y, width: GRID_W - half - GUTTER, height: GRID_H },
+                        { x: GRID_X, y: GRID_Y, width: NARROW_W, height: CARD_H },
+                        { x: GRID_X + NARROW_W + GUTTER, y: GRID_Y, width: WIDE_W, height: CARD_H },
+                        { x: GRID_X, y: GRID_Y + CARD_H + GUTTER, width: GRID_W, height: CARD_H },
                     ]
-                  : shown.length === 1
-                    ? [{ x: GRID_X, y: GRID_Y, width: GRID_W, height: GRID_H }]
-                    : [];
+                  : shown.length === 2
+                    ? [
+                          { x: GRID_X, y: GRID_Y, width: half, height: GRID_H },
+                          { x: GRID_X + half + GUTTER, y: GRID_Y, width: GRID_W - half - GUTTER, height: GRID_H },
+                      ]
+                    : shown.length === 1
+                      ? [{ x: GRID_X, y: GRID_Y, width: GRID_W, height: GRID_H }]
+                      : [];
 
         const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: PAD_X, y: 72, width: 33, height: 44 }, "contain", 0);
         const wordmark = makeTextLayer(
-            { slot: "logo", text: fields.logo, name: "Wordmark", x: 108, y: 72, width: 168, height: 48, fontSize: 28, fontWeight: 700, lineHeight: 0.86, letterSpacing: -0.01, uppercase: true, verticalAlign: "middle" },
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 108, y: 72, width: 104, height: 48, fontSize: 28, fontWeight: 700, lineHeight: 0.86, letterSpacing: -0.01, uppercase: true, verticalAlign: "middle" },
             fontId,
             color,
         );
-        const titleHeight = Math.round(headlineSize * 2);
+        const titleHeight = Math.round(headlineSize * 0.95 * 2);
         const title = makeTextLayer(
-            { slot: "title", text: fields.title, name: "Headline", x: PAD_X, y: 630 - 64 - titleHeight, width: 440, height: titleHeight, fontSize: headlineSize, fontWeight: 700, lineHeight: 1, letterSpacing: headlineTracking, verticalAlign: "bottom", balance: true },
+            { slot: "title", text: fields.title, name: "Headline", x: PAD_X, y: 630 - 72 - titleHeight, width: 440, height: titleHeight, fontSize: headlineSize, fontWeight: 700, lineHeight: 0.95, letterSpacing: headlineTracking, verticalAlign: "bottom", balance: true },
             fontId,
             color,
         );
@@ -1238,29 +1254,33 @@ const buildPresetLayers = (templateId: TemplateId, document: TemplateDocument): 
             const { label, body } = splitPrefixedLine(row.field);
             const hasValue = Boolean(label);
             const valueSize = Math.round(
-                Math.max(26, Math.min(92, (box.width - CARD_PAD_X * 2) / (Math.max((hasValue ? label : body).length, 2) * 0.58))),
+                Math.max(26, Math.min(VALUE_MAX, (box.width - CARD_PAD_X * 2) / (Math.max((hasValue ? label : body).length, 2) * 0.58))),
             );
             const captionSize = Math.round(
-                Math.max(12, Math.min(18, (box.width - CARD_PAD_X * 2) / (Math.max(body.length, 6) * 0.66))),
+                Math.max(CAPTION_MIN, Math.min(CAPTION_MAX, (box.width - CARD_PAD_X * 2) / (Math.max(body.length, 6) * 0.66))),
             );
             const valueHeight = Math.round(valueSize);
             const captionLine = Math.round(captionSize * 1.3);
-            const pinned = hasValue && box.height <= ROW_H;
+            const pinned = box.height <= CARD_H;
             const centerY = box.y + box.height / 2;
             const valueY = pinned ? box.y + CARD_PAD_TOP : Math.round(centerY - (CARD_GAP + captionLine) / 2 - valueHeight);
             const captionY = pinned
-                ? Math.round(box.y + box.height - CARD_PAD_BOTTOM - captionLine * 2)
-                : Math.round(centerY + (valueHeight + CARD_GAP) / 2);
+                ? hasValue
+                    ? Math.round(box.y + box.height - CARD_PAD_BOTTOM - captionLine * 2)
+                    : Math.round(centerY - captionLine)
+                : hasValue
+                  ? Math.round(centerY + (valueHeight + CARD_GAP) / 2)
+                  : Math.round(centerY - captionLine);
 
             const valueLayer = makeTextLayer(
-                { slot: row.label, text: label, name: `Stat ${i + 1}`, x: box.x, y: valueY, width: box.width, height: valueHeight, fontSize: valueSize, fontWeight: 640, lineHeight: 1, letterSpacing: -0.04, align: "center", verticalAlign: pinned ? "top" : "bottom" },
+                { slot: row.label, text: label, name: `Stat ${i + 1}`, x: box.x, y: valueY, width: box.width, height: valueHeight, fontSize: valueSize, fontWeight: 400, lineHeight: 1, letterSpacing: -0.04, align: "center", verticalAlign: pinned ? "top" : "bottom" },
                 fontId,
                 color,
             );
             const captionLayer = makeTextLayer(
-                { slot: row.base, text: body, name: `Caption ${i + 1}`, x: box.x, y: captionY, width: box.width, height: captionLine * 2, fontSize: captionSize, fontWeight: 600, lineHeight: 1.3, letterSpacing: 0.12, align: "center", uppercase: true, verticalAlign: pinned ? "bottom" : "top" },
+                { slot: row.base, text: body, name: `Caption ${i + 1}`, x: box.x, y: captionY, width: box.width, height: captionLine * 2, fontSize: captionSize, fontWeight: 600, lineHeight: 1.3, letterSpacing: 0.02, align: "center", uppercase: true, verticalAlign: pinned ? "bottom" : "top" },
                 fontId,
-                hasValue ? hexToRgba(color, 0.46) : color,
+                hasValue ? hexToRgba(color, 0.5) : color,
             );
 
             cards.push(valueLayer, captionLayer);

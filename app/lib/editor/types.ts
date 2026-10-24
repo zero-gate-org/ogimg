@@ -5,14 +5,14 @@ import type {
     GridOverlay,
 } from "../../components/templates/templateShared";
 
-export type TextAlign = "left" | "center" | "right";
-export type VerticalAlign = "top" | "middle" | "bottom";
+type TextAlign = "left" | "center" | "right";
+type VerticalAlign = "top" | "middle" | "bottom";
 export type ShapeKind = "rect" | "ellipse" | "line";
 export type ImageFit = "cover" | "contain" | "fill";
 export type BackgroundMode = "solid" | "gradient" | "preset" | "image";
-export type LayerKind = "text" | "shape" | "image";
+type LayerKind = "text" | "shape" | "image";
 
-export interface BaseLayer {
+interface BaseLayer {
     id: string;
     kind: LayerKind;
     name: string;
@@ -140,6 +140,10 @@ export type TemplateLayoutSlot =
     | "detailOneLabel"
     | "detailTwoLabel"
     | "detailThreeLabel"
+    // Stat Rail carries a fourth stat in the tag field so its panel grid can hold
+    // the reference's full two by two, which makes that field a value plus caption
+    // too.
+    | "tagLabel"
     | "logoImage"
     | "image";
 

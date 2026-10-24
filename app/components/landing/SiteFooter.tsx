@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, GithubLogo } from "@phosphor-icons/react/ssr";
+import { LEGAL_PAGES } from "../../lib/legal";
 import { SITE_NAME, SITE_URL } from "../../lib/seo";
 import { Reveal } from "./landingPrimitives";
 
@@ -53,36 +54,65 @@ export default function SiteFooter() {
             </section>
 
             <footer className="bg-background">
-                <div className="shell flex flex-col gap-6 py-10 md:flex-row md:items-center md:justify-between">
-                    <div className="flex items-center gap-2">
-                        <Image src="/icon.png" alt="" width={24} height={24} />
-                        <span className="font-pixel text-[15px] text-foreground">{SITE_NAME}</span>
+                <div className="shell flex flex-col gap-8 py-10 md:flex-row md:items-start md:justify-between md:gap-12">
+                    <div className="flex flex-col gap-3">
+                        <div className="flex items-center gap-2">
+                            <Image src="/icon.png" alt="" width={24} height={24} />
+                            <span className="font-pixel text-[15px] text-foreground">{SITE_NAME}</span>
+                        </div>
+                        <p className="font-mono text-[11px] text-muted-foreground">
+                            Rendering happens in your browser, on {SITE_URL.replace("https://", "")}
+                        </p>
                     </div>
 
-                    <nav aria-label="Footer" className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                        {RESOURCE_LINKS.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-                            >
-                                {link.label}
-                            </Link>
-                        ))}
-                        <a
-                            href="https://github.com/GxAditya/ogimg"
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-                        >
-                            <GithubLogo size={15} />
-                            Source
-                        </a>
-                    </nav>
+                    <div className="flex flex-col gap-8 sm:flex-row sm:gap-16 lg:gap-20">
+                        <nav aria-label="Product" className="flex flex-col gap-3">
+                            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                                Product
+                            </p>
+                            <ul className="flex flex-col gap-2">
+                                {RESOURCE_LINKS.map((link) => (
+                                    <li key={link.href}>
+                                        <Link
+                                            href={link.href}
+                                            className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+                                        >
+                                            {link.label}
+                                        </Link>
+                                    </li>
+                                ))}
+                                <li>
+                                    <a
+                                        href="https://github.com/GxAditya/ogimg"
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+                                    >
+                                        <GithubLogo size={15} />
+                                        Source
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
 
-                    <p className="font-mono text-[11px] text-muted-foreground">
-                        Rendering happens in your browser, on {SITE_URL.replace("https://", "")}
-                    </p>
+                        <nav aria-label="Legal" className="flex flex-col gap-3">
+                            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                                Legal
+                            </p>
+                            <ul className="flex flex-col gap-2">
+                                {LEGAL_PAGES.map((page) => (
+                                    <li key={page.href}>
+                                        <Link
+                                            href={page.href}
+                                            className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+                                        >
+                                            {page.label}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
+                    </div>
                 </div>
             </footer>
         </>

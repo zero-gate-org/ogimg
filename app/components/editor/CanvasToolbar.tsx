@@ -10,7 +10,7 @@ import {
     PencilSimple,
 } from "@phosphor-icons/react";
 
-export type ToolbarSaveState = "idle" | "saving" | "saved";
+type ToolbarSaveState = "idle" | "saving" | "saved";
 
 const SAVE_LABEL: Record<ToolbarSaveState, string> = {
     idle: "Save",
