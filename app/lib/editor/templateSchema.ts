@@ -456,6 +456,15 @@ export const TEMPLATE_SCHEMAS: Record<TemplateId, TemplateSchema> = {
             headline("Hero headline", "Create cards that get clicked"),
         ],
     },
+    "violet-console": {
+        supportsLogoImage: true,
+        supportsImage: true,
+        imageHint: "Fills the editor window edge to edge, framed by its glass and 8px corners.",
+        fields: [
+            brandName("Wordmark", "ogimg studio"),
+            headline("Headline", "Made for launch day"),
+        ],
+    },
 };
 
 export const getTemplateSchema = (templateId: TemplateId): TemplateSchema => TEMPLATE_SCHEMAS[templateId];

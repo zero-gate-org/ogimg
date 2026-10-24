@@ -56,6 +56,7 @@ const LAYOUT_EDITABLE_TEMPLATE_IDS: TemplateId[] = [
     "soft-mesh",
     "agile-startup",
     "og-image-studio",
+    "violet-console",
 ];
 
 export const isTemplateLayoutEditable = (templateId: TemplateId) =>
@@ -1531,6 +1532,37 @@ const buildPresetLayers = (templateId: TemplateId, document: TemplateDocument): 
             background: fieldsToCanvasBackground(fields),
             layers: [dashboardImage, title],
             slots: { title: title.id, image: dashboardImage.id },
+        };
+    }
+
+    if (templateId === "violet-console") {
+        // The violet field and the editor window are background paint the canvas
+        // model cannot reproduce, so a detached Violet Console keeps the base gradient
+        // and lifts out the lockup, the headline and the dashboard image. Every box
+        // mirrors the component's measured geometry.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 64, y: 64, width: 33, height: 44 }, "contain", 0);
+        const brand = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 108, y: 62, width: 104, height: 48, fontSize: 28, fontWeight: 700, lineHeight: 0.86, letterSpacing: -0.01, verticalAlign: "middle", uppercase: true },
+            fontId,
+            color,
+        );
+        const titleHeight = Math.round(headlineSize * 0.95 * 3);
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 64, y: 572 - titleHeight, width: 520, height: titleHeight, fontSize: headlineSize, fontWeight: 700, lineHeight: 0.95, letterSpacing: headlineTracking, verticalAlign: "bottom", balance: true },
+            fontId,
+            color,
+        );
+        const shot = makeImageLayer("image", "Dashboard", document.image, { x: 749, y: 64, width: 1106, height: 802 }, fields.imageFit, 8, "left top");
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [shot, logoImage, brand, title],
+            slots: {
+                logoImage: logoImage.id,
+                logo: brand.id,
+                title: title.id,
+                image: shot.id,
+            },
         };
     }
 

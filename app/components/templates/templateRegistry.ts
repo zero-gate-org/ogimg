@@ -38,7 +38,8 @@ export type TemplateId =
     | "light-column"
     | "soft-mesh"
     | "agile-startup"
-    | "og-image-studio";
+    | "og-image-studio"
+    | "violet-console";
 
 interface TemplateDefaults {
     title: string;
@@ -1043,6 +1044,33 @@ export const TEMPLATE_LIBRARY: TemplateDefinition[] = [
             backgroundPresetId: DEFAULT_BACKGROUND_PRESET_ID,
             gridOverlay: "none",
             gridColor: "#F5F5F5",
+            gridOpacity: 0.14,
+            gridBlur: 0,
+        },
+    },
+    {
+        id: "violet-console",
+        defaultImageFit: "cover",
+        defaultTitleTracking: -0.08,
+        defaultTitleSize: 86,
+        name: "Violet Console",
+        subtitle: "Violet field with a low headline and the card shown in an editor window",
+        previewGradient: ["#816BFF", "#120F33"],
+        supportsImage: true,
+        defaults: {
+            title: "Made for launch day",
+            textColor: "#FAFAFA",
+            tag: "",
+            logo: "ogimg studio",
+            image: "/hero-editor-aurora.png",
+            imageFileName: "hero-editor-aurora.png",
+            backgroundMode: "Gradient",
+            gradientStart: "#241C7A",
+            gradientEnd: "#120F33",
+            gradientAngle: 165,
+            backgroundPresetId: DEFAULT_BACKGROUND_PRESET_ID,
+            gridOverlay: "none",
+            gridColor: "#FAFAFA",
             gridOpacity: 0.14,
             gridBlur: 0,
         },
