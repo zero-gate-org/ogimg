@@ -33,6 +33,7 @@ import FacetField from "./FacetField";
 import CyanRim from "./CyanRim";
 import LightColumn from "./LightColumn";
 import SoftMesh from "./SoftMesh";
+import AgileStartup from "./AgileStartup";
 import type { TemplateProps } from "./templateShared";
 import type { TemplateId } from "./templateRegistry";
 
@@ -108,6 +109,8 @@ export const renderTemplateComponent = (templateId: TemplateId, props: TemplateP
             return <LightColumn {...props} />;
         case "soft-mesh":
             return <SoftMesh {...props} />;
+        case "agile-startup":
+            return <AgileStartup {...props} />;
         case "minimalist-tech":
         default:
             return <MinimalistTech {...props} />;

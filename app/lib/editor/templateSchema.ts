@@ -438,6 +438,16 @@ export const TEMPLATE_SCHEMAS: Record<TemplateId, TemplateSchema> = {
             { slot: "tag", label: "Domain line", placeholder: "ogimg.in" },
         ],
     },
+    "agile-startup": {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This reference is a fixed SVG composition, so it has no editable image slot.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            headline("Reference label", "Agile Startup"),
+            { slot: "tag", label: "URL", placeholder: "ogimg.in" },
+        ],
+    },
 };
 
 export const getTemplateSchema = (templateId: TemplateId): TemplateSchema => TEMPLATE_SCHEMAS[templateId];

@@ -18,6 +18,7 @@ const SHOWCASE_TEMPLATE_IDS = [
     "arch-glow",
     "dusk",
     "horizon-bloom",
+    "agile-startup",
 ] as const;
 
 const SHOWCASE_TEMPLATES = SHOWCASE_TEMPLATE_IDS.map((id) => getTemplateById(id));

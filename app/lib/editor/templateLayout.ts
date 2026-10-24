@@ -54,6 +54,7 @@ const LAYOUT_EDITABLE_TEMPLATE_IDS: TemplateId[] = [
     "cyan-rim",
     "light-column",
     "soft-mesh",
+    "agile-startup",
 ];
 
 export const isTemplateLayoutEditable = (templateId: TemplateId) =>
@@ -1472,6 +1473,33 @@ const buildPresetLayers = (templateId: TemplateId, document: TemplateDocument): 
             { slot: "tag", text: fields.tag, name: "Domain", x: 0, y: 522, width: 1200, height: 28, fontSize: 28, fontWeight: 500, lineHeight: 1, letterSpacing: -0.01, align: "center", verticalAlign: "middle", balance: true },
             fontId,
             hexToRgba(color, 0.95),
+        );
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [logoImage, wordmark, title, domain],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id, tag: domain.id },
+        };
+    }
+
+    if (templateId === "agile-startup") {
+        // The reference's corner lighting is SVG/CSS paint, so detached mode
+        // preserves the editable type and standard canvas background controls.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 530, y: 112, width: 40, height: 40 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 578, y: 112, width: 180, height: 40, fontSize: 26, fontWeight: 700, lineHeight: 1, letterSpacing: 0.02, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 190, y: 220, width: 820, height: 150, fontSize: headlineSize, fontWeight: 700, lineHeight: 1.05, letterSpacing: headlineTracking, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+        const domain = makeTextLayer(
+            { slot: "tag", text: fields.tag, name: "Domain", x: 0, y: 516, width: 1200, height: 34, fontSize: 28, fontWeight: 500, lineHeight: 1, letterSpacing: -0.01, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            tone.secondary,
         );
 
         return {

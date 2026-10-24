@@ -165,6 +165,7 @@ const TEMPLATE_DEFAULT_FONT_BY_ID: Record<TemplateId, TemplateFontId> = {
     "cyan-rim": "space-grotesk",
     "light-column": "space-grotesk",
     "soft-mesh": "space-grotesk",
+    "agile-startup": "space-grotesk",
 };
 
 const TEMPLATE_FONT_OPTION_BY_ID = new Map(

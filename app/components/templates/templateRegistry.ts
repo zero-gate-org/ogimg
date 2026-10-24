@@ -36,7 +36,8 @@ export type TemplateId =
     | "facet-field"
     | "cyan-rim"
     | "light-column"
-    | "soft-mesh";
+    | "soft-mesh"
+    | "agile-startup";
 
 interface TemplateDefaults {
     title: string;
@@ -988,6 +989,33 @@ export const TEMPLATE_LIBRARY: TemplateDefinition[] = [
             gridOverlay: "none",
             gridColor: "#FAFAFA",
             gridOpacity: 0.14,
+            gridBlur: 0,
+        },
+    },
+    {
+        id: "agile-startup",
+        defaultImageFit: "cover",
+        defaultTitleTracking: -0.03,
+        defaultTitleSize: 54,
+        name: "Agile Startup",
+        subtitle: "Dark startup card with a warm violet glow, grid, and outlined wordmark",
+        previewGradient: ["#500CB0", "#FFE9C5"],
+        supportsImage: false,
+        defaults: {
+            title: "Agile Startup",
+            textColor: "#FAFAFA",
+            tag: "ogimg.in",
+            logo: "ogimg.in",
+            image: "",
+            imageFileName: "",
+            backgroundMode: "Gradient",
+            gradientStart: "#000000",
+            gradientEnd: "#000000",
+            gradientAngle: 160,
+            backgroundPresetId: DEFAULT_BACKGROUND_PRESET_ID,
+            gridOverlay: "none",
+            gridColor: "#FAFAFA",
+            gridOpacity: 0.2,
             gridBlur: 0,
         },
     },
