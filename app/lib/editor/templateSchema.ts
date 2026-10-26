@@ -441,7 +441,7 @@ export const TEMPLATE_SCHEMAS: Record<TemplateId, TemplateSchema> = {
     "agile-startup": {
         supportsLogoImage: true,
         supportsImage: false,
-        imageHint: "This reference is a fixed SVG composition, so it has no editable image slot.",
+        imageHint: "This layout is typographic, so it has no image slot.",
         fields: [
             brandName("Brand", "ogimg.in"),
             headline("Reference label", "Agile Startup"),
@@ -463,6 +463,100 @@ export const TEMPLATE_SCHEMAS: Record<TemplateId, TemplateSchema> = {
         fields: [
             brandName("Wordmark", "ogimg studio"),
             headline("Headline", "Made for launch day"),
+        ],
+    },
+    "teal-rise": {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Wordmark", "ogimg.in"),
+            headline("Headline", "Every link deserves a card"),
+        ],
+    },
+    "graphite-window": {
+        supportsLogoImage: true,
+        supportsImage: true,
+        imageHint: "Fills the window edge to edge, past the right and bottom of the card.",
+        fields: [
+            brandName("Wordmark", "ogimg.in"),
+            headline("Headline", "Turn any link into a card"),
+        ],
+    },
+    "chromatic-haze": {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            headline("Headline", "Designed for social feeds"),
+            { slot: "tag", label: "URL line", placeholder: "www.ogimg.in" },
+        ],
+    },
+    "teal-contour": {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            headline("Headline", "Designed for link previews"),
+        ],
+    },
+    "violet-fade": {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            headline("Headline", "Designed for every feed"),
+            { slot: "tag", label: "URL line", placeholder: "www.ogimg.in" },
+        ],
+    },
+    afterglow: {
+        supportsLogoImage: true,
+        supportsImage: false,
+        imageHint: "This layout is typographic, so it has no image slot.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            headline("Headline", "Designed for better sharing"),
+        ],
+    },
+    "chroma-panel": {
+        supportsLogoImage: true,
+        supportsImage: true,
+        imageHint: "Fills the product window edge to edge, past the right and bottom of the card.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            headline("Headline", "Cards that get clicked"),
+            { slot: "tag", label: "URL line", placeholder: "www.ogimg.in" },
+        ],
+    },
+    "night-arc": {
+        supportsLogoImage: true,
+        supportsImage: true,
+        imageHint: "Fills the product window edge to edge, past the bottom of the card.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            {
+                slot: "title",
+                label: "Headline",
+                placeholder: "Every link, a better card",
+                multiline: true,
+            },
+        ],
+    },
+    "dawn-window": {
+        supportsLogoImage: true,
+        supportsImage: true,
+        imageHint: "Fills the product window edge to edge, past the bottom of the card.",
+        fields: [
+            brandName("Brand", "ogimg.in"),
+            {
+                slot: "title",
+                label: "Headline",
+                placeholder: "One editor, every size",
+                multiline: true,
+            },
         ],
     },
 };

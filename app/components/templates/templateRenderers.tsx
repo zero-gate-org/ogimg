@@ -36,6 +36,15 @@ import SoftMesh from "./SoftMesh";
 import AgileStartup from "./AgileStartup";
 import OgImageStudio from "./OgImageStudio";
 import VioletConsole from "./VioletConsole";
+import TealRise from "./TealRise";
+import GraphiteWindow from "./GraphiteWindow";
+import ChromaticHaze from "./ChromaticHaze";
+import TealContour from "./TealContour";
+import VioletFade from "./VioletFade";
+import Afterglow from "./Afterglow";
+import ChromaPanel from "./ChromaPanel";
+import NightArc from "./NightArc";
+import DawnWindow from "./DawnWindow";
 import type { TemplateProps } from "./templateShared";
 import type { TemplateId } from "./templateRegistry";
 
@@ -117,6 +126,24 @@ export const renderTemplateComponent = (templateId: TemplateId, props: TemplateP
             return <OgImageStudio {...props} />;
         case "violet-console":
             return <VioletConsole {...props} />;
+        case "teal-rise":
+            return <TealRise {...props} />;
+        case "graphite-window":
+            return <GraphiteWindow {...props} />;
+        case "chromatic-haze":
+            return <ChromaticHaze {...props} />;
+        case "teal-contour":
+            return <TealContour {...props} />;
+        case "violet-fade":
+            return <VioletFade {...props} />;
+        case "afterglow":
+            return <Afterglow {...props} />;
+        case "chroma-panel":
+            return <ChromaPanel {...props} />;
+        case "night-arc":
+            return <NightArc {...props} />;
+        case "dawn-window":
+            return <DawnWindow {...props} />;
         case "minimalist-tech":
         default:
             return <MinimalistTech {...props} />;

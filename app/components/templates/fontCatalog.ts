@@ -168,6 +168,15 @@ const TEMPLATE_DEFAULT_FONT_BY_ID: Record<TemplateId, TemplateFontId> = {
     "agile-startup": "space-grotesk",
     "og-image-studio": "geist-sans",
     "violet-console": "space-grotesk",
+    "teal-rise": "space-grotesk",
+    "graphite-window": "inter",
+    "chromatic-haze": "inter",
+    "teal-contour": "inter",
+    "violet-fade": "inter",
+    "afterglow": "inter",
+    "chroma-panel": "inter",
+    "night-arc": "inter",
+    "dawn-window": "inter",
 };
 
 const TEMPLATE_FONT_OPTION_BY_ID = new Map(

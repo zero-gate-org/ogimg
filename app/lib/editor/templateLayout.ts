@@ -57,6 +57,15 @@ const LAYOUT_EDITABLE_TEMPLATE_IDS: TemplateId[] = [
     "agile-startup",
     "og-image-studio",
     "violet-console",
+    "teal-rise",
+    "graphite-window",
+    "chromatic-haze",
+    "teal-contour",
+    "violet-fade",
+    "afterglow",
+    "chroma-panel",
+    "night-arc",
+    "dawn-window",
 ];
 
 export const isTemplateLayoutEditable = (templateId: TemplateId) =>
@@ -1487,7 +1496,7 @@ const buildPresetLayers = (templateId: TemplateId, document: TemplateDocument): 
     }
 
     if (templateId === "agile-startup") {
-        // The reference's corner lighting is SVG/CSS paint, so detached mode
+        // The reference's corner lighting is CSS paint, so detached mode
         // preserves the editable type and standard canvas background controls.
         const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 530, y: 112, width: 40, height: 40 }, "contain", 0);
         const wordmark = makeTextLayer(
@@ -1563,6 +1572,290 @@ const buildPresetLayers = (templateId: TemplateId, document: TemplateDocument): 
                 title: title.id,
                 image: shot.id,
             },
+        };
+    }
+
+    if (templateId === "teal-rise") {
+        // The arc and the 160px hairline grid are background paint the canvas model cannot
+        // reproduce, and neither is the ramp the component clips into the headline, so a
+        // detached Teal Rise keeps the gradient fill, the mark, the wordmark and the
+        // headline in the user's own colour, and drops those. Every box mirrors the
+        // component's measured geometry.
+        // The component centers the mark and the wordmark as one group, so these boxes are
+        // the group's default positions measured off the rendered card rather than a fixed
+        // left margin. A detached card with the default brand lands on the same pixels.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 519, y: 100, width: 32, height: 43 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 563, y: 100, width: 121, height: 43, fontSize: 27, fontWeight: 700, lineHeight: 0.9, letterSpacing: 0.01, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 125, y: 196, width: 950, height: 240, fontSize: headlineSize, fontWeight: 700, lineHeight: 0.96, letterSpacing: headlineTracking, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [logoImage, wordmark, title],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id },
+        };
+    }
+
+    if (templateId === "graphite-window") {
+        // The three ambient rings, the plate's glass and its lit hairline are background
+        // paint the canvas model cannot reproduce, and neither is the ramp the component
+        // clips into the headline, so a detached Graphite Window keeps the base gradient,
+        // the mark, the wordmark and the headline in the user's own colour, and drops
+        // those. Every box mirrors the component's measured geometry: the lockup is one
+        // flex row centred on a 44px mark at 64,64, the two line headline is a 176px block
+        // centred on the card's middle line, and the window is the reference's own
+        // 827,89 1106 x 802 rect bleeding off the right and the bottom.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 64, y: 64, width: 33, height: 44 }, "contain", 0);
+        const brand = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 108, y: 64, width: 160, height: 44, fontSize: 28, fontWeight: 600, lineHeight: 1, letterSpacing: -0.01, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const titleHeight = Math.round(headlineSize * 2);
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 64, y: 315 - titleHeight / 2, width: 540, height: titleHeight, fontSize: headlineSize, fontWeight: 600, lineHeight: 1, letterSpacing: headlineTracking, verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+        const shot = makeImageLayer("image", "Screenshot", document.image, { x: 827, y: 89, width: 1106, height: 802 }, fields.imageFit, 8, "left top");
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [shot, logoImage, brand, title],
+            slots: {
+                logoImage: logoImage.id,
+                logo: brand.id,
+                title: title.id,
+                image: shot.id,
+            },
+        };
+    }
+
+    if (templateId === "chromatic-haze") {
+        // The four discs and their 182px blur are background paint the canvas model
+        // cannot reproduce, so a detached Chromatic Haze keeps the gradient fill, the
+        // mark, the wordmark, the headline and the URL line. Every box mirrors the
+        // component's measured geometry: the lockup is one centred row on a 42 x 56 mark
+        // at y 80, the two line headline is centred on the card's middle line, and the
+        // URL line hangs off the bottom edge.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 499, y: 80, width: 42, height: 56 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 555, y: 80, width: 160, height: 56, fontSize: 32, fontWeight: 700, lineHeight: 1, letterSpacing: -0.01, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 210, y: 203, width: 780, height: 224, fontSize: headlineSize, fontWeight: 600, lineHeight: 1, letterSpacing: headlineTracking, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+        const domain = makeTextLayer(
+            { slot: "tag", text: fields.tag, name: "URL", x: 0, y: 524, width: 1200, height: 28, fontSize: 28, fontWeight: 500, lineHeight: 1, letterSpacing: -0.01, align: "center" },
+            fontId,
+            color,
+        );
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [logoImage, wordmark, title, domain],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id, tag: domain.id },
+        };
+    }
+
+    if (templateId === "teal-contour") {
+        // The three filtered panels are background paint the canvas model cannot
+        // reproduce, so a detached Teal Contour keeps the gradient fill, the mark, the
+        // wordmark and the low left headline. Every box mirrors the component's measured
+        // geometry: the lockup starts at 64,64 on a 33 x 44 mark, and the 96px title is a
+        // 190px two line block that stops 60px above the bottom edge.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 64, y: 64, width: 33, height: 44 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 108, y: 64, width: 150, height: 44, fontSize: 27, fontWeight: 700, lineHeight: 1, letterSpacing: -0.01, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const titleHeight = Math.round(headlineSize * 0.99 * 2);
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 64, y: 630 - 65 - titleHeight, width: 640, height: titleHeight, fontSize: headlineSize, fontWeight: 600, lineHeight: 0.99, letterSpacing: headlineTracking, balance: true },
+            fontId,
+            color,
+        );
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [logoImage, wordmark, title],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id },
+        };
+    }
+
+    if (templateId === "violet-fade") {
+        // The grid, the black panel and the warm floor glow are background paint the
+        // canvas model cannot reproduce, and neither is the ramp the component clips
+        // into the headline, so a detached Violet Fade keeps the base gradient fill,
+        // the mark, the wordmark, the headline and the URL line in the user's own
+        // colour, and drops those. Every box mirrors the component's measured
+        // geometry: the lockup is one centred row on a 28 x 36 mark at y 173, the
+        // headline is centred in the reference's 282,153 636 x 324 panel, and the
+        // URL line sits at y 432 inside the panel.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 531, y: 173, width: 28, height: 36 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 569, y: 173, width: 120, height: 36, fontSize: 20, fontWeight: 700, lineHeight: 1, letterSpacing: 0.02, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 282, y: 153, width: 636, height: 324, fontSize: headlineSize, fontWeight: 600, lineHeight: 1, letterSpacing: headlineTracking, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+        const url = makeTextLayer(
+            { slot: "tag", text: fields.tag, name: "URL line", x: 0, y: 432, width: 1200, height: 20, fontSize: 20, fontWeight: 500, lineHeight: 1, letterSpacing: 0.01, align: "center", verticalAlign: "top" },
+            fontId,
+            tone.secondary,
+        );
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [logoImage, wordmark, title, url],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id, tag: url.id },
+        };
+    }
+
+    if (templateId === "afterglow") {
+        // The grid, the black panel and both radial rings are background paint the
+        // canvas model cannot reproduce, and neither is the ramp the component clips
+        // into the headline, so a detached Afterglow keeps the base gradient fill, the
+        // mark, the wordmark and the headline in the user's own colour, and drops
+        // those. Every box mirrors the component's measured geometry: the lockup is
+        // one centred row on the reference's 33 x 44 mark at y 506, and the headline
+        // is centred on the reference's 280.75,0 638.5 x 362 panel at one em leading.
+        // The type box is 716 wide so the app's default copy keeps the reference's
+        // two line setting; the panel itself stays 638.5 wide.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 513, y: 506, width: 33, height: 44 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 557, y: 506, width: 160, height: 44, fontSize: 27, fontWeight: 700, lineHeight: 1, letterSpacing: -0.01, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 242, y: 0, width: 716, height: 362, fontSize: headlineSize, fontWeight: 600, lineHeight: 1, letterSpacing: headlineTracking, align: "center", verticalAlign: "middle", balance: true },
+            fontId,
+            color,
+        );
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [logoImage, wordmark, title],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id },
+        };
+    }
+
+    if (templateId === "chroma-panel") {
+        // The grid, the moon's filtered rim, the plate's glass and the rainbow the
+        // component clips into the headline are paint the canvas model cannot
+        // reproduce, so a detached Chroma Panel keeps the gradient fill, the mark,
+        // the wordmark, the headline in the user's own colour, the URL line and
+        // the screenshot. Every box mirrors the component's measured geometry: the
+        // lockup is one row on a 33 x 44 mark at 64,80, the headline is a 660 wide
+        // rail two 1.2 em lines tall starting at y 190, and the window is the
+        // reference's 836,89 1106 x 802 rect bleeding off the right and bottom.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 64, y: 80, width: 33, height: 44 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 108, y: 80, width: 220, height: 44, fontSize: 24, fontWeight: 700, lineHeight: 1, letterSpacing: -0.01, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const titleHeight = Math.round(headlineSize * 1.2 * 2);
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 64, y: 190, width: 660, height: titleHeight, fontSize: headlineSize, fontWeight: 600, lineHeight: 1.2, letterSpacing: headlineTracking, balance: true },
+            fontId,
+            color,
+        );
+        const url = makeTextLayer(
+            { slot: "tag", text: fields.tag, name: "URL line", x: 64, y: 523, width: 340, height: 28, fontSize: 28, fontWeight: 500, lineHeight: 1, letterSpacing: -0.01 },
+            fontId,
+            color,
+        );
+        const shot = makeImageLayer("image", "Screenshot", document.image, { x: 836, y: 89, width: 1106, height: 802 }, fields.imageFit, 8, "left top");
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [shot, logoImage, wordmark, title, url],
+            slots: {
+                logoImage: logoImage.id,
+                logo: wordmark.id,
+                title: title.id,
+                tag: url.id,
+                image: shot.id,
+            },
+        };
+    }
+
+    if (templateId === "night-arc") {
+        // The two teal rimmed discs and the plate's glass, edge light and 8px window
+        // corners are background paint the canvas model cannot reproduce, and neither
+        // is the ramp the component clips into the headline, so a detached Night Arc
+        // keeps the base gradient, the mark, the wordmark, the headline in the user's
+        // own colour, and the screenshot. Every box mirrors the component's measured
+        // geometry: the lockup is one row on a 33 x 44 mark at 64,64, the two line
+        // headline is centred on the 760px top band starting at y 90, and the image is
+        // the reference's 128,353 943 x 802 rect bleeding off the bottom edge.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 64, y: 64, width: 33, height: 44 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 108, y: 64, width: 220, height: 44, fontSize: 24, fontWeight: 700, lineHeight: 1, letterSpacing: -0.01, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const titleHeight = Math.round(headlineSize * 2);
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 220, y: 90, width: 760, height: titleHeight, fontSize: headlineSize, fontWeight: 600, lineHeight: 1, letterSpacing: headlineTracking, align: "center", balance: true },
+            fontId,
+            color,
+        );
+        const shot = makeImageLayer("image", "Screenshot", document.image, { x: 128, y: 353, width: 943, height: 802 }, fields.imageFit, 8, "left top");
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [shot, logoImage, wordmark, title],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id, image: shot.id },
+        };
+    }
+
+    if (templateId === "dawn-window") {
+        // The blurred dawn field, the source's 1% wash and the plate's glass, edge
+        // light and 8px window corners are background paint the canvas model cannot
+        // reproduce, and neither is the ramp the component clips into the headline,
+        // so a detached Dawn Window keeps the base gradient, the mark, the wordmark,
+        // the headline in the user's own colour, and the screenshot. Every box
+        // mirrors the component's measured geometry: the lockup is one row on a
+        // 33 x 44 mark at 64,64, the two line headline is centred on the 760px top
+        // band starting at y 87, and the image is the reference's 128,328 943 x 802
+        // rect bleeding off the bottom edge.
+        const logoImage = makeImageLayer("logoImage", "Mark", document.logoImage, { x: 64, y: 64, width: 33, height: 44 }, "contain", 0);
+        const wordmark = makeTextLayer(
+            { slot: "logo", text: fields.logo, name: "Wordmark", x: 108, y: 64, width: 220, height: 44, fontSize: 24, fontWeight: 700, lineHeight: 1, letterSpacing: -0.01, uppercase: true, verticalAlign: "middle" },
+            fontId,
+            color,
+        );
+        const titleHeight = Math.round(headlineSize * 2);
+        const title = makeTextLayer(
+            { slot: "title", text: fields.title, name: "Headline", x: 220, y: 87, width: 760, height: titleHeight, fontSize: headlineSize, fontWeight: 600, lineHeight: 1, letterSpacing: headlineTracking, align: "center", balance: true },
+            fontId,
+            color,
+        );
+        const shot = makeImageLayer("image", "Screenshot", document.image, { x: 128, y: 328, width: 943, height: 802 }, fields.imageFit, 8, "left top");
+
+        return {
+            background: fieldsToCanvasBackground(fields),
+            layers: [shot, logoImage, wordmark, title],
+            slots: { logoImage: logoImage.id, logo: wordmark.id, title: title.id, image: shot.id },
         };
     }
 
