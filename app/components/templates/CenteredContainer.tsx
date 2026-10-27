@@ -74,7 +74,7 @@ export default function CenteredContainer({
                     </div>
                 )}
 
-                <h1
+                <div
                     className="mt-11 max-w-[900px] leading-[1.04]"
                     style={{
                         color: textColor,
@@ -86,7 +86,7 @@ export default function CenteredContainer({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
 
                 {subtext && (
                     <div className="mt-12 flex flex-col items-center gap-6">

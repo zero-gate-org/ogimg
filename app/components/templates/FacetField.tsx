@@ -306,7 +306,7 @@ export default function FacetField({
                 className="absolute left-0 right-0 flex items-center justify-center"
                 style={{ top: HEADLINE_TOP, bottom: HEADLINE_BOTTOM }}
             >
-                <h1
+                <div
                     style={{
                         maxWidth: HEADLINE_WIDTH,
                         color: textColor,
@@ -321,7 +321,7 @@ export default function FacetField({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
             </div>
 
             {domain && (

@@ -1,4 +1,13 @@
+import type { Metadata } from "next";
 import TemplateGalleryPreview from "../components/TemplateGalleryPreview";
+
+export const metadata: Metadata = {
+    title: "Reference probe",
+    robots: {
+        index: false,
+        follow: false,
+    },
+};
 
 export default function RefProbePage() {
     return (

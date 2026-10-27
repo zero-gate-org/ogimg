@@ -252,7 +252,7 @@ export default function TealRise({
                 className="absolute left-0 right-0 flex items-center justify-center"
                 style={{ top: HEADLINE_TOP, bottom: HEADLINE_BOTTOM }}
             >
-                <h1
+                <div
                     style={{
                         margin: 0,
                         maxWidth: HEADLINE_WIDTH,
@@ -272,7 +272,7 @@ export default function TealRise({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
             </div>
         </TemplateCard>
     );

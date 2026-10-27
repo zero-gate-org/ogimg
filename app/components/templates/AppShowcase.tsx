@@ -84,7 +84,7 @@ export default function AppShowcase({
 
                     <div>
                         {tagline && (
-                            <h1
+                            <div
                                 className="max-w-[440px] leading-[1.08]"
                                 style={{
                                     color: textColor,
@@ -96,7 +96,7 @@ export default function AppShowcase({
                                 }}
                             >
                                 {tagline}
-                            </h1>
+                            </div>
                         )}
 
                         {tagLabel && (

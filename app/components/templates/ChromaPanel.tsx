@@ -314,7 +314,7 @@ export default function ChromaPanel({
                 className="absolute"
                 style={{ left: HEADLINE_LEFT, top: HEADLINE_TOP, width: HEADLINE_WIDTH }}
             >
-                <h1
+                <div
                     style={{
                         margin: 0,
                         backgroundImage: `linear-gradient(${RAMP_DEG}deg, ${RAMP_BLUE} ${RAMP_BLUE_STOP}%, ${RAMP_PURPLE} ${RAMP_PURPLE_STOP}%, ${RAMP_ORANGE} ${RAMP_ORANGE_STOP}%, ${textColor} ${RAMP_INK_STOP}%)`,
@@ -333,7 +333,7 @@ export default function ChromaPanel({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
             </div>
 
             {domain && (

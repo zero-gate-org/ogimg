@@ -91,7 +91,7 @@ export default function PodcastCover({
                       stretching the artwork out of square.
                     */}
                     <div className="flex w-[300px] flex-col justify-between py-1">
-                        <h1
+                        <div
                             className="leading-[1.04]"
                             style={{
                                 color: textColor,
@@ -103,7 +103,7 @@ export default function PodcastCover({
                             }}
                         >
                             {title}
-                        </h1>
+                        </div>
 
                         {guest && (
                             <div>

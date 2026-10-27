@@ -8,8 +8,9 @@ import { List, X } from "@phosphor-icons/react";
 
 const LINKS = [
     { href: "/template-gallery", label: "Templates" },
-    { href: "/#preview", label: "Preview" },
-    { href: "/#faq", label: "FAQ" },
+    { href: "/learn", label: "Guides" },
+    { href: "/tools", label: "Tools" },
+    { href: "/compare", label: "Compare" },
     { href: "/changelog", label: "Changelog" },
 ];
 

@@ -225,7 +225,7 @@ export default function TealContour({
                 className="absolute"
                 style={{ left: PAD_X, bottom: HEADLINE_BOTTOM, width: HEADLINE_WIDTH }}
             >
-                <h1
+                <div
                     style={{
                         margin: 0,
                         color: textColor,
@@ -239,7 +239,7 @@ export default function TealContour({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
             </div>
         </TemplateCard>
     );

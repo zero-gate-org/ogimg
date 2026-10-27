@@ -431,7 +431,7 @@ export default function DawnWindow({
                 className="absolute"
                 style={{ left: (1200 - HEADLINE_WIDTH) / 2, top: HEADLINE_TOP, width: HEADLINE_WIDTH }}
             >
-                <h1
+                <div
                     style={{
                         margin: 0,
                         backgroundImage: `linear-gradient(${RAMP_DEG}deg, ${textColor} ${RAMP_START_STOP}%, ${hexToRgba(
@@ -454,7 +454,7 @@ export default function DawnWindow({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
             </div>
         </TemplateCard>
     );

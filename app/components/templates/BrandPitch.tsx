@@ -82,7 +82,7 @@ export default function BrandPitch({
 
                 <div className="grid flex-1 grid-cols-[1.15fr_1fr] content-center gap-16">
                     <div>
-                        <h1
+                        <div
                             className="max-w-[620px] leading-[1.05]"
                             style={{
                                 color: textColor,
@@ -94,7 +94,7 @@ export default function BrandPitch({
                             }}
                         >
                             {title}
-                        </h1>
+                        </div>
 
                         {subheading && (
                             <p className="mt-7 max-w-[560px] text-[22px] leading-[1.35]" style={{ color: tone.secondary }}>

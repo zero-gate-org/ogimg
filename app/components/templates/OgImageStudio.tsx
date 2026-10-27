@@ -60,7 +60,7 @@ export default function OgImageStudio({
             />
 
             <div className="relative z-10 flex h-full w-full flex-col items-center">
-                <h1
+                <div
                     className="mt-[104px] max-w-[560px] text-center leading-[0.96]"
                     style={{
                         color: textColor,
@@ -72,7 +72,7 @@ export default function OgImageStudio({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
 
                 <ImageSlot
                     image={dashboardImage}

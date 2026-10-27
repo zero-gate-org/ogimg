@@ -239,7 +239,7 @@ export default function LightColumn({
                     justifyContent: "center",
                 }}
             >
-                <h1
+                <div
                     style={{
                         margin: 0,
                         maxWidth: HEADLINE_WIDTH,
@@ -255,7 +255,7 @@ export default function LightColumn({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
             </div>
 
             {domain && (

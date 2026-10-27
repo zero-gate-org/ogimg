@@ -243,7 +243,7 @@ export default function PrismFrame({
                     zIndex: 2,
                 }}
             >
-                <h1
+                <div
                     style={{
                         margin: 0,
                         color: textColor,
@@ -257,7 +257,7 @@ export default function PrismFrame({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
             </div>
         </TemplateCard>
     );

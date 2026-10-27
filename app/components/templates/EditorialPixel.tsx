@@ -96,7 +96,7 @@ export default function EditorialPixel({
                       keeps it honest and gives the template its poster register,
                       so nothing is ever faux bolded.
                     */}
-                    <h1
+                    <div
                         className="max-w-[760px] leading-[1.08]"
                         style={{
                             color: textColor,
@@ -108,7 +108,7 @@ export default function EditorialPixel({
                         }}
                     >
                         {title}
-                    </h1>
+                    </div>
 
                     {ctaLine && (
                         <div className="shrink-0 pb-2 text-right">

@@ -217,7 +217,7 @@ export default function Spotlight({
                     zIndex: 3,
                 }}
             >
-                <h1
+                <div
                     style={{
                         margin: 0,
                         color: textColor,
@@ -231,7 +231,7 @@ export default function Spotlight({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
 
                 {tagline && (
                     <>

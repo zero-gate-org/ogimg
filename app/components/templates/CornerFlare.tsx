@@ -321,7 +321,7 @@ export default function CornerFlare({
                     justifyContent: "flex-start",
                 }}
             >
-                <h1
+                <div
                     style={{
                         margin: 0,
                         color: textColor,
@@ -335,7 +335,7 @@ export default function CornerFlare({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
 
                 {support && (
                     <p

@@ -241,7 +241,7 @@ export default function StatBento({
                     padding: `${RAIL_PAD_TOP}px ${RAIL_PAD_RIGHT}px ${RAIL_PAD_BOTTOM}px ${RAIL_PAD_LEFT}px`,
                 }}
             >
-                <h1
+                <div
                     style={{
                         maxWidth: RAIL_WIDTH - RAIL_PAD_LEFT - RAIL_PAD_RIGHT,
                         color: textColor,
@@ -254,7 +254,7 @@ export default function StatBento({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
 
                 {brand && (
                     <p

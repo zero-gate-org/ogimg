@@ -191,7 +191,7 @@ export default function AgileStartup({
                 className="absolute inset-x-0 flex justify-center"
                 style={{ top: HEADLINE_TOP, padding: "0 96px" }}
             >
-                <h1
+                <div
                     style={{
                         maxWidth: `${HEADLINE_WIDTH}px`,
                         color: textColor,
@@ -207,7 +207,7 @@ export default function AgileStartup({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
             </div>
 
             {domain && (

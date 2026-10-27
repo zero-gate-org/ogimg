@@ -298,7 +298,7 @@ export default function GraphiteWindow({
                 className="absolute flex items-center"
                 style={{ left: PAD_X, top: 0, bottom: 0, width: HEADLINE_WIDTH }}
             >
-                <h1
+                <div
                     style={{
                         margin: 0,
                         backgroundImage: `linear-gradient(${RAMP_DEG}deg, ${textColor} 0%, ${textColor} ${RAMP_START}%, ${hexToRgba(
@@ -320,7 +320,7 @@ export default function GraphiteWindow({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
             </div>
 
             {/* The plate, bleeding off the right and the bottom edge as the reference sets it. */}

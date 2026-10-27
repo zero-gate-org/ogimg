@@ -48,11 +48,16 @@ export default async function TemplateEditorPage({
     params: Promise<{ templateId: string }> | { templateId: string };
 }) {
     const { templateId } = await params;
-    const isKnownTemplate = TEMPLATE_LIBRARY.some((template) => template.id === templateId);
+    const template = TEMPLATE_LIBRARY.find((entry) => entry.id === templateId);
 
-    if (!isKnownTemplate) {
+    if (!template) {
         notFound();
     }
 
-    return <TemplateEditor templateId={templateId as TemplateId} backHref="/template-gallery" />;
+    return (
+        <>
+            <h1 className="sr-only">{template.name} Open Graph image editor</h1>
+            <TemplateEditor templateId={templateId as TemplateId} backHref="/template-gallery" />
+        </>
+    );
 }

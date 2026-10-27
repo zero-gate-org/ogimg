@@ -196,7 +196,7 @@ export default function GridGlow({
                 className="absolute left-0 right-0 flex flex-col items-center justify-center"
                 style={{ top: TYPE_TOP, height: TYPE_BAND, padding: "0 64px" }}
             >
-                <h1
+                <div
                     style={{
                         maxWidth: 900,
                         color: textColor,
@@ -210,7 +210,7 @@ export default function GridGlow({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
 
                 {tagline && (
                     <p

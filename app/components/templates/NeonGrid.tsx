@@ -113,7 +113,7 @@ export default function NeonGrid({
                     )}
 
                     <div className="flex flex-col">
-                        <h1
+                        <div
                             className="max-w-[470px] uppercase leading-[0.94]"
                             style={{
                                 color: textColor,
@@ -125,7 +125,7 @@ export default function NeonGrid({
                             }}
                         >
                             {title}
-                        </h1>
+                        </div>
 
                         {tagline && (
                             <p

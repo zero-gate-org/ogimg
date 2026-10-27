@@ -33,18 +33,18 @@ export default function Hero() {
                 <div className="mx-auto max-w-[1000px] text-center">
                     <motion.h1
                         {...enter(0)}
-                        className="text-[clamp(2.5rem,11vw,7rem)] font-semibold leading-[0.91] tracking-[-0.055em] text-foreground"
+                        className="text-[clamp(2.4rem,10vw,6.5rem)] font-semibold leading-[0.91] tracking-[-0.055em] text-foreground"
                     >
-                        <span className="block">Give every link</span>
-                        <span className="block">a poster.</span>
+                        <span className="block">Open Graph images</span>
+                        <span className="block">that look designed.</span>
                     </motion.h1>
 
                     <motion.p
                         {...enter(0.1)}
                         className="mx-auto mt-6 max-w-[58ch] text-pretty text-[16px] leading-[1.55] text-muted-foreground md:text-[17px]"
                     >
-                        A browser canvas for the image that shows up when someone shares your work.
-                        Start from a template or a blank canvas, then export the PNG.
+                        Give every link a poster worth clicking. Start from a template or a blank canvas, then
+                        export a 1200 x 630 PNG that renders correctly on X, LinkedIn, Discord, and Slack.
                     </motion.p>
 
                     <motion.div
@@ -90,7 +90,7 @@ export default function Hero() {
                 >
                     <div className="border border-border bg-surface p-1.5 md:p-2">
                         <Image
-                            src="/hero-editor-aurora.png"
+                            src="/hero-editor-aurora.webp"
                             alt="The ogimg.in template editor with the Aurora Arc template open on the canvas, showing its wordmark, headline, and domain line."
                             width={2560}
                             height={1600}

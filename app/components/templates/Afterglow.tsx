@@ -296,7 +296,7 @@ export default function Afterglow({
                     height: PANEL_H,
                 }}
             >
-                <h1
+                <div
                     style={{
                         margin: 0,
                         width: "100%",
@@ -318,7 +318,7 @@ export default function Afterglow({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
             </div>
         </TemplateCard>
     );

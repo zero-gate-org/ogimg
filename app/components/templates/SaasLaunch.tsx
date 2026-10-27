@@ -90,7 +90,7 @@ export default function SaasLaunch({
                 </div>
 
                 <div className="min-h-0 flex-1 px-14 pt-9">
-                    <h1
+                    <div
                         className="max-w-[860px] leading-[1.04]"
                         style={{
                             color: textColor,
@@ -102,7 +102,7 @@ export default function SaasLaunch({
                         }}
                     >
                         {title}
-                    </h1>
+                    </div>
                 </div>
 
                 <div className="flex min-h-0 items-stretch gap-10 px-14 pb-12 pt-8">

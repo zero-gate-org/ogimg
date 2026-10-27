@@ -1,33 +1,46 @@
+import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import "./globals.css";
+import { JsonLd } from "./components/content/JsonLd";
 import {
   DEFAULT_OG_IMAGE,
   DEFAULT_OG_IMAGE_ALT,
+  SITE_DESCRIPTION,
   SITE_NAME,
   SITE_URL_OBJECT,
+  organizationSchema,
+  softwareApplicationSchema,
+  websiteSchema,
 } from "./lib/seo";
 
 export const metadata: Metadata = {
   metadataBase: SITE_URL_OBJECT,
   title: {
-    default: "Open Graph Image Generator",
+    default: "Open Graph Image Generator and Free OG Image Maker",
     template: "%s | ogimg.in",
   },
-  description: "Create beautiful Open Graph images in your browser with editable templates, custom backgrounds, and PNG, JPEG, or WebP export.",
+  description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
   keywords: [
     "open graph image generator",
     "og image generator",
+    "og image maker",
+    "open graph image maker",
     "social preview image generator",
     "twitter card image generator",
     "open graph templates",
+    "free og image generator",
   ],
+  authors: [{ name: "GxAditya", url: "https://www.ogimg.in/about" }],
+  creator: "GxAditya",
+  publisher: SITE_NAME,
+  category: "Design",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Open Graph Image Generator",
-    description: "Create beautiful Open Graph images in your browser with editable templates, custom backgrounds, and fast exports.",
+    title: "Open Graph Image Generator and Free OG Image Maker",
+    description: SITE_DESCRIPTION,
     url: "/",
     siteName: SITE_NAME,
     type: "website",
@@ -43,8 +56,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Open Graph Image Generator",
-    description: "Create beautiful Open Graph images in your browser with editable templates, custom backgrounds, and fast exports.",
+    title: "Open Graph Image Generator and Free OG Image Maker",
+    description: SITE_DESCRIPTION,
     images: [DEFAULT_OG_IMAGE],
   },
   robots: {
@@ -73,15 +86,17 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en" className="dark">
       <head>
         {/* eslint-disable-next-line @next/next/no-css-tags */}
         <link rel="stylesheet" href="/fonts/fonts.css" />
+        <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
       </head>
       <body className="antialiased bg-background text-foreground">
+        <JsonLd items={[organizationSchema(), websiteSchema(), softwareApplicationSchema()]} />
         {children}
       </body>
     </html>

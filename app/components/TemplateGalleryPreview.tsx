@@ -23,7 +23,7 @@ export default function TemplateGalleryPreview({
         logoImage: "/icon.png",
         image:
             templateId === "og-image-studio"
-                ? "/hero-editor-aurora.png"
+                ? "/hero-editor-aurora.webp"
                 : template.supportsImage
                   ? defaults.image || undefined
                   : undefined,

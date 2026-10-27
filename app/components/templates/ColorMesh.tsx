@@ -223,7 +223,7 @@ export default function ColorMesh({
 
                 {/* The headline carries the card; the tag is a quiet line beneath it. */}
                 <div>
-                    <h1
+                    <div
                         className="max-w-[960px]"
                         style={{
                             color: textColor,
@@ -236,7 +236,7 @@ export default function ColorMesh({
                         }}
                     >
                         {title}
-                    </h1>
+                    </div>
 
                     {tagline && (
                         <p

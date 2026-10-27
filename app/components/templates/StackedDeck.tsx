@@ -364,7 +364,7 @@ export default function StackedDeck({
                     padding: "0 96px",
                 }}
             >
-                <h1
+                <div
                     style={{
                         margin: 0,
                         maxWidth: 940,
@@ -380,7 +380,7 @@ export default function StackedDeck({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
 
                 {tagline && (
                     <p

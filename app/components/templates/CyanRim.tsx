@@ -304,7 +304,7 @@ export default function CyanRim({
                 {/* The support line hangs off the headline's own box, so an empty one
                     leaves no gap and a filled one never moves the centring. */}
                 <div style={{ position: "relative" }}>
-                    <h1
+                    <div
                         style={{
                             margin: 0,
                             color: textColor,
@@ -318,7 +318,7 @@ export default function CyanRim({
                         }}
                     >
                         {title}
-                    </h1>
+                    </div>
 
                     {support && (
                         <div style={{ position: "absolute", top: "100%", left: 0, width: RAIL_WIDTH }}>

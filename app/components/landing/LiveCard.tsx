@@ -78,7 +78,7 @@ const HERO_DOCUMENT: FreeDocument = {
             strokeEnabled: false,
         } as Layer,
         {
-            ...createImageLayer("/hero-editor-aurora.png", "Editor screenshot"),
+            ...createImageLayer("/hero-editor-aurora.webp", "Editor screenshot"),
             id: "hero-shot",
             name: "Editor screenshot",
             x: 728,

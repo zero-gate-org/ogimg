@@ -239,7 +239,7 @@ export default function VioletRail({
                 )}
             </div>
 
-            <h1
+            <div
                 style={{
                     position: "absolute",
                     left: PAD,
@@ -258,7 +258,7 @@ export default function VioletRail({
                 }}
             >
                 {title}
-            </h1>
+            </div>
         </TemplateCard>
     );
 }

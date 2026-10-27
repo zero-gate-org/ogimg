@@ -90,7 +90,7 @@ export default function MinimalistTech({
                     </div>
 
                     <div className="max-w-[560px]">
-                        <h1
+                        <div
                             className="leading-[1.03]"
                             style={{
                                 color: textColor,
@@ -102,7 +102,7 @@ export default function MinimalistTech({
                             }}
                         >
                             {title}
-                        </h1>
+                        </div>
                     </div>
                 </div>
 

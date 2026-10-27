@@ -427,7 +427,7 @@ ${fontCss}
         }
 
         const blob = await canvasToBlob(output, format, quality);
-        saveAs(blob, `${slugify(name)}-${width}x${height}.${format === "jpeg" ? "jpg" : format}`);
+        saveAs(blob, `${slugify(name)}-${width * scale}x${height * scale}.${format === "jpeg" ? "jpg" : format}`);
     } finally {
         host.remove();
     }

@@ -160,7 +160,7 @@ export default function NotchCard({
                 )}
 
                 <div className="flex min-h-0 w-full flex-1 items-center justify-center py-6">
-                    <h1
+                    <div
                         className="max-w-[820px] text-center"
                         style={{
                             color: textColor,
@@ -175,7 +175,7 @@ export default function NotchCard({
                         }}
                     >
                         {title}
-                    </h1>
+                    </div>
                 </div>
 
                 {tagline && (

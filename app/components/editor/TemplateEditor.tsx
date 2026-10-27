@@ -162,7 +162,7 @@ export default function TemplateEditor({
     const [kits, setKits] = useState<BrandKit[]>([]);
     const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
     const [format, setFormat] = useState<ExportFormat>("png");
-    const [scale, setScale] = useState(2);
+    const [scale, setScale] = useState(1);
     const [isExporting, setIsExporting] = useState(false);
     const [exportError, setExportError] = useState<string | null>(null);
     const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");

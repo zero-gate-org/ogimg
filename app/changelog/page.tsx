@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CaretLeft } from "@phosphor-icons/react/ssr";
 import { CHANGELOG_ENTRIES } from "../components/changelogData";
+import SiteFooter from "../components/landing/SiteFooter";
 import { Reveal } from "../components/landing/landingPrimitives";
 import { createMetadata } from "../lib/seo";
 
@@ -77,6 +78,8 @@ export default function ChangelogPage() {
                     ))}
                 </div>
             </main>
+
+            <SiteFooter />
         </div>
     );
 }

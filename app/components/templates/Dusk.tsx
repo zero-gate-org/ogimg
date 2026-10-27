@@ -195,7 +195,7 @@ export default function Dusk({
 
             {/* The headline, on the bottom rail. The block grows upward as it wraps. */}
             <div className="absolute" style={{ left: RAIL_LEFT, bottom: BOTTOM_RAIL, width: `${TYPE_WIDTH}px` }}>
-                <h1
+                <div
                     style={{
                         color: textColor,
                         fontStyle,
@@ -207,7 +207,7 @@ export default function Dusk({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
 
                 {tagline && (
                     <p

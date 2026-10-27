@@ -113,7 +113,7 @@ export default function Spectrum({
                         </svg>
                     )}
 
-                    <h1
+                    <div
                         className="mt-4 max-w-[860px]"
                         style={{
                             color: textColor,
@@ -126,7 +126,7 @@ export default function Spectrum({
                         }}
                     >
                         {title}
-                    </h1>
+                    </div>
 
                     {tagline && (
                         <p className="mt-4 max-w-[720px] text-[21px] leading-[1.35]" style={{ color: tone.secondary }}>

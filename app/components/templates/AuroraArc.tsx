@@ -233,7 +233,7 @@ export default function AuroraArc({
                 </div>
 
                 <div className="flex min-h-0 flex-1 items-center justify-center px-[132px]">
-                    <h1
+                    <div
                         style={{
                             color: textColor,
                             fontStyle,
@@ -247,7 +247,7 @@ export default function AuroraArc({
                         }}
                     >
                         {title}
-                    </h1>
+                    </div>
                 </div>
 
                 {domain && (

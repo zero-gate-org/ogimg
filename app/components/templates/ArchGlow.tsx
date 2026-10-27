@@ -172,7 +172,7 @@ export default function ArchGlow({
                 />
             </div>
 
-            <h1
+            <div
                 className="absolute left-0 right-0"
                 style={{
                     top: HEADLINE_TOP,
@@ -190,7 +190,7 @@ export default function ArchGlow({
                 }}
             >
                 {title}
-            </h1>
+            </div>
 
             {tagline && (
                 <p

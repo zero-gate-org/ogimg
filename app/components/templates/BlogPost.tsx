@@ -87,7 +87,7 @@ export default function BlogPost({
                 <div className="flex min-h-0 flex-1">
                     <div className="flex w-[50%] shrink-0 flex-col justify-center px-14 pb-14 pt-10">
                         <div className="mb-7 h-px w-16" style={{ backgroundColor: tone.hairline }} />
-                        <h1
+                        <div
                             className="max-w-[520px] leading-[1.12]"
                             style={{
                                 color: textColor,
@@ -99,7 +99,7 @@ export default function BlogPost({
                             }}
                         >
                             {title}
-                        </h1>
+                        </div>
                     </div>
 
                     <ImageSlot

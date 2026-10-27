@@ -87,7 +87,7 @@ export default function Changelog({
                     {footerCta && <MetaLabel tone={tone}>{footerCta}</MetaLabel>}
                 </div>
 
-                <h1
+                <div
                     className="mt-9 max-w-[900px] leading-[1.06]"
                     style={{
                         color: textColor,
@@ -99,7 +99,7 @@ export default function Changelog({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
 
                 {entries.length > 0 && (
                     <ul

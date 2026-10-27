@@ -1,45 +1,14 @@
-"use client";
+import { Plus } from "@phosphor-icons/react/ssr";
+import { HOME_FAQS } from "../../lib/faqs";
 
-import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Plus } from "@phosphor-icons/react";
-
-const FAQS = [
-    {
-        question: "Do I need design skills?",
-        answer:
-            "No. Templates handle layout if you want a finished look in under a minute, and the free canvas is there when you want exact control.",
-    },
-    {
-        question: "What is the difference between a template and the free canvas?",
-        answer:
-            "A template fixes the layout and exposes the controls that matter for that design. The canvas has no fixed layout: you place every element and set every value yourself.",
-    },
-    {
-        question: "What formats and sizes can I export?",
-        answer:
-            "PNG, JPEG, and WebP at 1x, 2x, or 3x. Canvas sizes include Open Graph, LinkedIn, Product Hunt, YouTube thumbnails, square posts, and stories, plus custom dimensions.",
-    },
-    {
-        question: "Can I use my own fonts?",
-        answer:
-            "The bundled set covers sixteen families, including the Geist pixel faces. They are self-hosted and embedded into the exported file, so the image renders the same on any machine.",
-    },
-    {
-        question: "Is it really free?",
-        answer: "Yes. There is no account, no watermark, and no paid tier. Everything runs in your browser tab.",
-    },
-    {
-        question: "Do you store my uploads or my text?",
-        answer:
-            "Nothing is sent anywhere. Images, copy, and projects stay in your browser. Clearing site data removes saved projects and brand kits.",
-    },
-];
-
+/**
+ * Native details/summary rather than a stateful accordion.
+ *
+ * Every answer is in the server HTML, which keeps the copy available to search
+ * engines, AI crawlers, and readers without JavaScript. The FAQPage schema on
+ * the homepage is generated from the same HOME_FAQS list.
+ */
 export default function Faq() {
-    const [openIndex, setOpenIndex] = useState<number | null>(0);
-    const reduce = useReducedMotion();
-
     return (
         <section id="faq" className="scroll-mt-20 py-20 md:py-28">
             <div className="shell grid gap-10 lg:grid-cols-[minmax(0,0.62fr)_minmax(0,1fr)] lg:gap-16">
@@ -60,62 +29,27 @@ export default function Faq() {
                     </a>
                 </div>
 
-                <ul className="border-t border-border">
-                    {FAQS.map((faq, index) => {
-                        const isOpen = openIndex === index;
-
-                        return (
-                            <li key={faq.question} className="border-b border-border">
-                                <button
-                                    type="button"
-                                    onClick={() => setOpenIndex(isOpen ? null : index)}
-                                    aria-expanded={isOpen}
-                                    className={`group grid w-full grid-cols-[2.5rem_1fr_auto] items-start gap-3 px-2 py-4 text-left transition-colors duration-200 hover:bg-surface-sunken ${
-                                        index === 0 ? "mt-0" : ""
-                                    }`}
-                                >
-                                    <span className="pt-0.5 font-mono text-[11px] text-border-strong transition-colors duration-200 group-hover:text-foreground">
-                                        {String(index + 1).padStart(2, "0")}
-                                    </span>
-                                    <span
-                                        className={`text-[15px] transition-colors duration-200 ${
-                                            isOpen ? "text-foreground" : "text-foreground/90 group-hover:text-foreground"
-                                        }`}
-                                    >
-                                        {faq.question}
-                                    </span>
-                                    <Plus
-                                        size={16}
-                                        className={`mt-0.5 shrink-0 text-muted-foreground transition-transform duration-200 ease-out group-hover:text-foreground ${
-                                            isOpen ? "rotate-45" : ""
-                                        }`}
-                                    />
-                                </button>
-
-                                <AnimatePresence initial={false}>
-                                    {isOpen ? (
-                                        <motion.div
-                                            initial={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
-                                            animate={reduce ? { opacity: 1 } : { height: "auto", opacity: 1 }}
-                                            exit={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
-                                            transition={{ duration: 0.32, ease: [0.23, 1, 0.32, 1] }}
-                                            className="overflow-hidden"
-                                        >
-                                            <motion.p
-                                                initial={reduce ? false : { opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                exit={reduce ? undefined : { opacity: 0, transition: { duration: 0.16, ease: "easeOut" } }}
-                                                className="max-w-[62ch] pb-5 pl-[3.25rem] pr-4 text-[14px] leading-relaxed text-muted-foreground"
-                                            >
-                                                {faq.answer}
-                                            </motion.p>
-                                        </motion.div>
-                                    ) : null}
-                                </AnimatePresence>
-                            </li>
-                        );
-                    })}
-                </ul>
+                <div className="border-t border-border">
+                    {HOME_FAQS.map((faq, index) => (
+                        <details key={faq.question} className="group border-b border-border">
+                            <summary className="grid cursor-pointer list-none grid-cols-[2.5rem_1fr_auto] items-start gap-3 px-2 py-4 text-left transition-colors duration-200 hover:bg-surface-sunken">
+                                <span className="pt-0.5 font-mono text-[11px] text-border-strong transition-colors duration-200 group-hover:text-foreground">
+                                    {String(index + 1).padStart(2, "0")}
+                                </span>
+                                <span className="text-[15px] text-foreground/90 transition-colors duration-200 group-hover:text-foreground">
+                                    {faq.question}
+                                </span>
+                                <Plus
+                                    size={16}
+                                    className="mt-0.5 shrink-0 text-muted-foreground transition-transform duration-200 ease-out group-hover:text-foreground group-open:rotate-45"
+                                />
+                            </summary>
+                            <p className="max-w-[62ch] pb-5 pl-[3.25rem] pr-4 text-[14px] leading-relaxed text-muted-foreground">
+                                {faq.answer}
+                            </p>
+                        </details>
+                    ))}
+                </div>
             </div>
         </section>
     );

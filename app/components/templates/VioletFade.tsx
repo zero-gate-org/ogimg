@@ -237,7 +237,7 @@ export default function VioletFade({
                     height: PANEL_H,
                 }}
             >
-                <h1
+                <div
                     style={{
                         margin: 0,
                         maxWidth: PANEL_W,
@@ -257,7 +257,7 @@ export default function VioletFade({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
             </div>
 
             {url && (

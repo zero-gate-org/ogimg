@@ -346,7 +346,7 @@ export default function StatRail({
             </div>
 
             <div className="absolute" style={{ left: PAD_X, bottom: HEADLINE_BOTTOM, width: RAIL_WIDTH }}>
-                <h1
+                <div
                     style={{
                         margin: 0,
                         // The reference ramps its headline white into silver, and the
@@ -367,7 +367,7 @@ export default function StatRail({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
             </div>
         </TemplateCard>
     );

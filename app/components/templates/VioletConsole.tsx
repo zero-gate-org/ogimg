@@ -229,7 +229,7 @@ export default function VioletConsole({
 
             {/* Headline, anchored to the bottom edge of the rail. */}
             <div className="absolute" style={{ left: PAD_X, bottom: HEADLINE_BOTTOM, width: HEADLINE_WIDTH }}>
-                <h1
+                <div
                     style={{
                         margin: 0,
                         color: textColor,
@@ -243,7 +243,7 @@ export default function VioletConsole({
                     }}
                 >
                     {title}
-                </h1>
+                </div>
             </div>
 
             {/* The app panel, bleeding off the right and bottom edges. */}
